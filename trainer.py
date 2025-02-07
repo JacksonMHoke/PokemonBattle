@@ -4,3 +4,5 @@ class Trainer:
         self.name=name
         self.pokemon=pokemon
         self.bag=bag
+        self.activePokemon=None
+        self.alivePokemon=len(self.pokemon)
