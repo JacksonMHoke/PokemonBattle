@@ -189,5 +189,5 @@ effectiveness = {
 }
 
 # Example function to retrieve the multiplier with a default of 1:
-def get_effectiveness(attacking_type, defending_type):
+def getEffectiveness(attacking_type, defending_type):
     return effectiveness.get(attacking_type, {}).get(defending_type, 1)
