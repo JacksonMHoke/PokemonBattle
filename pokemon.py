@@ -2,9 +2,8 @@ from globals import Stat
 from globals import Type
 from abc import ABC, abstractmethod
 class Pokemon(ABC):
-    def __init__(self, name, typing, level, stats, moves, item=None, ability=None):
+    def __init__(self, name, level, stats, moves, item=None, ability=None):
         self.name=name
-        self.typing=typing
         self.stats=stats
         self.moves=moves
         self.ability=ability
@@ -15,4 +14,11 @@ class Pokemon(ABC):
         self.hp=stats[Stat.MHP]
         self.speed=stats[Stat.SPE]
 
-    
+    def takeDamage(self, dmg):
+        self.hp-=dmg
+        self.fainted=self.hp<=0
+
+class Pikachu(Pokemon):
+    def __init__(self, name, level, stats, moves, item=None, ability=None):
+        super().__init__(name, level, stats, moves, item, ability)
+        self.typing=[Type.ELECTRIC]
