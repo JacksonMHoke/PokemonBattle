@@ -2,6 +2,7 @@ from enum import Enum
 
 STAB=1.5
 CRIT=1.5
+CRITCHANCE=0.1
 
 class Stat(Enum):
     HP=1

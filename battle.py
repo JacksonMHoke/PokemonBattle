@@ -12,8 +12,8 @@ class Battle:
         self.context['trainer2']=trainer2
 
     def _trainer1GoesFirst(self):
-        t1Speed=self.trainer1.activePokemon.speed
-        t2Speed=self.trainer2.activePokemon.speed
+        t1Speed=self.trainer1.activePokemon.stats[Stat.SPE]
+        t2Speed=self.trainer2.activePokemon.stats[Stat.SPE]
         if t1Speed>t2Speed:
             return True
         if t2Speed>t1Speed:
@@ -23,9 +23,9 @@ class Battle:
     def run_battle(self):
         while True:
             # check if battle should continue
-            if self.trainer1.alivePokemon==0:
+            if self.trainer1.isWhiteOut():
                 return False
-            if self.trainer2.alivePokemon==0:
+            if self.trainer2.isWhiteOut():
                 return True
             
             # if no active pokemon, send out new pokemon
@@ -33,6 +33,9 @@ class Battle:
                 self.trainer1.selectPokemon()
             if self.trainer2.activePokemon is None:
                 self.trainer2.selectPokemon()
+
+            print(f'{self.trainer1.name}s pokemon {self.trainer1.activePokemon.name} has {self.trainer1.activePokemon.stats[Stat.HP]} hp', flush=True)
+            print(f'{self.trainer2.name}s pokemon {self.trainer2.activePokemon.name} has {self.trainer2.activePokemon.stats[Stat.HP]} hp', flush=True)
 
             # choose moves                                 TODO: allow for other options like run, bag, etc
             t1Move=self.trainer1.selectMove()

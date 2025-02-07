@@ -14,9 +14,20 @@ class Tackle(Move):
     def __init__(self):
         self.power=20
         self.accuracy=1
-        self.critChance=0.1
+        self.critChance=CRITCHANCE
         self.isPhys=True
         self.type=Type.NORMAL
+        self.name=self.__class__.__name__
+    def enact(self, context, currTrainer):
+        singleTargetAttack.do(context, self, currTrainer)
+
+class Earthquake(Move):
+    def __init__(self):
+        self.power=100
+        self.accuracy=1
+        self.critChance=CRITCHANCE
+        self.isPhys=True
+        self.type=Type.GROUND
         self.name=self.__class__.__name__
     def enact(self, context, currTrainer):
         singleTargetAttack.do(context, self, currTrainer)
