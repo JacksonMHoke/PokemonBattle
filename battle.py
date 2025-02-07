@@ -40,10 +40,10 @@ class Battle:
 
             # enact moves by speed of pokemon              TODO: change to max heap to handle multi-battles
             if self._trainer1GoesFirst():
-                t1Move.enact(self.context)
+                t1Move.enact(self.context, 1)
                 if self.trainer2.activePokemon is not None:
-                    t2Move.enact(self.context)
+                    t2Move.enact(self.context, 2)
             else:
-                t2Move.enact(self.context)
+                t2Move.enact(self.context, 2)
                 if self.trainer1.activePokemon is not None:
-                    t1Move.enact(self.context)
+                    t1Move.enact(self.context, 1)

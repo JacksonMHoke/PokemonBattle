@@ -33,3 +33,7 @@ class Trainer:
         except:
             return self.selectPokemon()
         return validPokemon[min(max(0, choice-1), len(validPokemon)-1)]
+    
+    def updateActivePokemon(self):
+        if self.activePokemon.fainted:
+            self.activePokemon=None

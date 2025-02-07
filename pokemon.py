@@ -2,21 +2,27 @@ from globals import Stat
 from globals import Type
 from abc import ABC, abstractmethod
 class Pokemon(ABC):
-    def __init__(self, name, level, stats, moves, item=None, ability=None):
+    def __init__(self, name, level, baseStats, moves, item=None, ability=None):
         self.name=name
-        self.stats=stats
+        self.baseStats=baseStats
+        self.stats=baseStats
         self.moves=moves
         self.ability=ability
         self.item=item
         self.fainted=False
         self.level=level
         self.exp=0
-        self.hp=stats[Stat.MHP]
-        self.speed=stats[Stat.SPE]
 
-    def takeDamage(self, dmg):
-        self.hp-=dmg
-        self.fainted=self.hp<=0
+    def faint(self):
+        print(f'{self.name} has fainted!')
+        self.fainted=True
+
+    def takeDamage(self, dmg, isPhys):
+        mitigation=self.stats[Stat.DEF] if isPhys else self.stats[Stat.SPD]
+        self.stats[Stat.HP]-=max(dmg-self.stats[Stat.DEF], 1)
+        print(f'{self.name} took {max(dmg-mitigation, 1)} damage!')
+        if self.hp<=0:
+            self.faint()
 
 class Pikachu(Pokemon):
     def __init__(self, name, level, stats, moves, item=None, ability=None):

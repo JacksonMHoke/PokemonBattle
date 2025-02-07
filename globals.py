@@ -1,6 +1,10 @@
 from enum import Enum
+
+STAB=1.5
+CRIT=1.5
+
 class Stat(Enum):
-    MHP=1
+    HP=1
     ATT=2
     SPA=3
     DEF=4
