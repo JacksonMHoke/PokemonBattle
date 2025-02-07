@@ -14,5 +14,6 @@ class Tackle(Move):
         self.power=20
         self.accuracy=100
         self.critChance=0.1
+        self.name=self.__class__.__name__
     def enact(self, context):
         pass
