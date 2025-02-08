@@ -13,23 +13,28 @@ class singleTargetAttack(Action):
         attPokemon=context[f'trainer{currTrainer}'].activePokemon
         defPokemon=context[f'trainer{3-currTrainer}'].activePokemon
 
+        # calc mults
         stab=STAB if move.type in attPokemon.typing else 1
-        strength=attPokemon.stats[Stat.ATT] if move.isPhys else attPokemon.stats[Stat.SPA]
+        attackMult=attPokemon.stats[Stat.ATT]/defPokemon.stats[Stat.DEF] if move.isPhys else attPokemon.stats[Stat.SPA]/defPokemon.stats[Stat.SPD]
         eff=1
         for t in defPokemon.typing:
             eff*=getEffectiveness(move.type, t)
-        if random()<move.accuracy:
-            if eff>1:
-                print(f'{move.name} was super effective!', flush=True)
-            elif eff<1:
-                print(f'{move.name} was ineffective...', flush=True)
-            dmg=(strength/100)*move.power*stab*eff
-            if random()<move.critChance:
-                print('A critical hit!', flush=True)
-                dmg*=CRIT
-            defPokemon.takeDamage(dmg, move.isPhys)
-        else:
+
+        if random()>move.accuracy:
             print(move.name, 'missed!', flush=True)
+            return
+        
+        if eff>1:
+            print(f'{move.name} was super effective!', flush=True)
+        elif eff<1:
+            print(f'{move.name} was ineffective...', flush=True)
+
+        dmg=attackMult*move.power*stab*eff
+        if random()<move.critChance:
+            print('A critical hit!', flush=True)
+            dmg*=CRIT
+
+        defPokemon.takeDamage(dmg, move.isPhys)
 
         context['trainer1'].updateActivePokemon()
         context['trainer2'].updateActivePokemon()

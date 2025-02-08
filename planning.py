@@ -14,6 +14,7 @@
 # selectMove(pokemonIdx)
 
 # pokemon
+# name
 # has array of types
 # has array of moves
 # hp, def, spD, att, spA, spe

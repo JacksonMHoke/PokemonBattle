@@ -18,10 +18,9 @@ class Pokemon(ABC):
         print(f'{self.name} has fainted!', flush=True)
         self.fainted=True
 
-    def takeDamage(self, dmg, isPhys):
-        mitigation=self.stats[Stat.DEF] if isPhys else self.stats[Stat.SPD]
-        self.stats[Stat.HP]-=max(dmg-self.stats[Stat.DEF], 1)
-        print(f'{self.name} took {max(dmg-mitigation, 1)} damage!', flush=True)
+    def takeDamage(self, dmg):
+        self.stats[Stat.HP]-=dmg
+        print(f'{self.name} took {dmg} damage!', flush=True)
         if self.stats[Stat.HP]<=0:
             self.faint()
 
