@@ -1,52 +1,35 @@
 from trainer import *
 from pokemon import *
 from moves import *
+from battlequeue import *
+from tabulate import tabulate
 from random import random
 
 class Battle:
-    def __init__(self, trainer1, trainer2):
-        self.trainer1=trainer1
-        self.trainer2=trainer2
+    def __init__(self, teams):
         self.context={}
-        self.context['trainer1']=trainer1
-        self.context['trainer2']=trainer2
+        self.context['teams']=teams
 
-    def _trainer1GoesFirst(self):
-        t1Speed=self.trainer1.activePokemon.stats[Stat.SPE]
-        t2Speed=self.trainer2.activePokemon.stats[Stat.SPE]
-        if t1Speed>t2Speed:
-            return True
-        if t2Speed>t1Speed:
-            return False
-        return random()>0.5
-
-    def run_battle(self):
+    def runBattle(self):
+        queue=BattleQueue()
         while True:
-            # check if battle should continue
-            if self.trainer1.isWhiteOut():
-                return False
-            if self.trainer2.isWhiteOut():
-                return True
+            # return winning team if that team is only team that remains
+            remainingTeams=[i for i in range(len(self.context['teams'])) if self.context['teams'][i].teamWhiteOut(i)]
+            if len(remainingTeams)==1:
+                return remainingTeams[0]
             
             # if no active pokemon, send out new pokemon
-            if self.trainer1.activePokemon is None:
-                self.trainer1.selectPokemon()
-            if self.trainer2.activePokemon is None:
-                self.trainer2.selectPokemon()
+            for team in self.context['teams']:
+                team.populateEmptySlots()
 
-            print(f'{self.trainer1.name}s pokemon {self.trainer1.activePokemon.name} has {self.trainer1.activePokemon.stats[Stat.HP]} hp', flush=True)
-            print(f'{self.trainer2.name}s pokemon {self.trainer2.activePokemon.name} has {self.trainer2.activePokemon.stats[Stat.HP]} hp', flush=True)
+            for team in self.context['teams']:
+                team.printActivePokemon()
 
             # choose moves                                 TODO: allow for other options like run, bag, etc
-            t1Move=self.trainer1.selectMove()
-            t2Move=self.trainer2.selectMove()
-
+            for team in self.context['teams']:
+                actionRequests=team.selectAction()
+                for actionRequest in actionRequests:
+                    queue.push(actionRequest)
+                
             # enact moves by speed of pokemon              TODO: change to max heap to handle multi-battles
-            if self._trainer1GoesFirst():
-                t1Move.enact(self.context, 1)
-                if self.trainer2.activePokemon is not None:
-                    t2Move.enact(self.context, 2)
-            else:
-                t2Move.enact(self.context, 2)
-                if self.trainer1.activePokemon is not None:
-                    t1Move.enact(self.context, 1)
+            queue.processTurn()

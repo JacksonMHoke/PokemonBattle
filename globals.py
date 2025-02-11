@@ -32,6 +32,12 @@ class Type(Enum):
     STEEL=17
     FAIRY=18
 
+class Prio(Enum):
+    RUN=10000
+    SWAP=9999
+    ITEM=9998
+    MOVE=0
+
 # Effectiveness multipliers:
 # For any (attacker, defender) pair not listed, assume a multiplier of 1.
 effectiveness = {
@@ -196,3 +202,6 @@ effectiveness = {
 # Example function to retrieve the multiplier with a default of 1:
 def getEffectiveness(attacking_type, defending_type):
     return effectiveness.get(attacking_type, {}).get(defending_type, 1)
+
+def clamp(n, smallest, largest):
+    return min(max(0, n), largest)
