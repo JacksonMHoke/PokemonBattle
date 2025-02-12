@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
-from globals import Stat
-from globals import Type
+from globals import *
 from behaviors import *
 from battleaction import *
 class Move(ABC):
@@ -8,10 +7,10 @@ class Move(ABC):
     def __init__(self):
         pass
     @abstractmethod
-    def enact(self, context, attacker, targetReqs):
+    def enact(self, context, attackerLoc, targetLocs):
         pass
     @abstractmethod
-    def select(self, context, attacker):
+    def select(self, context, attackerLoc):
         pass
 
 class Tackle(Move):
@@ -21,11 +20,12 @@ class Tackle(Move):
         self.critChance=CRITCHANCE
         self.isPhys=True
         self.type=Type.NORMAL
+        self.priority=Prio.MOVE
         self.name=self.__class__.__name__
-    def enact(self, context, attacker, targetLocs):
-        AttackSingleTarget.do(context, self, attacker, targetLocs)
-    def select(self, context, attackerLoc):
-        return SelectSingleTarget.select(context, attackerLoc)
+    def enact(self, context, attackerLoc, targetLocs):
+        AttackSingleTarget.do(context, self, attackerLoc, targetLocs)
+    def select(self, context, attackerLocLoc):
+        return [SelectSingleTarget.select(context, attackerLocLoc)]
 
 class Earthquake(Move):
     def __init__(self):
@@ -34,11 +34,12 @@ class Earthquake(Move):
         self.critChance=CRITCHANCE
         self.isPhys=True
         self.type=Type.GROUND
+        self.priority=Prio.MOVE
         self.name=self.__class__.__name__
-    def enact(self, context, targetReqs):
-        AttackSingleTarget.do(context, self, targetReqs)
+    def enact(self, context, attackerLoc, targetLocs):
+        AttackSingleTarget.do(context, self, attackerLoc, targetLocs)
     def select(self, context, attackerLoc):
-        return SelectSingleTarget.select(context, attackerLoc)
+        return [SelectSingleTarget.select(context, attackerLoc)]
 
 class Thunder(Move):
     def __init__(self):
@@ -47,8 +48,9 @@ class Thunder(Move):
         self.critChance=CRITCHANCE
         self.isPhys=False
         self.type=Type.ELECTRIC
+        self.priority=Prio.MOVE
         self.name=self.__class__.__name__
-    def enact(self, context, targetReqs):
-        AttackSingleTarget.do(context, self, targetReqs)
-    def select(self, context, attackerLoc):
-        return SelectSingleTarget.select(context, attackerLoc)
+    def enact(self, context, attackerLoc, targetLocs):
+        AttackSingleTarget.do(context, self, attackerLoc, targetLocs)
+    def select(self, context, attackerLocLoc):
+        return [SelectSingleTarget.select(context, attackerLocLoc)]
