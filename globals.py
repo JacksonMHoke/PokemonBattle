@@ -1,5 +1,19 @@
 from enum import Enum
 
+"""
+This file contains all ENUMs, helper functions, and also constants.
+
+Multipliers:
+STAB, CRIT, CRITCHANCE
+
+ENUMs:
+Stat, Type, Prio
+
+Helper Functions:
+get_effectiveness(attackingType, defendingType)
+clamp(n, smallest, largest)
+"""
+
 STAB=1.5
 CRIT=1.5
 CRITCHANCE=0.1
@@ -200,8 +214,10 @@ effectiveness = {
 }
 
 # Example function to retrieve the multiplier with a default of 1:
-def getEffectiveness(attacking_type, defending_type):
-    return effectiveness.get(attacking_type, {}).get(defending_type, 1)
+def getEffectiveness(attackingType, defendingType):
+    """Returns damage multiplier for attackingType attacking defendingType"""
+    return effectiveness.get(attackingType, {}).get(defendingType, 1)
 
 def clamp(n, smallest, largest):
-    return min(max(0, n), largest)
+    """Returns n clamped between smallest and largest inclusive"""
+    return min(max(smallest, n), largest)
