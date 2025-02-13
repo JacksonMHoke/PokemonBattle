@@ -107,7 +107,7 @@ class SelectSingleTarget(SelectionBehavior):
     def select(context, attackerLoc):
         """Returns list of a single target that is selected from user input.
 
-        Attributes:
+        Arguments:
             attackerLoc (BattleLocation): The attacker's location in the battle
 
         Returns:
