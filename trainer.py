@@ -1,16 +1,23 @@
 from pokemon import *
 from battleaction import *
 class Trainer:
+    """Represents a pokemon trainer
+
+    Attributes:
+        name (str): Name of trainer.
+        party (list): List of pokemon in party
+        bag (Bag): Trainer's bag(TODO: implement bag class)
+    """
     def __init__(self, name, party, bag):
         self.name=name
         self.party=party
         self.bag=bag
-        self.activePokemon=[]
     
     def _getAlivePokemon(self):
         return [mon for mon in self.party if not mon.fainted]
     
     def selectPokemon(self):
+        """Selects a pokemon from the list of non-fainted pokemon in party."""
         validPokemon=self._getAlivePokemon()
         print('List of possible pokemon: ', flush=True)
         for i, mon in enumerate(validPokemon):
@@ -22,11 +29,7 @@ class Trainer:
         choice=clamp(choice, 0, len(validPokemon)-1)
         print(f'{validPokemon[choice].name} was selected!\n\n', flush=True)
         return validPokemon[choice]
-    
-    def updateActivePokemon(self):
-        for i, mon in enumerate(self.activePokemon):
-            if mon.fainted:
-                self.activePokemon[i]=None
 
     def isWhiteOut(self):
+        """Returns true if trainer has no non-fainted pokemon."""
         return len(self._getAlivePokemon())==0
