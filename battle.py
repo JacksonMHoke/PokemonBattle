@@ -4,8 +4,14 @@ from moves import *
 from battlequeue import *
 from tabulate import tabulate
 from random import random
-
 class Battle:
+    """Represents a battle scenario between teams.
+
+    This class manages the setup and simulation of a battle between separate teams.
+
+    Attributes:
+        teams (list): A list of teams to be in battle
+    """
     def __init__(self, teams):
         self.context={}
         self.context['teams']=teams
@@ -13,6 +19,8 @@ class Battle:
             self.context['teams'][i].initializeField(i)
 
     def runBattle(self):
+        """Runs the battle.
+        """
         queue=BattleQueue()
         self.context['turn']=1
         while True:
