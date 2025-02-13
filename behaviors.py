@@ -4,16 +4,43 @@ from random import random
 from battleaction import *
 
 class ExecutionBehavior(ABC):
+    """Abstract class for move behavior
+
+    This class is an abstract class that requires a single function, do, that executes the desired
+    behavior from the attacker to the targets.
+
+    Note: This class is an abstract class and is not to be instantiated
+    """
     @staticmethod
     @abstractmethod
-    def do(context, move, targetReqs):
+    def do(context, move, attackerLoc, targetReqs):
         pass
 
 '''
 Attacking Behavior
 '''
 class AttackSingleTarget(ExecutionBehavior):
+    """Implements execution behavior for a single target attack
+
+    This class provides the logic for executing a move that targets a single target. It calculates
+    various multipliers including stab bonuses, ATT/SPA to DEF/SPD ratios, type effectiveness, and critical hits.
+    It also handles accuracy and prints messages to update what has occured.
+
+    Note:
+        This class is used as a namespace for a static method `do` and is not intended to be instantiated
+    """
     def do(context, move, attackerLoc, targetLocs):
+        """Executes a single target attack.
+
+        Arguments:
+            context (dict): The battle context.
+            move (Move): The move being used.
+            attackerLoc (BattleLocation): Battle location of the attacker.
+            targetLocs (list): List of BattleLocation's of the targets.
+        
+        Raises:
+            AssertionError: If `targetLocs` does not contain exactly 1 target.
+        """
         assert(len(targetLocs)==1)
         target=targetLocs[0].pokemon
         attacker=attackerLoc.pokemon
@@ -56,13 +83,36 @@ Selection Behavior
 '''
 
 class SelectionBehavior(ABC):
+    """Abstract class for selection behavior.
+
+    This class is an abstract class that requires a single function, `select`, that takes in the attacker location and returns
+    a list of target locations that are selected from user input. 
+
+    Note:
+        This class is an abstract class and is not to be instantiated
+    """
     @staticmethod
     @abstractmethod
     def select(context, attackerLoc):
         pass
 
 class SelectSingleTarget(SelectionBehavior):
+    """Implements selection behavior for single target selection.
+
+    This class provides the logic for selecting a single target on the battlefield
+    from any team.
+
+    Note: This class is used as a namespace for a static method `do` and is not intended to be instantiated
+    """
     def select(context, attackerLoc):
+        """Returns list of a single target that is selected from user input.
+
+        Attributes:
+            attackerLoc (BattleLocation): The attacker's location in the battle
+
+        Returns:
+            list: List that consists of the BattleLocation of the target selected.  
+        """
         attacker=attackerLoc.pokemon
         print(f'Team {context['teams'][attackerLoc.teamIdx].teamName}\'s Pokemon {attacker.name} is choosing a target!', flush=True)
         for i, team in enumerate(context['teams']):
@@ -82,5 +132,4 @@ class SelectSingleTarget(SelectionBehavior):
         except:
             return SelectSingleTarget.select(context, attackerLoc)
         
-        
-        return context['teams'][targetTeam].slots[targetMon]
+        return [context['teams'][targetTeam].slots[targetMon]]

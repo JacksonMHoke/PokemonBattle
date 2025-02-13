@@ -25,7 +25,7 @@ class Tackle(Move):
     def enact(self, context, attackerLoc, targetLocs):
         AttackSingleTarget.do(context, self, attackerLoc, targetLocs)
     def select(self, context, attackerLocLoc):
-        return [SelectSingleTarget.select(context, attackerLocLoc)]
+        return SelectSingleTarget.select(context, attackerLocLoc)
 
 class Earthquake(Move):
     def __init__(self):
@@ -39,7 +39,7 @@ class Earthquake(Move):
     def enact(self, context, attackerLoc, targetLocs):
         AttackSingleTarget.do(context, self, attackerLoc, targetLocs)
     def select(self, context, attackerLoc):
-        return [SelectSingleTarget.select(context, attackerLoc)]
+        return SelectSingleTarget.select(context, attackerLoc)
 
 class Thunder(Move):
     def __init__(self):
@@ -53,4 +53,4 @@ class Thunder(Move):
     def enact(self, context, attackerLoc, targetLocs):
         AttackSingleTarget.do(context, self, attackerLoc, targetLocs)
     def select(self, context, attackerLocLoc):
-        return [SelectSingleTarget.select(context, attackerLocLoc)]
+        return SelectSingleTarget.select(context, attackerLocLoc)
