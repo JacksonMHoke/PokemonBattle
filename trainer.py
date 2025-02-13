@@ -31,5 +31,5 @@ class Trainer:
         return validPokemon[choice]
 
     def isWhiteOut(self):
-        """Returns true if trainer has no non-fainted pokemon."""
+        """Returns if trainer is whited out."""
         return len(self._getAlivePokemon())==0

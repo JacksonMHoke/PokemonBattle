@@ -2,6 +2,18 @@ from trainer import *
 from globals import *
 from tabulate import tabulate
 class Team:
+    """Represents team in a battle.
+
+    Attributes:
+        trainers (list): List of trainers on team
+        teamName (str): Name of team
+        teamIdx (int): Index of team in battle context
+        fieldSize (int): Number of slots on battlefield this team has
+        slots (list): List of BattleLocations
+
+    Note:
+        Do not modify teamIdx
+    """
     def __init__(self, name, trainers, fieldSize=1):
         self.trainers=trainers
         self.teamName=name
@@ -10,6 +22,11 @@ class Team:
         self.slots=[]
 
     def initializeField(self, teamIdx):
+        """Sets the field for this team.
+
+        Arguements:
+            teamIdx (int): Index of team in battle context
+        """
         self.teamIdx=teamIdx
         for i in range(self.fieldSize):
             self.slots.append(BattleLocation(teamIdx, i, None, None))
@@ -18,9 +35,15 @@ class Team:
         return [trainer for trainer in self.trainers if not trainer.isWhiteOut()]
 
     def isWhiteOut(self):
+        """Returns if team is whited out."""
         return len(self._getAliveTrainers())==0
     
     def selectTrainer(self):                                        # TODO: ENSURE THERE ARE POKEMON TO CHOOSE FROM IN CHOICES AVAILABLE
+        """Selects trainer that is not whited out.
+        
+        Returns:
+            Trainer: Selected trainer
+        """
         validTrainers=self._getAliveTrainers()
         print('List of possible trainers: ', flush=True)
         for i, trainer in enumerate(validTrainers):
@@ -33,6 +56,7 @@ class Team:
         return validTrainers[choice]
     
     def populateEmptySlots(self):
+        """Populates all slots without pokemon in them."""
         for i, slot in enumerate(self.slots):
             if slot.pokemon is None:
                 trainer=self.selectTrainer()
@@ -40,6 +64,7 @@ class Team:
                 slot.swapPokemon(trainer, pokemon)
 
     def printActivePokemon(self):
+        """Prints all active pokemon."""
         names=[slot.pokemon.name for slot in self.slots if slot.pokemon is not None]
         hps=[slot.pokemon.stats[Stat.HP] for slot in self.slots if slot.pokemon is not None]
         print(self.teamName)
@@ -47,6 +72,11 @@ class Team:
         print('\n', flush=True)
 
     def selectActions(self, context):
+        """Selects actions for each slot.
+        
+        Arguments:
+            context (dict): Battle context
+        """
         actions=[]
         for slot in self.slots:
             actions.append(slot.selectAction(context))
