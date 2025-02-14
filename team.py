@@ -58,7 +58,7 @@ class Team:
     def populateEmptySlots(self):
         """Populates all slots without pokemon in them."""
         for i, slot in enumerate(self.slots):
-            if slot.pokemon is None:
+            if slot.pokemon is None or slot.pokemon.state==State.FAINTED:
                 trainer=self.selectTrainer()
                 pokemon=trainer.selectPokemon()
                 slot.swapPokemon(trainer, pokemon)
