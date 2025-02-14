@@ -14,7 +14,7 @@ class Trainer:
         self.bag=bag
     
     def _getAlivePokemon(self):
-        return [mon for mon in self.party if not mon.fainted]
+        return [mon for mon in self.party if mon.state!=State.FAINTED]
     
     def selectPokemon(self):
         """Selects a pokemon from the list of non-fainted pokemon in party."""

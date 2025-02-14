@@ -20,8 +20,7 @@ class Battle:
             self.context['teams'][i].initializeField(i)
 
     def runBattle(self):
-        """Runs the battle.
-        """
+        """Runs the battle."""
         queue=BattleQueue()
         self.context['turn']=1
         while True:
@@ -43,6 +42,7 @@ class Battle:
                 for action in actions:
                     queue.push(action)
                 
-            # enact moves by speed of pokemon              TODO: change to max heap to handle multi-battles
+            # enact moves by speed of pokemon
             queue.executeTurn(self.context)
+
             self.context['turn']+=1

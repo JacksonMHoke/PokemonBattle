@@ -38,7 +38,7 @@ class MoveAction(BattleAction):
         targetLocs (list): List of BattleLocation's of the targets.
 
     This class is a child of the BattleAction class and carries the information needed
-    to execute the move from the attacker to the targets.  
+    to execute the move from the attacker to the targets.
     """
     def __init__(self, turn, move, attackerLoc, targetLocs):
         super().__init__(turn, move.priority, attackerLoc.pokemon.stats[Stat.SPE])
@@ -51,6 +51,8 @@ class MoveAction(BattleAction):
         Arguments:
             context (dict): Battle context
         """
+        if self.attackerLoc.pokemonAtSelection.state!=State.ACTIVE:
+            return
         self.move.enact(context, self.attackerLoc, self.targetLocs)
     
 class BattleLocation:
@@ -103,5 +105,8 @@ class BattleLocation:
             trainer (Trainer): Trainer of pokemon to be swapped in
             pokemon (Pokemon): Pokemon to be swapped in
         """
+        if self.pokemon is not None and self.pokemon.state==State.ACTIVE:
+            self.pokemon.state=State.BENCHED
         self.pokemon=pokemon
+        self.pokemon.state=State.ACTIVE
         self.trainer=trainer

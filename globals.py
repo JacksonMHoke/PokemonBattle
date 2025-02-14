@@ -7,7 +7,7 @@ Multipliers:
 STAB, CRIT, CRITCHANCE
 
 ENUMs:
-Stat, Type, Prio
+Stat, Type, Prio, State
 
 Helper Functions:
 get_effectiveness(attackingType, defendingType)
@@ -51,6 +51,11 @@ class Prio(Enum):
     SWAP=9999
     ITEM=9998
     MOVE=0
+
+class State(Enum):
+    FAINTED=0
+    BENCHED=1
+    ACTIVE=2
 
 # Effectiveness multipliers:
 # For any (attacker, defender) pair not listed, assume a multiplier of 1.

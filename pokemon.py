@@ -1,5 +1,4 @@
-from globals import Stat
-from globals import Type
+from globals import *
 from copy import deepcopy
 from abc import ABC, abstractmethod
 class Pokemon(ABC):
@@ -12,7 +11,7 @@ class Pokemon(ABC):
         moves (list): List of moves
         ability (Ability): Pokemon's ability TODO: implement Ability class
         item (Item): Pokemon's held item TODO: implement Item class
-        fainted (bool): Pokemon's fainted status TODO: implement ENUM for Fainted, Benched, Active
+        state (State): Pokemon's current state(active, benched, fainted)
         level (int): Pokemon's level
         exp (int): Pokemon's EXP
         typing (list): List of types
@@ -26,14 +25,14 @@ class Pokemon(ABC):
         self.moves=moves
         self.ability=ability
         self.item=item
-        self.fainted=False
+        self.state=State.BENCHED
         self.level=level
         self.exp=0
 
     def faint(self):
         """Print fainted message and update state."""
         print(f'{self.name} has fainted!', flush=True)
-        self.fainted=True
+        self.state=State.FAINTED
 
     def takeDamage(self, dmg):
         """Take damage"""
