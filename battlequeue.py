@@ -7,7 +7,7 @@ class BattleQueue:
     based on the lowest BattleAction. AKA compares in this order: Turn, Priority, Speed
 
     Attributes:
-        N/A
+        pq (list): Priority queue that holds all actions
     """
     def __init__(self):
         self.pq=[]

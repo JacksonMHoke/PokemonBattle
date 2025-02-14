@@ -47,7 +47,13 @@ class Tackle(Move):
     This class encompasses all information, behavior, and targeting for the move, Tackle.
 
     Attributes:
-        N/A
+        power (int): Power of move
+        accuracy (float): Accuracy of move between 0 and 1
+        critChance (float): Critical hit chance of move between 0 and 1
+        isPhys (bool): Determines whether move is physical or not
+        type (Type): Type of move
+        priority (Prio): Priority of move
+        name (str): Name of move
     """
     def __init__(self):
         self.power=20
@@ -68,7 +74,13 @@ class Earthquake(Move):
     This class encompasses all information, behavior, and targeting for the move, Earthquake
 
     Attributes:
-        N/A
+        power (int): Power of move
+        accuracy (float): Accuracy of move between 0 and 1
+        critChance (float): Critical hit chance of move between 0 and 1
+        isPhys (bool): Determines whether move is physical or not
+        type (Type): Type of move
+        priority (Prio): Priority of move
+        name (str): Name of move
     """
     def __init__(self):
         self.power=100
@@ -89,7 +101,13 @@ class Thunder(Move):
     This class encompasses all information, behavior, and targeting for the move, Thunder
 
     Attributes:
-        N/A
+        power (int): Power of move
+        accuracy (float): Accuracy of move between 0 and 1
+        critChance (float): Critical hit chance of move between 0 and 1
+        isPhys (bool): Determines whether move is physical or not
+        type (Type): Type of move
+        priority (Prio): Priority of move
+        name (str): Name of move
     """
     def __init__(self):
         self.power=120

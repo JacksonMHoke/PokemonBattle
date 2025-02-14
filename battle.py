@@ -11,6 +11,7 @@ class Battle:
 
     Attributes:
         teams (list): A list of teams to be in battle
+        context (dict): Battle context
     """
     def __init__(self, teams):
         self.context={}
