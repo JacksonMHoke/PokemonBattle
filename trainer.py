@@ -15,10 +15,13 @@ class Trainer:
     
     def _getAlivePokemon(self):
         return [mon for mon in self.party if mon.state!=State.FAINTED]
+
+    def getBenchedPokemon(self):
+        return [mon for mon in self.party if mon.state==State.BENCHED]
     
-    def selectPokemon(self):
-        """Selects a pokemon from the list of non-fainted pokemon in party."""
-        validPokemon=self._getAlivePokemon()
+    def selectPokemon(self): # TODO: create general select function vs select benched pokemon
+        """Selects a pokemon from the list of benched pokemon in party."""
+        validPokemon=self.getBenchedPokemon()
         print('List of possible pokemon: ', flush=True)
         for i, mon in enumerate(validPokemon):
             print('\t', i, mon.name, flush=True)

@@ -38,7 +38,7 @@ class Team:
         """Returns if team is whited out."""
         return len(self._getAliveTrainers())==0
     
-    def selectTrainer(self):                                        # TODO: ENSURE THERE ARE POKEMON TO CHOOSE FROM IN CHOICES AVAILABLE
+    def selectTrainer(self):                                        # TODO: Separate this into generic select trainer and select trainer for benched pokemon
         """Selects trainer that is not whited out.
         
         Returns:
@@ -47,6 +47,8 @@ class Team:
         validTrainers=self._getAliveTrainers()
         print('List of possible trainers: ', flush=True)
         for i, trainer in enumerate(validTrainers):
+            if len(trainer.getBenchedPokemon())==0:
+                continue
             print('\t', i, trainer.name, flush=True)
         try:
             choice=int(input('Select the trainer you want to choose: '))
@@ -57,6 +59,7 @@ class Team:
     
     def populateEmptySlots(self):
         """Populates all slots without pokemon in them."""
+        print('Choose which trainer you would like to select to send a pokemon out: ')
         for i, slot in enumerate(self.slots):
             if slot.pokemon is None or slot.pokemon.state==State.FAINTED:
                 trainer=self.selectTrainer()
