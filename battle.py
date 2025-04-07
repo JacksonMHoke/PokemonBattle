@@ -15,8 +15,7 @@ class Battle:
         context (Context): Battle context
     """
     def __init__(self, teams):
-        self.context=Context()
-        self.context.teams=teams
+        self.context=Context(teams=teams)
         for i in range(len(teams)):
             self.context.teams[i].initializeField(i)
 

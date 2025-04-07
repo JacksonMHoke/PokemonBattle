@@ -13,7 +13,7 @@ class ExecutionBehavior(ABC):
     """
     @staticmethod
     @abstractmethod
-    def do(context, move, attackerLoc, targetReqs):
+    def do(context):
         pass
 
 '''
@@ -29,30 +29,35 @@ class AttackSingleTarget(ExecutionBehavior):
     Note:
         This class is used as a namespace for a static method `do` and is not intended to be instantiated
     """
-    def do(context, move, attackerLoc, targetLocs):
+    def do(context):
         """Executes a single target attack.
 
         Arguments:
             context (Context): The battle context.
-            move (Move): The move being used.
-            attackerLoc (BattleLocation): Battle location of the attacker.
-            targetLocs (list): List of BattleLocation's of the targets.
         
         Raises:
-            AssertionError: If `targetLocs` does not contain exactly 1 target.
+            AssertionError: If `defenderLocs` does not contain exactly 1 target.
         """
-        assert(len(targetLocs)==1)
-        target=targetLocs[0].pokemon
-        attacker=attackerLoc.pokemon
+        defenderLocs=context.defenderLocs
+        attackerLoc=context.attackerLoc
+
+        attacker=context.attacker
+        defenders=context.defenders
+
+        move=context.move
+
+        assert(len(defenderLocs)==1 and len(defenders)==1)
+
+        defender=defenders[0]
 
         # calc mults
         stab=STAB if move.type in attacker.typing else 1
-        attackMult=attacker.stats[Stat.ATT]/target.stats[Stat.DEF] if move.isPhys else attacker.stats[Stat.SPA]/target.stats[Stat.SPD]
+        attackMult=attacker.stats[Stat.ATT]/defender.stats[Stat.DEF] if move.isPhys else attacker.stats[Stat.SPA]/defender.stats[Stat.SPD]
         eff=1
-        for t in target.typing:
+        for t in defender.typing:
             eff*=getEffectiveness(move.type, t)
 
-        if random()>move.accuracy:
+        if random()>move.accuracy:                  # TODO: Add evasiveness as a stat for miss calculation
             print(move.name, 'missed!', flush=True)
             return
         
@@ -66,7 +71,7 @@ class AttackSingleTarget(ExecutionBehavior):
             print('A critical hit!', flush=True)
             dmg*=CRIT
 
-        target.takeDamage(dmg)
+        defender.takeDamage(dmg)
 
         # TODO: update all slots
 

@@ -35,25 +35,26 @@ class MoveAction(BattleAction):
     Attributes:
         move (Move): Move to be used.
         attackerLoc (BattleLocation): BattleLocation of the attacker.
-        targetLocs (list): List of BattleLocation's of the targets.
+        defenderLocs (list): List of BattleLocation's of the targets.
 
     This class is a child of the BattleAction class and carries the information needed
     to execute the move from the attacker to the targets.
     """
-    def __init__(self, turn, move, attackerLoc, targetLocs):
+    def __init__(self, turn, move, attackerLoc, defenderLocs):
         super().__init__(turn, move.priority, attackerLoc.pokemon.stats[Stat.SPE])
         self.move=move
         self.attackerLoc=attackerLoc
-        self.targetLocs=targetLocs
+        self.defenderLocs=defenderLocs
     def execute(self, context):
         """Executes the move using the context, attacker location, and target locations.
 
         Arguments:
             context (Context): Battle context
         """
-        if self.attackerLoc.pokemonAtSelection.state!=State.ACTIVE:
+        if self.attackerLoc.pokemonAtSelection.state!=State.ACTIVE:                                     # TODO: will have to change for moves like future sight
             return
-        self.move.enact(context, self.attackerLoc, self.targetLocs)
+        context.prepareMove(attackerLoc=self.attackerLoc, defenderLocs=self.defenderLocs, move=self.move)
+        self.move.enact(context=context)
     
 class BattleLocation:
     """Represents a slot or location on the battlefield.

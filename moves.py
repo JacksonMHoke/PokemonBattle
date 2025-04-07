@@ -7,7 +7,7 @@ class Move(ABC):
 
     This is an abstract class that requires all moves to implement 3 functions:
         __init__(self)
-        enact(self, context, attackerLoc, targetLocs)
+        enact(self, context, attackerLoc, defenderLocs)
         select(self, context, attackerLoc)
 
     init defines move's stats, enact executes the move, and select selects the targets of the move.
@@ -19,13 +19,11 @@ class Move(ABC):
         """Defines characteristics of the move."""
         pass
     @abstractmethod
-    def enact(self, context, attackerLoc, targetLocs):
+    def enact(self, context):
         """Executes the move using the battle context from attacker location to target locations.
         
         Arguments:
             context (Context): Battle context.
-            attackerLoc (BattleLocation): BattleLocation of the attacker.
-            targetLocs (list): List of BattleLocation's of the targets.
         """
         pass
     @abstractmethod
@@ -63,10 +61,10 @@ class Tackle(Move):
         self.type=Type.NORMAL
         self.priority=Prio.MOVE
         self.name=self.__class__.__name__
-    def enact(self, context, attackerLoc, targetLocs):
-        AttackSingleTarget.do(context, self, attackerLoc, targetLocs)
-    def select(self, context, attackerLocLoc):
-        return SelectSingleTarget.select(context, attackerLocLoc)
+    def enact(self, context):
+        AttackSingleTarget.do(context)
+    def select(self, context, attackerLoc):
+        return SelectSingleTarget.select(context, attackerLoc)
 
 class Earthquake(Move):
     """Earthquake move
@@ -90,8 +88,8 @@ class Earthquake(Move):
         self.type=Type.GROUND
         self.priority=Prio.MOVE
         self.name=self.__class__.__name__
-    def enact(self, context, attackerLoc, targetLocs):
-        AttackSingleTarget.do(context, self, attackerLoc, targetLocs)
+    def enact(self, context):
+        AttackSingleTarget.do(context)
     def select(self, context, attackerLoc):
         return SelectSingleTarget.select(context, attackerLoc)
 
@@ -117,7 +115,7 @@ class Thunder(Move):
         self.type=Type.ELECTRIC
         self.priority=Prio.MOVE
         self.name=self.__class__.__name__
-    def enact(self, context, attackerLoc, targetLocs):
-        AttackSingleTarget.do(context, self, attackerLoc, targetLocs)
+    def enact(self, context):
+        AttackSingleTarget.do(context)
     def select(self, context, attackerLocLoc):
         return SelectSingleTarget.select(context, attackerLocLoc)
