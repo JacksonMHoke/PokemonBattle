@@ -23,7 +23,7 @@ class Move(ABC):
         """Executes the move using the battle context from attacker location to target locations.
         
         Arguments:
-            context (dict): Battle context.
+            context (Context): Battle context.
             attackerLoc (BattleLocation): BattleLocation of the attacker.
             targetLocs (list): List of BattleLocation's of the targets.
         """
@@ -33,7 +33,7 @@ class Move(ABC):
         """Selects targets and returns a list of the target's BattleLocations.
 
         Arguments:
-            context (dict): Battle context.
+            context (Context): Battle context.
             attackerLoc (BattleLocation): BattleLocation of the attacker.
         
         Returns:

@@ -38,4 +38,4 @@ class BattleQueue:
         self.executeTickEvents(context)
         # TODO: Make this function compatible with tick events like leech seed
             # could create an interface class that requires a tick() function to be defined
-            # could keep a list of these tick classes in a context dictionary so that we can check if an effect is active
+            # could keep a list of these tick classes in a context Context so that we can check if an effect is active

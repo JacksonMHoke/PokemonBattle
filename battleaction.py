@@ -49,7 +49,7 @@ class MoveAction(BattleAction):
         """Executes the move using the context, attacker location, and target locations.
 
         Arguments:
-            context (dict): Battle context
+            context (Context): Battle context
         """
         if self.attackerLoc.pokemonAtSelection.state!=State.ACTIVE:
             return
@@ -80,7 +80,7 @@ class BattleLocation:
         """Selects action for the trainer and pokemon at this slot.
 
         Arguments:
-            context (dict): Battle context
+            context (Context): Battle context
         """
         self.pokemonAtSelection=self.pokemon
         validMoves=self.pokemon.moves
@@ -95,7 +95,7 @@ class BattleLocation:
         selectedMove=validMoves[clamp(choice, 0, len(validMoves)-1)]
         print(f'{selectedMove.name} was selected.\n\n', flush=True)
         targetsLoc=selectedMove.select(context, self)
-        action=MoveAction(context['turn'], selectedMove, self, targetsLoc)
+        action=MoveAction(context.turn, selectedMove, self, targetsLoc)
         return action
     
     def swapPokemon(self, trainer, pokemon):

@@ -33,7 +33,7 @@ class AttackSingleTarget(ExecutionBehavior):
         """Executes a single target attack.
 
         Arguments:
-            context (dict): The battle context.
+            context (Context): The battle context.
             move (Move): The move being used.
             attackerLoc (BattleLocation): Battle location of the attacker.
             targetLocs (list): List of BattleLocation's of the targets.
@@ -108,15 +108,16 @@ class SelectSingleTarget(SelectionBehavior):
         """Returns list of a single target that is selected from user input.
 
         Arguments:
+            context (Context): The battle context
             attackerLoc (BattleLocation): The attacker's location in the battle
 
         Returns:
             list: List that consists of the BattleLocation of the target selected.  
         """
         attacker=attackerLoc.pokemon
-        print(f'Team {context['teams'][attackerLoc.teamIdx].teamName}\'s Pokemon {attacker.name} is choosing a target!', flush=True)
-        for i, team in enumerate(context['teams']):
-            print(f'{i} Pokemon from Team {context['teams'][i].teamName}:', flush=True)
+        print(f'Team {context.teams[attackerLoc.teamIdx].teamName}\'s Pokemon {attacker.name} is choosing a target!', flush=True)
+        for i, team in enumerate(context.teams):
+            print(f'{i} Pokemon from Team {context.teams[i].teamName}:', flush=True)
             for j, slot in enumerate(team.slots):
                 if slot.pokemon is None:
                     print('Empty')
@@ -124,12 +125,12 @@ class SelectSingleTarget(SelectionBehavior):
                     print(j, slot.pokemon.name, flush=True)
         try:
             targetTeam=int(input('Select team to target by number: '))
-            targetTeam=clamp(targetTeam, 0, len(context['teams'])-1)
-            print(f'Team {context['teams'][targetTeam].teamName} was selected as a target!', flush=True)
+            targetTeam=clamp(targetTeam, 0, len(context.teams)-1)
+            print(f'Team {context.teams[targetTeam].teamName} was selected as a target!', flush=True)
             targetMon=int(input('Select pokemon to target by number: '))
-            targetMon=clamp(targetMon, 0, len(context['teams'][targetTeam].slots)-1)
-            print(f'{context['teams'][targetTeam].slots[targetMon].pokemon.name} was selected as a target!\n\n', flush=True)
+            targetMon=clamp(targetMon, 0, len(context.teams[targetTeam].slots)-1)
+            print(f'{context.teams[targetTeam].slots[targetMon].pokemon.name} was selected as a target!\n\n', flush=True)
         except:
             return SelectSingleTarget.select(context, attackerLoc)
         
-        return [context['teams'][targetTeam].slots[targetMon]]
+        return [context.teams[targetTeam].slots[targetMon]]

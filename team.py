@@ -78,7 +78,7 @@ class Team:
         """Selects actions for each slot.
         
         Arguments:
-            context (dict): Battle context
+            context (Context): Battle context
         """
         actions=[]
         for slot in self.slots:
