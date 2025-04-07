@@ -57,6 +57,10 @@ class State(Enum):
     BENCHED=1
     ACTIVE=2
 
+class Trigger(Enum):
+    START=0
+    BEFORE_ATTACK=1
+
 # Effectiveness multipliers:
 # For any (attacker, defender) pair not listed, assume a multiplier of 1.
 effectiveness = {
