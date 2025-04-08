@@ -3,6 +3,7 @@ from pokemon import *
 from moves import *
 from battlequeue import *
 from context import *
+from event import *
 from tabulate import tabulate
 from random import random
 class Battle:
@@ -23,6 +24,9 @@ class Battle:
         """Runs the battle."""
         queue=BattleQueue()
         self.context.turn=1
+
+        triggerAllEvents(self.context, Trigger.START)   # Triggers all events that are conditional on battle start
+
         while True:
             # return winning team if that team is only team that remains
             remainingTeams=[i for i in range(len(self.context.teams)) if not self.context.teams[i].isWhiteOut()]

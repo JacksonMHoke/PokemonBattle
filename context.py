@@ -10,6 +10,8 @@ class Context:
         defenderLocs (list): list of defending pokemon locations
         move (Move): move being used right now
         effects (list): list of effects
+        trigger (Trigger): current trigger for events
+        triggerPokemon (Pokemon): current pokemon that is being triggered(ability or item)
         teams (list): list of teams
     """
     def __init__(self, teams):
@@ -20,6 +22,8 @@ class Context:
         self.defenderLocs=None
         self.move=None
         self.effects=[]
+        self.trigger=None
+        self.triggerPokemon=None
         self.teams=teams
     
     def setAttacker(self, attackerLoc):
