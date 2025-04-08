@@ -13,6 +13,9 @@ def triggerAllEvents(context, trigger):                                 # TODO: 
                 if pokemon.ability is not None:
                     pokemon.ability.trigger(context)
 
+    for event in context.events:
+        event.trigger(context)
+
 class Event(ABC):
     """
     Event that can be triggered from specific trigger

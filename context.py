@@ -9,7 +9,7 @@ class Context:
         defenders (list): list of defending pokemon
         defenderLocs (list): list of defending pokemon locations
         move (Move): move being used right now
-        effects (list): list of effects
+        events (list): list of events
         trigger (Trigger): current trigger for events
         triggerPokemon (Pokemon): current pokemon that is being triggered(ability or item)
         teams (list): list of teams
@@ -21,7 +21,7 @@ class Context:
         self.attackerLoc=None
         self.defenderLocs=None
         self.move=None
-        self.effects=[]
+        self.events=[]
         self.trigger=None
         self.triggerPokemon=None
         self.teams=teams
