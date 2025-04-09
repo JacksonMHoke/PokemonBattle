@@ -25,6 +25,7 @@ class Trainer:
         validPokemon=self.getBenchedPokemon()
         pokemonNames=[pokemon.name for pokemon in validPokemon]
         
+        context.window[f'team{context.currentTeam+1}DDTitle'].update(value='Select a pokemon to send out:')
         context.window[f'team{context.currentTeam+1}DDChoice'].update(values=pokemonNames)
         context.window[f'team{context.currentTeam+1}DD'].update(visible=True)
         context.window.refresh()

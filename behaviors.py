@@ -59,19 +59,23 @@ class AttackSingleTarget(ExecutionBehavior):
 
         if random()>move.accuracy:                  # TODO: Add evasiveness as a stat for miss calculation
             print(move.name, 'missed!', flush=True)
+            context.window['combatLog'].update(f'{move.name} missed!\n', append=True)
             return
         
         if eff>1:
             print(f'{move.name} was super effective!', flush=True)
+            context.window['combatLog'].update(f'{move.name} was super effective!\n', append=True)
         elif eff<1:
             print(f'{move.name} was ineffective...', flush=True)
+            context.window['combatLog'].update(f'{move.name} was ineffective!\n', append=True)
 
         dmg=attackMult*move.power*stab*eff
         if random()<move.critChance:
             print('A critical hit!', flush=True)
+            context.window['combatLog'].update(f'A critical hit!\n', append=True)
             dmg*=CRIT
 
-        defender.takeDamage(dmg)
+        defender.takeDamage(dmg, context)
 
         # TODO: update all slots
 
@@ -133,7 +137,11 @@ class SelectSingleTarget(SelectionBehavior):
                     validTargets.append((i, j))
         if len(validTargets)==len(context.teams):
             raise Exception('No targets found!')
+        if len(validTargets)==len(context.teams)+1:
+            loc=[l for l in validTargets if l[1]!=-1][0]
+            return [context.teams[loc[0]].slots[loc[1]]]
 
+        context.window[f'team{context.currentTeam+1}DDTitle'].update(value='Select a target:')
         context.window[f'team{context.currentTeam+1}DD'].update(visible=True)
         context.window[f'team{context.currentTeam+1}DDChoice'].update(values=targetNames)
         context.window.refresh()

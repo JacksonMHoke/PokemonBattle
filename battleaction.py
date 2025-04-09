@@ -87,6 +87,7 @@ class BattleLocation:
         self.pokemonAtSelection=self.pokemon
         validMoves=self.pokemon.moves
         moveNames=[move.name for move in validMoves]
+        context.window[f'team{context.currentTeam+1}DDTitle'].update(value='Select a move:')
         context.window[f'team{context.currentTeam+1}DDChoice'].update(values=moveNames)
         context.window[f'team{context.currentTeam+1}DD'].update(visible=True)
         context.window.refresh()

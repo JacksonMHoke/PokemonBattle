@@ -49,6 +49,7 @@ class Team:
         trainerNames=[trainer.name for trainer in validTrainers]
         if len(validTrainers)==1:
             return validTrainers[0]
+        context.window[f'team{self.teamIdx+1}DDTitle'].update(value='Select a trainer:')
         context.window[f'team{self.teamIdx+1}DDChoice'].update(values=trainerNames)
         context.window[f'team{self.teamIdx+1}DD'].update(visible=True)
         context.window.refresh()
@@ -70,7 +71,7 @@ class Team:
 
                 context.window[f'team{self.teamIdx+1}PokemonName'].update(value=f'Name: {pokemon.name}')
                 context.window[f'team{self.teamIdx+1}HP'].update(value=f'HP: {pokemon.stats[Stat.HP]}')
-                context.window.refresh()
+                refreshWindow(context)
 
     def printActivePokemon(self):
         """Prints all active pokemon."""

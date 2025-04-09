@@ -34,12 +34,14 @@ class Pokemon(ABC):
         print(f'{self.name} has fainted!', flush=True)
         self.state=State.FAINTED
 
-    def takeDamage(self, dmg):
+    def takeDamage(self, dmg, context):
         """Take damage"""
         self.stats[Stat.HP]-=dmg
         print(f'{self.name} took {dmg} damage!', flush=True)
+        context.window['combatLog'].update(f'{self.name} took {dmg} damage!\n', append=True)
         if self.stats[Stat.HP]<=0:
             self.faint()
+            context.window['combatLog'].update(f'{self.name} fainted!\n', append=True)
 
 class Pikachu(Pokemon):
     def __init__(self, name, level, stats, moves, item=None, ability=None):
