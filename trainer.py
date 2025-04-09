@@ -25,13 +25,13 @@ class Trainer:
         validPokemon=self.getBenchedPokemon()
         pokemonNames=[pokemon.name for pokemon in validPokemon]
         
-        context.window[f'team{context.currentTeam+1}PokemonChoice'].update(values=pokemonNames)
-        context.window[f'team{context.currentTeam+1}PokemonOptions'].update(visible=True)
+        context.window[f'team{context.currentTeam+1}DDChoice'].update(values=pokemonNames)
+        context.window[f'team{context.currentTeam+1}DD'].update(visible=True)
         context.window.refresh()
         v=waitForSubmit(context)
-        context.window[f'team{context.currentTeam+1}PokemonOptions'].update(visible=False)
+        context.window[f'team{context.currentTeam+1}DD'].update(visible=False)
         for name, pokemon in zip(pokemonNames, validPokemon):
-            if name==v[f'team{context.currentTeam+1}PokemonChoice']:
+            if name==v[f'team{context.currentTeam+1}DDChoice']:
                 return pokemon
         raise Exception('No match in pokemon dropdown')
 

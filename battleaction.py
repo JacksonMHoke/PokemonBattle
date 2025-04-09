@@ -87,13 +87,13 @@ class BattleLocation:
         self.pokemonAtSelection=self.pokemon
         validMoves=self.pokemon.moves
         moveNames=[move.name for move in validMoves]
-        context.window[f'team{context.currentTeam+1}MoveChoice'].update(values=moveNames)
-        context.window[f'team{context.currentTeam+1}MoveOptions'].update(visible=True)
+        context.window[f'team{context.currentTeam+1}DDChoice'].update(values=moveNames)
+        context.window[f'team{context.currentTeam+1}DD'].update(visible=True)
         context.window.refresh()
         v=waitForSubmit(context)
-        context.window[f'team{context.currentTeam+1}MoveOptions'].update(visible=False)
+        context.window[f'team{context.currentTeam+1}DD'].update(visible=False)
         for name, move in zip(moveNames, validMoves):
-            if name==v[f'team{context.currentTeam+1}MoveChoice']:
+            if name==v[f'team{context.currentTeam+1}DDChoice']:
                 targetsLoc=move.select(context, self)
                 action=MoveAction(context.turn, move, self, targetsLoc)
                 return action

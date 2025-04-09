@@ -134,13 +134,13 @@ class SelectSingleTarget(SelectionBehavior):
         if len(validTargets)==len(context.teams):
             raise Exception('No targets found!')
 
-        context.window[f'team{context.currentTeam+1}TargetOptions'].update(visible=True)
-        context.window[f'team{context.currentTeam+1}TargetChoice'].update(values=targetNames)
+        context.window[f'team{context.currentTeam+1}DD'].update(visible=True)
+        context.window[f'team{context.currentTeam+1}DDChoice'].update(values=targetNames)
         context.window.refresh()
         v=waitForSubmit(context)
-        context.window[f'team{context.currentTeam+1}TargetOptions'].update(visible=False)
+        context.window[f'team{context.currentTeam+1}DD'].update(visible=False)
         for name, loc in zip(targetNames, validTargets):
-            if v[f'team{context.currentTeam+1}TargetChoice']==name:
+            if v[f'team{context.currentTeam+1}DDChoice']==name:
                 if loc[1]==-1:
                     return SelectSingleTarget.select(context, attackerLoc)
                 return [context.teams[loc[0]].slots[loc[1]]]

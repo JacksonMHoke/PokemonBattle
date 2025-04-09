@@ -49,13 +49,13 @@ class Team:
         trainerNames=[trainer.name for trainer in validTrainers]
         if len(validTrainers)==1:
             return validTrainers[0]
-        context.window[f'team{self.teamIdx+1}TrainerChoice'].update(values=trainerNames)
-        context.window[f'team{self.teamIdx+1}TrainerOptions'].update(visible=True)
+        context.window[f'team{self.teamIdx+1}DDChoice'].update(values=trainerNames)
+        context.window[f'team{self.teamIdx+1}DD'].update(visible=True)
         context.window.refresh()
         v=waitForSubmit(context)
-        context.window[f'team{self.teamIdx+1}TrainerOptions'].update(visible=False)
+        context.window[f'team{self.teamIdx+1}DD'].update(visible=False)
         for name, trainer in zip(trainerNames, validTrainers):
-            if name==v[f'team{self.teamIdx+1}TrainerChoice']:
+            if name==v[f'team{self.teamIdx+1}DDChoice']:
                 return trainer
         raise Exception('No match in trainer dropdown')
     

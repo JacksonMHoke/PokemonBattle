@@ -28,7 +28,7 @@ class Battle:
         queue=BattleQueue()
         self.context.turn=1
         
-        self.context.window = sg.Window('Battle Window', getLayout())
+        self.context.window = sg.Window('Battle Window', getLayout(), size=(800, 600), finalize=True)
 
         triggerAllEvents(self.context, Trigger.START)   # Triggers all events that are conditional on battle start
 
@@ -38,7 +38,7 @@ class Battle:
             if len(remainingTeams)==1:
                 return remainingTeams[0]
             
-            event, values = self.context.window.read()
+            event, values = self.context.window.read(timeout=50)
             if event == sg.WINDOW_CLOSED or event == "Exit":
                 break
             
