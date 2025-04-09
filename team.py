@@ -1,5 +1,6 @@
 from trainer import *
 from globals import *
+from gui import *
 from tabulate import tabulate
 class Team:
     """Represents team in a battle.
@@ -38,33 +39,38 @@ class Team:
         """Returns if team is whited out."""
         return len(self._getAliveTrainers())==0
     
-    def selectTrainer(self):                                        # TODO: Separate this into generic select trainer and select trainer for benched pokemon
+    def selectTrainer(self, context):                                        # TODO: Separate this into generic select trainer and select trainer for benched pokemon
         """Selects trainer that is not whited out.
         
         Returns:
             Trainer: Selected trainer
         """
-        validTrainers=self._getAliveTrainers()
-        print('List of possible trainers: ', flush=True)
-        for i, trainer in enumerate(validTrainers):
-            if len(trainer.getBenchedPokemon())==0:
-                continue
-            print('\t', i, trainer.name, flush=True)
-        try:
-            choice=int(input('Select the trainer you want to choose: '))
-        except:
-            return self.selectPokemon()
-        choice=clamp(choice, 0, len(validTrainers)-1)
-        return validTrainers[choice]
+        validTrainers=[trainer for trainer in self._getAliveTrainers() if len(trainer.getBenchedPokemon())>0]
+        trainerNames=[trainer.name for trainer in validTrainers]
+        if len(validTrainers)==1:
+            return validTrainers[0]
+        context.window[f'team{self.teamIdx+1}TrainerChoice'].update(values=trainerNames)
+        context.window[f'team{self.teamIdx+1}TrainerOptions'].update(visible=True)
+        context.window.refresh()
+        v=waitForSubmit(context)
+        context.window[f'team{self.teamIdx+1}TrainerOptions'].update(visible=False)
+        for name, trainer in zip(trainerNames, validTrainers):
+            if name==v[f'team{self.teamIdx+1}TrainerChoice']:
+                return trainer
+        raise Exception('No match in trainer dropdown')
     
-    def populateEmptySlots(self):
+    def populateEmptySlots(self, context):
         """Populates all slots without pokemon in them."""
-        print('Choose which trainer you would like to select to send a pokemon out: ')
+        context.currentTeam=self.teamIdx
         for i, slot in enumerate(self.slots):
             if slot.pokemon is None or slot.pokemon.state==State.FAINTED:
-                trainer=self.selectTrainer()
-                pokemon=trainer.selectPokemon()
+                trainer=self.selectTrainer(context)
+                pokemon=trainer.selectPokemon(context)
                 slot.swapPokemon(trainer, pokemon)
+
+                context.window[f'team{self.teamIdx+1}PokemonName'].update(value=f'Name: {pokemon.name}')
+                context.window[f'team{self.teamIdx+1}HP'].update(value=f'HP: {pokemon.stats[Stat.HP]}')
+                context.window.refresh()
 
     def printActivePokemon(self):
         """Prints all active pokemon."""
@@ -81,6 +87,7 @@ class Team:
             context (Context): Battle context
         """
         actions=[]
+        context.currentTeam=self.teamIdx
         for slot in self.slots:
             actions.append(slot.selectAction(context))
         return actions

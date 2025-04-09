@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from globals import *
 
-def triggerAllEvents(context, trigger):                                 # TODO: Make triggerAllEvents not only trigger all items and abiltiies
+def triggerAllEvents(context, trigger):
     """Triggers all events"""
     context.trigger=trigger
     for team in context.teams:

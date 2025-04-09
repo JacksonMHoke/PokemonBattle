@@ -1,5 +1,6 @@
 from battleaction import *
 from heapq import heappush, heappop
+
 class BattleQueue:
     """Handles actions put into the queue and executes them in a specific order.
 

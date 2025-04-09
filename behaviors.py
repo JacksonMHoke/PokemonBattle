@@ -120,22 +120,28 @@ class SelectSingleTarget(SelectionBehavior):
             list: List that consists of the BattleLocation of the target selected.  
         """
         attacker=attackerLoc.pokemon
-        print(f'Team {context.teams[attackerLoc.teamIdx].teamName}\'s Pokemon {attacker.name} is choosing a target!', flush=True)
+        validTargets=[]
+        targetNames=[]
         for i, team in enumerate(context.teams):
-            print(f'{i} Pokemon from Team {context.teams[i].teamName}:', flush=True)
+            targetNames.append(f'--{team.teamName}--')
+            validTargets.append((i, -1))
             for j, slot in enumerate(team.slots):
-                if slot.pokemon is None:
-                    print('Empty')
+                if slot.pokemon is None or slot.pokemon.name==attacker.name:
+                    continue
                 else:
-                    print(j, slot.pokemon.name, flush=True)
-        try:
-            targetTeam=int(input('Select team to target by number: '))
-            targetTeam=clamp(targetTeam, 0, len(context.teams)-1)
-            print(f'Team {context.teams[targetTeam].teamName} was selected as a target!', flush=True)
-            targetMon=int(input('Select pokemon to target by number: '))
-            targetMon=clamp(targetMon, 0, len(context.teams[targetTeam].slots)-1)
-            print(f'{context.teams[targetTeam].slots[targetMon].pokemon.name} was selected as a target!\n\n', flush=True)
-        except:
-            return SelectSingleTarget.select(context, attackerLoc)
-        
-        return [context.teams[targetTeam].slots[targetMon]]
+                    targetNames.append(slot.pokemon.name)
+                    validTargets.append((i, j))
+        if len(validTargets)==len(context.teams):
+            raise Exception('No targets found!')
+
+        context.window[f'team{context.currentTeam+1}TargetOptions'].update(visible=True)
+        context.window[f'team{context.currentTeam+1}TargetChoice'].update(values=targetNames)
+        context.window.refresh()
+        v=waitForSubmit(context)
+        context.window[f'team{context.currentTeam+1}TargetOptions'].update(visible=False)
+        for name, loc in zip(targetNames, validTargets):
+            if v[f'team{context.currentTeam+1}TargetChoice']==name:
+                if loc[1]==-1:
+                    return SelectSingleTarget.select(context, attackerLoc)
+                return [context.teams[loc[0]].slots[loc[1]]]
+        raise Exception('No match for target in drop down!')

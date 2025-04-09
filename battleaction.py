@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from random import random
 from globals import *
+from gui import *
 class BattleAction(ABC):
     """Represents an action in battle.
 
@@ -85,19 +86,20 @@ class BattleLocation:
         """
         self.pokemonAtSelection=self.pokemon
         validMoves=self.pokemon.moves
-        print(f'{self.trainer.name} is picking a move for {self.pokemon.name}', flush=True)
-        print('List of moves:', len(validMoves), flush=True)
-        for i, move in enumerate(validMoves):
-            print('\t', i, move.name, flush=True)
-        try:
-            choice=int(input('Select the move by number: '))
-        except:
-            return self.selectAction(context)
-        selectedMove=validMoves[clamp(choice, 0, len(validMoves)-1)]
-        print(f'{selectedMove.name} was selected.\n\n', flush=True)
-        targetsLoc=selectedMove.select(context, self)
-        action=MoveAction(context.turn, selectedMove, self, targetsLoc)
-        return action
+        moveNames=[move.name for move in validMoves]
+        context.window[f'team{context.currentTeam+1}MoveChoice'].update(values=moveNames)
+        context.window[f'team{context.currentTeam+1}MoveOptions'].update(visible=True)
+        context.window.refresh()
+        v=waitForSubmit(context)
+        context.window[f'team{context.currentTeam+1}MoveOptions'].update(visible=False)
+        for name, move in zip(moveNames, validMoves):
+            if name==v[f'team{context.currentTeam+1}MoveChoice']:
+                targetsLoc=move.select(context, self)
+                action=MoveAction(context.turn, move, self, targetsLoc)
+                return action
+        raise Exception('No match in move dropdown')
+    
+        
     
     def swapPokemon(self, trainer, pokemon):
         """Swaps pokemon off this slot in place for a new pokemon and their trainer.

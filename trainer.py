@@ -1,5 +1,6 @@
 from pokemon import *
 from battleaction import *
+from gui import *
 class Trainer:
     """Represents a pokemon trainer
 
@@ -19,19 +20,20 @@ class Trainer:
     def getBenchedPokemon(self):
         return [mon for mon in self.party if mon.state==State.BENCHED]
     
-    def selectPokemon(self): # TODO: create general select function vs select benched pokemon
+    def selectPokemon(self, context): # TODO: create general select function vs select benched pokemon
         """Selects a pokemon from the list of benched pokemon in party."""
         validPokemon=self.getBenchedPokemon()
-        print('List of possible pokemon: ', flush=True)
-        for i, mon in enumerate(validPokemon):
-            print('\t', i, mon.name, flush=True)
-        try:
-            choice=int(input('Select the pokemon you want to send out by number: '))
-        except:
-            return self.selectPokemon()
-        choice=clamp(choice, 0, len(validPokemon)-1)
-        print(f'{validPokemon[choice].name} was selected!\n\n', flush=True)
-        return validPokemon[choice]
+        pokemonNames=[pokemon.name for pokemon in validPokemon]
+        
+        context.window[f'team{context.currentTeam+1}PokemonChoice'].update(values=pokemonNames)
+        context.window[f'team{context.currentTeam+1}PokemonOptions'].update(visible=True)
+        context.window.refresh()
+        v=waitForSubmit(context)
+        context.window[f'team{context.currentTeam+1}PokemonOptions'].update(visible=False)
+        for name, pokemon in zip(pokemonNames, validPokemon):
+            if name==v[f'team{context.currentTeam+1}PokemonChoice']:
+                return pokemon
+        raise Exception('No match in pokemon dropdown')
 
     def isWhiteOut(self):
         """Returns if trainer is whited out."""

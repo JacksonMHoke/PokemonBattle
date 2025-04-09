@@ -4,8 +4,11 @@ from moves import *
 from battlequeue import *
 from context import *
 from event import *
+from gui import *
+import FreeSimpleGUI as sg
 from tabulate import tabulate
 from random import random
+
 class Battle:
     """Represents a battle scenario between teams.
 
@@ -24,6 +27,8 @@ class Battle:
         """Runs the battle."""
         queue=BattleQueue()
         self.context.turn=1
+        
+        self.context.window = sg.Window('Battle Window', getLayout())
 
         triggerAllEvents(self.context, Trigger.START)   # Triggers all events that are conditional on battle start
 
@@ -33,12 +38,15 @@ class Battle:
             if len(remainingTeams)==1:
                 return remainingTeams[0]
             
+            event, values = self.context.window.read()
+            if event == sg.WINDOW_CLOSED or event == "Exit":
+                break
+            
             # if no active pokemon, send out new pokemon
             for team in self.context.teams:
-                team.populateEmptySlots()
+                team.populateEmptySlots(self.context)
 
-            for team in self.context.teams:
-                team.printActivePokemon()
+            refreshWindow(self.context)
 
             # choose moves                                 TODO: allow for other options like run, bag, etc
             for team in self.context.teams:
@@ -48,5 +56,7 @@ class Battle:
                 
             # enact moves in correct order
             queue.executeTurn(self.context)
+
+            refreshWindow(self.context)
 
             self.context.turn+=1
