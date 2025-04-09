@@ -69,8 +69,8 @@ class Team:
                 pokemon=trainer.selectPokemon(context)
                 slot.swapPokemon(trainer, pokemon)
 
-                context.window[f'team{self.teamIdx+1}PokemonName'].update(value=f'Name: {pokemon.name}')
-                context.window[f'team{self.teamIdx+1}HP'].update(value=f'HP: {pokemon.stats[Stat.HP]}')
+                context.window[f'team{self.teamIdx+1}:{i}PokemonName'].update(value=f'Name: {pokemon.name}')
+                context.window[f'team{self.teamIdx+1}:{i}HP'].update(value=f'HP: {pokemon.stats[Stat.HP]}')
                 refreshWindow(context)
 
     def printActivePokemon(self):

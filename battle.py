@@ -28,7 +28,7 @@ class Battle:
         queue=BattleQueue()
         self.context.turn=1
         
-        self.context.window = sg.Window('Battle Window', getLayout(), size=(800, 600), finalize=True, element_justification='center')
+        self.context.window = sg.Window('Battle Window', getLayout(self.context), size=(800, 600), finalize=True, element_justification='center')
 
         triggerAllEvents(self.context, Trigger.START)   # Triggers all events that are conditional on battle start
 
@@ -38,8 +38,8 @@ class Battle:
             if len(remainingTeams)==1:
                 return remainingTeams[0]
             
-            event, values = self.context.window.read(timeout=50)
-            if event == sg.WINDOW_CLOSED or event == "Exit":
+            e, v = self.context.window.read(timeout=50)
+            if e == sg.WINDOW_CLOSED or e == "Exit":
                 break
             
             # if no active pokemon, send out new pokemon
