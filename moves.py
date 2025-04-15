@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from globals import *
 from behaviors import *
 from battleaction import *
+from event import *
 class Move(ABC):
     """Abstract class for moves.
 
@@ -117,5 +118,27 @@ class Thunder(Move):
         self.name=self.__class__.__name__
     def enact(self, context):
         AttackSingleTarget.do(context)
-    def select(self, context, attackerLocLoc):
-        return SelectSingleTarget.select(context, attackerLocLoc)
+    def select(self, context, attackerLoc):
+        return SelectSingleTarget.select(context, attackerLoc)
+    
+class Burn(Move):
+    """Burn move
+
+    Burns target
+    
+    Attributes:
+        type (Type): Type of move
+        priority (Prio): Priority of move
+        name (str): Name of move
+    """
+    def __init__(self):
+        self.name=self.__class__.__name__
+        self.priority=Prio.MOVE
+        self.type=Type.FIRE
+    
+    def enact(self, context):
+        context.inflictedStatus=Burned()
+        StatusSingleTarget.do(context)
+        context.inflictedStatus=None
+    def select(self, context, attackerLoc):
+        return SelectSingleTarget.select(context, attackerLoc)

@@ -26,6 +26,7 @@ class Pokemon(ABC):
         self.ability=ability
         self.item=item
         self.state=State.BENCHED
+        self.status=None
         self.level=level
         self.exp=0
 

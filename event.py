@@ -12,6 +12,8 @@ def triggerAllEvents(context, trigger):
                     pokemon.item.trigger(context)
                 if pokemon.ability is not None:
                     pokemon.ability.trigger(context)
+                if pokemon.status is not None:
+                    pokemon.status.trigger(context)
 
     for event in context.events:
         event.trigger(context)
@@ -53,6 +55,40 @@ class Ability(Event):
     def __init__(self, name, triggers):
         super().__init__(triggers)
         self.name=name
+
+class Status(Event):
+    """
+    Status that triggers in battle
+
+    Attributes:
+        name (str): name of status
+    """
+    def __init__(self, name, triggers):
+        super().__init__(triggers)
+        self.name=name
+
+
+"""
+Statuses
+"""
+class Burned(Status):
+    """Take 10 damage at end of turn"""
+    def __init__(self):
+        triggers=[Trigger.END_TURN_STATUS]
+        super().__init__(name=self.__class__.__name__, triggers=triggers)
+        self.dmg=10
+
+    def trigger(self, context):
+        if context.trigger not in self.triggers:
+            return
+        context.triggerPokemon.takeDamage(dmg=self.dmg, context=context)
+"""
+Abilities
+"""
+
+"""
+Items
+"""
 
 class Sword(Item):
     """Item that buffs attack by a flat amount"""

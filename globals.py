@@ -60,6 +60,7 @@ class State(Enum):
 class Trigger(Enum):
     START=0
     BEFORE_ATTACK=1
+    END_TURN_STATUS=2
 
 # Effectiveness multipliers:
 # For any (attacker, defender) pair not listed, assume a multiplier of 1.

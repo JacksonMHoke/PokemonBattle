@@ -77,8 +77,6 @@ class AttackSingleTarget(ExecutionBehavior):
 
         defender.takeDamage(dmg, context)
 
-        # TODO: update all slots
-
 '''
 Buffing Behavior
 '''
@@ -86,6 +84,36 @@ Buffing Behavior
 '''
 Misc Behavior
 '''
+
+class StatusSingleTarget(ExecutionBehavior):
+    """Implements execution behavior for a single target status
+
+    This class implements statusing a single pokemon.
+
+    Note:
+        This class is used as a namespace for a static method `do` and is not intended to be instantiated
+    """
+    def do(context):
+        """Statuses target with a status
+
+        Arguments:
+            context (Context): The battle context.
+        
+        Raises:
+            AssertionError: If `defenderLocs` does not contain exactly 1 target.
+        """
+        defenderLocs=context.defenderLocs
+        attackerLoc=context.attackerLoc
+
+        attacker=context.attacker
+        defenders=context.defenders
+
+        move=context.move
+
+        assert(len(defenderLocs)==1 and len(defenders)==1)
+
+        defender=defenders[0]
+        defender.status=context.inflictedStatus
 
 '''
 Selection Behavior

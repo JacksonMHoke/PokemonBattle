@@ -1,4 +1,5 @@
 from battleaction import *
+from event import *
 from heapq import heappush, heappop
 
 class BattleQueue:
@@ -23,10 +24,6 @@ class BattleQueue:
         heappop(self.pq)
         action.execute(context)
 
-    def executeTickEvents(self, context):
-        """Processes all end of turn tick events such as burn, leech seed, etc."""
-        pass
-
     def executeTurn(self, context):
         """Executes all actions in the current turn"""
         if len(self.pq)==0:
@@ -36,7 +33,4 @@ class BattleQueue:
         while len(self.pq)>0 and self.pq[0].turn==currentTurn:
             self.executeAction(context)
 
-        self.executeTickEvents(context)
-        # TODO: Make this function compatible with tick events like leech seed
-            # could create an interface class that requires a tick() function to be defined
-            # could keep a list of these tick classes in a context Context so that we can check if an effect is active
+        triggerAllEvents(context, Trigger.END_TURN_STATUS)

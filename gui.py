@@ -42,9 +42,6 @@ def getLayout(context):
         'PROGRESS_DEPTH': 0,
     }
     sg.theme('FlatTheme')
-    
-    # team1DD=sg.Column([[sg.Text('Select a _', key='team1DDTitle')], [sg.Combo(['choice 1', 'choice 2'], readonly=True, size=(50, 1), auto_size_text=False, key='team1DDChoice')], [sg.Button('Submit', key='submit1')]], visible=False, key='team1DD')
-    # team2DD=sg.Column([[sg.Text('Select a _', key='team2DDTitle')], [sg.Combo(['choice 1', 'choice 2'], readonly=True, size=(50, 1), auto_size_text=False, key='team2DDChoice')], [sg.Button('Submit', key='submit2')]], visible=False, key='team2DD')
 
     teamSlots=[]
     teamDDs=[]
@@ -82,30 +79,6 @@ def getLayout(context):
     print(teamSlots[0][0].Layout)
     rightLayout=sg.Column([[sg.Text('Combat Log')], [sg.Multiline('', key='combatLog', size=(250, 600), disabled=True, autoscroll=True)]], vertical_alignment='top', element_justification='right')
     return [[sg.Column([[l] for l in teamLayouts]), sg.VerticalSeparator(), rightLayout]]
-
-
-    # Layout for the top section (Team 1)
-    # team1_layout=[
-    #     [sg.Text('Team 1', font=('Helvetica', 16))],
-    #     [sg.Text('Name: N/A', key='team1PokemonName')],
-    #     [sg.Text('HP: N/A', key='team1HP')],
-    #     [sg.Image(filename="./sprites/default.png", key='team1Sprite')],
-    #     [team1DD]
-    # ]
-
-    # Layout for the bottom section (Team 2)
-    # team2_layout=[
-    #     [sg.Text('Team 2', font=('Helvetica', 16))],
-    #     [sg.Text('Name: N/A', key='team2PokemonName')],
-    #     [sg.Text('HP: N/A', key='team2HP')],
-    #     [sg.Image(filename="./sprites/default.png", key='team2Sprite')],
-    #     [team2DD]
-    # ]
-
-    # Full window layout: Two rows with columns for team layouts
-    # leftLayout=sg.Column([[sg.Column(team1_layout, element_justification='center')], [sg.HorizontalSeparator()], [sg.Column(team2_layout, element_justification='center')]])
-    # 
-    # return [[teamLayouts, sg.VerticalSeparator(), rightLayout]]
 
 class DropdownItem:
     """
