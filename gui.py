@@ -22,6 +22,7 @@ def refreshWindow(context):
                 continue
             context.window[f'team{i+1}:{j}PokemonName'].update(value=f'Name: {slot.pokemon.name}')
             context.window[f'team{i+1}:{j}HP'].update(value=f'HP: {slot.pokemon.stats[Stat.HP]}')
+            context.window[f'team{i+1}:{j}Status'].update(value=' ', background_color='gray' if slot.pokemon.status is None else slot.pokemon.status.color)
             context.window[f'team{i+1}:{j}Sprite'].update(filename=f'./sprites/{type(slot.pokemon).__name__.lower()}.png')
     context.window.refresh()
 
@@ -55,7 +56,7 @@ def getLayout(context):
         for j, slot in enumerate(team.slots):
             teamSlots[i].append(sg.Column([
                 [sg.Text('Name: N/A', key=f'team{i+1}:{j}PokemonName')],
-                [sg.Text('HP: N/A', key=f'team{i+1}:{j}HP')],
+                [sg.Text('HP: N/A', key=f'team{i+1}:{j}HP'), sg.Text(' ', background_color='gray', key=f'team{i+1}:{j}Status')],
                 [sg.Image(filename="./sprites/default.png", key=f'team{i+1}:{j}Sprite')]
             ]))
             teamSlots[i].append(sg.VerticalSeparator())

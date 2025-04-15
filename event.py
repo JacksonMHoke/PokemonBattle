@@ -62,6 +62,7 @@ class Status(Event):
 
     Attributes:
         name (str): name of status
+        color (str): color of status
     """
     def __init__(self, name, triggers):
         super().__init__(triggers)
@@ -77,6 +78,7 @@ class Burned(Status):
         triggers=[Trigger.END_TURN_STATUS]
         super().__init__(name=self.__class__.__name__, triggers=triggers)
         self.dmg=10
+        self.color='red'
 
     def trigger(self, context):
         if context.trigger not in self.triggers:
