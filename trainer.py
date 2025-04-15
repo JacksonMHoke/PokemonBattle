@@ -23,7 +23,10 @@ class Trainer:
     def selectPokemon(self, context): # TODO: create general select function vs select benched pokemon
         """Selects a pokemon from the list of benched pokemon in party."""
         validPokemon=self.getBenchedPokemon()
-        pokemonNames=[pokemon.name for pokemon in validPokemon]
+        pokemonNames=[DropdownItem(pokemon.name, i) for i, pokemon in enumerate(validPokemon)]
+
+        if len(validPokemon)==0:
+            return None
         
         context.window[f'team{context.currentTeam+1}DDTitle'].update(value='Select a pokemon to send out:')
         context.window[f'team{context.currentTeam+1}DDChoice'].update(values=pokemonNames)
@@ -31,10 +34,7 @@ class Trainer:
         context.window.refresh()
         v=waitForSubmit(context)
         context.window[f'team{context.currentTeam+1}DD'].update(visible=False)
-        for name, pokemon in zip(pokemonNames, validPokemon):
-            if name==v[f'team{context.currentTeam+1}DDChoice']:
-                return pokemon
-        raise Exception('No match in pokemon dropdown')
+        return validPokemon[v[f'team{context.currentTeam+1}DDChoice'].id]
 
     def isWhiteOut(self):
         """Returns if trainer is whited out."""

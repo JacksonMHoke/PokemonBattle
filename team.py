@@ -46,19 +46,22 @@ class Team:
             Trainer: Selected trainer
         """
         validTrainers=[trainer for trainer in self._getAliveTrainers() if len(trainer.getBenchedPokemon())>0]
-        trainerNames=[trainer.name for trainer in validTrainers]
+        trainerNames=[DropdownItem(trainer.name, i) for i, trainer in enumerate(validTrainers)]
+
         if len(validTrainers)==1:
             return validTrainers[0]
+        if len(validTrainers)==0:
+            return None
+        
         context.window[f'team{self.teamIdx+1}DDTitle'].update(value='Select a trainer:')
         context.window[f'team{self.teamIdx+1}DDChoice'].update(values=trainerNames)
         context.window[f'team{self.teamIdx+1}DD'].update(visible=True)
         context.window.refresh()
+
         v=waitForSubmit(context)
         context.window[f'team{self.teamIdx+1}DD'].update(visible=False)
-        for name, trainer in zip(trainerNames, validTrainers):
-            if name==v[f'team{self.teamIdx+1}DDChoice']:
-                return trainer
-        raise Exception('No match in trainer dropdown')
+
+        return validTrainers[v[f'team{self.teamIdx+1}DDChoice'].id]
     
     def populateEmptySlots(self, context):
         """Populates all slots without pokemon in them."""
@@ -66,20 +69,18 @@ class Team:
         for i, slot in enumerate(self.slots):
             if slot.pokemon is None or slot.pokemon.state==State.FAINTED:
                 trainer=self.selectTrainer(context)
+                if trainer is None:
+                    slot.clear()
+                    context.window[f'team{self.teamIdx+1}:{i}PokemonName'].update(value=f'Name: {'N/A'}')
+                    context.window[f'team{self.teamIdx+1}:{i}HP'].update(value=f'HP: {'N/A'}')
+                    refreshWindow(context)
+                    continue
                 pokemon=trainer.selectPokemon(context)
                 slot.swapPokemon(trainer, pokemon)
 
                 context.window[f'team{self.teamIdx+1}:{i}PokemonName'].update(value=f'Name: {pokemon.name}')
                 context.window[f'team{self.teamIdx+1}:{i}HP'].update(value=f'HP: {pokemon.stats[Stat.HP]}')
                 refreshWindow(context)
-
-    def printActivePokemon(self):
-        """Prints all active pokemon."""
-        names=[slot.pokemon.name for slot in self.slots if slot.pokemon is not None]
-        hps=[slot.pokemon.stats[Stat.HP] for slot in self.slots if slot.pokemon is not None]
-        print(self.teamName)
-        print(tabulate([names, hps]))
-        print('\n', flush=True)
 
     def selectActions(self, context):
         """Selects actions for each slot.
@@ -90,5 +91,7 @@ class Team:
         actions=[]
         context.currentTeam=self.teamIdx
         for slot in self.slots:
+            if slot.pokemon is None:
+                continue
             actions.append(slot.selectAction(context))
         return actions

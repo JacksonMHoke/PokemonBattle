@@ -84,23 +84,33 @@ class BattleLocation:
         Arguments:
             context (Context): Battle context
         """
+        if self.pokemon is None:
+            raise Exception('Selecting action from empty slot!')
+
         self.pokemonAtSelection=self.pokemon
         validMoves=self.pokemon.moves
-        moveNames=[move.name for move in validMoves]
+        moveNames=[DropdownItem(move.name, i) for i, move in enumerate(validMoves)]
         context.window[f'team{context.currentTeam+1}DDTitle'].update(value='Select a move:')
         context.window[f'team{context.currentTeam+1}DDChoice'].update(values=moveNames)
         context.window[f'team{context.currentTeam+1}DD'].update(visible=True)
         context.window.refresh()
         v=waitForSubmit(context)
         context.window[f'team{context.currentTeam+1}DD'].update(visible=False)
-        for name, move in zip(moveNames, validMoves):
-            if name==v[f'team{context.currentTeam+1}DDChoice']:
-                targetsLoc=move.select(context, self)
-                action=MoveAction(context.turn, move, self, targetsLoc)
-                return action
-        raise Exception('No match in move dropdown')
+        move=validMoves[v[f'team{context.currentTeam+1}DDChoice'].id]
+        targetsLoc=move.select(context, self)
+        action=MoveAction(context.turn, move, self, targetsLoc)
+        return action
     
-        
+    def clear(self):
+        """Clears the slot and handles pokemon states accordingly"""
+        if self.pokemon is None:
+            return
+        assert self.pokemon.state!=State.BENCHED
+        if self.pokemon.state==State.ACTIVE:
+            self.pokemon.state=State.BENCHED
+
+        self.pokemon=None
+        self.trainer=None
     
     def swapPokemon(self, trainer, pokemon):
         """Swaps pokemon off this slot in place for a new pokemon and their trainer.
@@ -109,8 +119,9 @@ class BattleLocation:
             trainer (Trainer): Trainer of pokemon to be swapped in
             pokemon (Pokemon): Pokemon to be swapped in
         """
-        if self.pokemon is not None and self.pokemon.state==State.ACTIVE:
-            self.pokemon.state=State.BENCHED
+        assert pokemon.state==State.BENCHED
+
+        self.clear()
         self.pokemon=pokemon
         self.pokemon.state=State.ACTIVE
         self.trainer=trainer

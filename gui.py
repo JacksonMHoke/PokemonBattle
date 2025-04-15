@@ -106,3 +106,18 @@ def getLayout(context):
     # leftLayout=sg.Column([[sg.Column(team1_layout, element_justification='center')], [sg.HorizontalSeparator()], [sg.Column(team2_layout, element_justification='center')]])
     # 
     # return [[teamLayouts, sg.VerticalSeparator(), rightLayout]]
+
+class DropdownItem:
+    """
+    Dropdown item class that stores display text and index of the option selected.
+
+    Attributes:
+        displayText (str): text to be displayed
+        id (int): index of option on dropdown menu
+    """
+    def __init__(self, displayText, id):
+        self.displayText=displayText
+        self.id=id
+
+    def __str__(self):
+        return self.displayText

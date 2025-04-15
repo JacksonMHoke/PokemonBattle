@@ -109,7 +109,7 @@ class SelectSingleTarget(SelectionBehavior):
     """Implements selection behavior for single target selection.
 
     This class provides the logic for selecting a single target on the battlefield
-    from any team.
+    from any team except user itself.
 
     Note: This class is used as a namespace for a static method `do` and is not intended to be instantiated
     """
@@ -127,13 +127,13 @@ class SelectSingleTarget(SelectionBehavior):
         validTargets=[]
         targetNames=[]
         for i, team in enumerate(context.teams):
-            targetNames.append(f'--{team.teamName}--')
+            targetNames.append(DropdownItem(f'--{team.teamName}--', len(targetNames)))
             validTargets.append((i, -1))
             for j, slot in enumerate(team.slots):
-                if slot.pokemon is None or slot.pokemon.name==attacker.name:
+                if slot.pokemon is None or slot.pokemon.name==attacker.name and attackerLoc.teamIdx==i:
                     continue
                 else:
-                    targetNames.append(slot.pokemon.name)
+                    targetNames.append(DropdownItem(slot.pokemon.name, len(targetNames)))
                     validTargets.append((i, j))
         if len(validTargets)==len(context.teams):
             raise Exception('No targets found!')
@@ -147,9 +147,7 @@ class SelectSingleTarget(SelectionBehavior):
         context.window.refresh()
         v=waitForSubmit(context)
         context.window[f'team{context.currentTeam+1}DD'].update(visible=False)
-        for name, loc in zip(targetNames, validTargets):
-            if v[f'team{context.currentTeam+1}DDChoice']==name:
-                if loc[1]==-1:
-                    return SelectSingleTarget.select(context, attackerLoc)
-                return [context.teams[loc[0]].slots[loc[1]]]
-        raise Exception('No match for target in drop down!')
+        loc=validTargets[v[f'team{context.currentTeam+1}DDChoice'].id]
+        if loc[1]==-1:
+            return SelectSingleTarget.select(context, attackerLoc)
+        return [context.teams[loc[0]].slots[loc[1]]]
