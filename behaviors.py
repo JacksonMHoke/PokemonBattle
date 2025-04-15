@@ -169,12 +169,10 @@ class SelectSingleTarget(SelectionBehavior):
             loc=[l for l in validTargets if l[1]!=-1][0]
             return [context.teams[loc[0]].slots[loc[1]]]
 
-        context.window[f'team{context.currentTeam+1}DDTitle'].update(value='Select a target:')
-        context.window[f'team{context.currentTeam+1}DD'].update(visible=True)
-        context.window[f'team{context.currentTeam+1}DDChoice'].update(values=targetNames)
-        context.window.refresh()
+        showDropdown(context=context, team=context.currentTeam+1, text='Select a target:', values=targetNames)
         v=waitForSubmit(context)
-        context.window[f'team{context.currentTeam+1}DD'].update(visible=False)
+        hideDropdown(context=context, team=context.currentTeam+1)
+
         loc=validTargets[v[f'team{context.currentTeam+1}DDChoice'].id]
         if loc[1]==-1:
             return SelectSingleTarget.select(context, attackerLoc)

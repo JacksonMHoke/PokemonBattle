@@ -27,13 +27,11 @@ class Trainer:
 
         if len(validPokemon)==0:
             return None
-        
-        context.window[f'team{context.currentTeam+1}DDTitle'].update(value='Select a pokemon to send out:')
-        context.window[f'team{context.currentTeam+1}DDChoice'].update(values=pokemonNames)
-        context.window[f'team{context.currentTeam+1}DD'].update(visible=True)
-        context.window.refresh()
+
+        showDropdown(context=context, team=context.currentTeam+1, text='Select a pokemon to send out:', values=pokemonNames)
         v=waitForSubmit(context)
-        context.window[f'team{context.currentTeam+1}DD'].update(visible=False)
+        hideDropdown(context=context, team=context.currentTeam+1)
+
         return validPokemon[v[f'team{context.currentTeam+1}DDChoice'].id]
 
     def isWhiteOut(self):

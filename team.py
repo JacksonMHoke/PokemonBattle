@@ -52,14 +52,10 @@ class Team:
             return validTrainers[0]
         if len(validTrainers)==0:
             return None
-        
-        context.window[f'team{self.teamIdx+1}DDTitle'].update(value='Select a trainer:')
-        context.window[f'team{self.teamIdx+1}DDChoice'].update(values=trainerNames)
-        context.window[f'team{self.teamIdx+1}DD'].update(visible=True)
-        context.window.refresh()
 
+        showDropdown(context=context, team=self.teamIdx+1, text='Select a trainer:', values=trainerNames)
         v=waitForSubmit(context)
-        context.window[f'team{self.teamIdx+1}DD'].update(visible=False)
+        hideDropdown(context=context, team=self.teamIdx+1)
 
         return validTrainers[v[f'team{self.teamIdx+1}DDChoice'].id]
     

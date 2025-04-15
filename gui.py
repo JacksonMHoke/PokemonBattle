@@ -7,7 +7,7 @@ def waitForSubmit(context):
         e, v=context.window.read()
         if e==sg.WINDOW_CLOSED or e=="Exit":
             break
-        if 'submit' in e:
+        if 'submit' in e or '\r' in e:
             break
     return v
 
@@ -18,15 +18,24 @@ def refreshWindow(context):
             if slot.pokemon is None or slot.pokemon.state==State.FAINTED:
                 context.window[f'team{i+1}:{j}PokemonName'].update(value='Name: N/A')
                 context.window[f'team{i+1}:{j}HP'].update(value='HP: N/A')
+                context.window[f'team{i+1}:{j}Status'].update(value='   ', background_color='gray')
                 context.window[f'team{i+1}:{j}Sprite'].update(filename=f'./sprites/default.png')
                 continue
             context.window[f'team{i+1}:{j}PokemonName'].update(value=f'Name: {slot.pokemon.name}')
             context.window[f'team{i+1}:{j}HP'].update(value=f'HP: {slot.pokemon.stats[Stat.HP]}')
-            context.window[f'team{i+1}:{j}Status'].update(value=' ', background_color='gray' if slot.pokemon.status is None else slot.pokemon.status.color)
+            context.window[f'team{i+1}:{j}Status'].update(value='   ', background_color='gray' if slot.pokemon.status is None else slot.pokemon.status.color)
             context.window[f'team{i+1}:{j}Sprite'].update(filename=f'./sprites/{type(slot.pokemon).__name__.lower()}.png')
     context.window.refresh()
 
-    # TODO: implement this function once UI is decided on
+def showDropdown(context, team, text, values):
+    context.window[f'team{team+1}DDTitle'].update(value=text)
+    context.window[f'team{team+1}DDChoice'].update(values=values)
+    context.window[f'team{team+1}DD'].update(visible=True)
+    context.window[f'team{team+1}DD'].SetFocus()
+    context.window.refresh()
+
+def hideDropdown(context, team):
+    context.window[f'team{team+1}DD'].update(visible=False)
 
 def getLayout(context):
     """Gets layout for battle"""
@@ -56,7 +65,7 @@ def getLayout(context):
         for j, slot in enumerate(team.slots):
             teamSlots[i].append(sg.Column([
                 [sg.Text('Name: N/A', key=f'team{i+1}:{j}PokemonName')],
-                [sg.Text('HP: N/A', key=f'team{i+1}:{j}HP'), sg.Text(' ', background_color='gray', key=f'team{i+1}:{j}Status')],
+                [sg.Text('HP: N/A', key=f'team{i+1}:{j}HP'), sg.Text('   ', background_color='gray', key=f'team{i+1}:{j}Status')],
                 [sg.Image(filename="./sprites/default.png", key=f'team{i+1}:{j}Sprite')]
             ]))
             teamSlots[i].append(sg.VerticalSeparator())
