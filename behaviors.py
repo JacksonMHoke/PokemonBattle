@@ -169,9 +169,9 @@ class SelectSingleTarget(SelectionBehavior):
             loc=[l for l in validTargets if l[1]!=-1][0]
             return [context.teams[loc[0]].slots[loc[1]]]
 
-        showDropdown(context=context, team=context.currentTeam+1, text='Select a target:', values=targetNames)
-        v=waitForSubmit(context)
-        hideDropdown(context=context, team=context.currentTeam+1)
+        showDropdown(context=context, team=context.currentTeam, text='Select a target:', values=targetNames)
+        v=waitForSubmit(context, context.currentTeam)
+        hideDropdown(context=context, team=context.currentTeam)
 
         loc=validTargets[v[f'team{context.currentTeam+1}DDChoice'].id]
         if loc[1]==-1:

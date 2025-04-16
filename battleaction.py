@@ -91,10 +91,10 @@ class BattleLocation:
         validMoves=self.pokemon.moves
         moveNames=[DropdownItem(move.name, i) for i, move in enumerate(validMoves)]
 
-        showDropdown(context=context, team=context.currentTeam+1, text='Select a move:', values=moveNames)
-        v=waitForSubmit(context)
-        hideDropdown(context=context, team=context.currentTeam+1)
-        
+        showDropdown(context=context, team=context.currentTeam, text='Select a move:', values=moveNames)
+        v=waitForSubmit(context, context.currentTeam)
+        hideDropdown(context=context, team=context.currentTeam)
+
         move=validMoves[v[f'team{context.currentTeam+1}DDChoice'].id]
         targetsLoc=move.select(context, self)
         action=MoveAction(context.turn, move, self, targetsLoc)

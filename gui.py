@@ -1,13 +1,13 @@
 import FreeSimpleGUI as sg
 from globals import *
 
-def waitForSubmit(context):
+def waitForSubmit(context, team):
     """Waits until submit button is clicked"""
     while True:
         e, v=context.window.read()
         if e==sg.WINDOW_CLOSED or e=="Exit":
             break
-        if 'submit' in e or '\r' in e:
+        if v[f'team{team+1}DDChoice']!='' and ('submit' in e or '\r' in e):
             break
     return v
 
@@ -31,7 +31,7 @@ def showDropdown(context, team, text, values):
     context.window[f'team{team+1}DDTitle'].update(value=text)
     context.window[f'team{team+1}DDChoice'].update(values=values)
     context.window[f'team{team+1}DD'].update(visible=True)
-    context.window[f'team{team+1}DD'].SetFocus()
+    context.window[f'team{team+1}DDChoice'].SetFocus()
     context.window.refresh()
 
 def hideDropdown(context, team):

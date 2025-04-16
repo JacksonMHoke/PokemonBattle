@@ -53,9 +53,9 @@ class Team:
         if len(validTrainers)==0:
             return None
 
-        showDropdown(context=context, team=self.teamIdx+1, text='Select a trainer:', values=trainerNames)
-        v=waitForSubmit(context)
-        hideDropdown(context=context, team=self.teamIdx+1)
+        showDropdown(context=context, team=self.teamIdx, text='Select a trainer:', values=trainerNames)
+        v=waitForSubmit(context, self.teamIdx)
+        hideDropdown(context=context, team=self.teamIdx)
 
         return validTrainers[v[f'team{self.teamIdx+1}DDChoice'].id]
     

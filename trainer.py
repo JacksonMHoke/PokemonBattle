@@ -28,9 +28,9 @@ class Trainer:
         if len(validPokemon)==0:
             return None
 
-        showDropdown(context=context, team=context.currentTeam+1, text='Select a pokemon to send out:', values=pokemonNames)
-        v=waitForSubmit(context)
-        hideDropdown(context=context, team=context.currentTeam+1)
+        showDropdown(context=context, team=context.currentTeam, text='Select a pokemon to send out:', values=pokemonNames)
+        v=waitForSubmit(context, context.currentTeam)
+        hideDropdown(context=context, team=context.currentTeam)
 
         return validPokemon[v[f'team{context.currentTeam+1}DDChoice'].id]
 
