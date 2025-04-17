@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import Enum, IntEnum
 
 """
 This file contains all ENUMs, helper functions, and also constants.
@@ -46,10 +46,11 @@ class Type(Enum):
     STEEL=17
     FAIRY=18
 
-class Prio(Enum):
+class Prio(IntEnum):
     RUN=10000
     SWAP=9999
     ITEM=9998
+    FASTMOVE=1
     MOVE=0
 
 class State(Enum):
@@ -59,8 +60,9 @@ class State(Enum):
 
 class Trigger(Enum):
     START=0
-    BEFORE_ATTACK=1
-    END_TURN_STATUS=2
+    BEFORE_MOVE=1
+    AFTER_MOVE=2
+    END_TURN_STATUS=3
 
 # Effectiveness multipliers:
 # For any (attacker, defender) pair not listed, assume a multiplier of 1.

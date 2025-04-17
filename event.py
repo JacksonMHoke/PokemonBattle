@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from globals import *
+from random import random
 
 def triggerAllEvents(context, trigger):
     """Triggers all events"""
@@ -84,6 +85,24 @@ class Burned(Status):
         if context.trigger not in self.triggers:
             return
         context.triggerPokemon.takeDamage(dmg=self.dmg, context=context)
+
+class Frozen(Status):
+    """20% chance to escape freeze, otherwise move is skipped."""
+    def __init__(self):
+        triggers=[Trigger.BEFORE_MOVE]
+        super().__init__(name=self.__class__.__name__, triggers=triggers)
+        self.color='blue'
+        self.unfreezeChance=0.2
+
+    def trigger(self, context):
+        if context.trigger not in self.triggers or not isinstance(context.attacker.status, Frozen):
+            return
+        if random()<self.unfreezeChance:
+            context.triggerPokemon.status=None
+            context.window['combatLog'].update(f'{context.triggerPokemon.name} was unfrozen!\n', append=True)
+        else:
+            context.cancelMove=True
+            context.window['combatLog'].update(f'{context.triggerPokemon.name} is frozen and cannot move!\n', append=True)
 """
 Abilities
 """

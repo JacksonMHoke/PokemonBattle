@@ -6,7 +6,7 @@ from globals import *
 from team import *
 from event import *
 
-moves=[Tackle(), Earthquake(), Thunder(), Burn()]
+moves=[Tackle(), Freeze(), Thunder(), Burn()]
 pikachuStats={
     Stat.HP : 200,
     Stat.ATT : 100,
@@ -29,7 +29,7 @@ rats=[Rattata('rat1', 20, ratStats, moves, Sword())]#, Rattata('rat2', 20, ratSt
 t1=Trainer('Trainer 1', pikachus, None)
 t2=Trainer('Trainer 2', rats, None)
 # t3=Trainer('Trainer 3', deepcopy(rats[:1]), None)
-teams=[Team('Team Pikachu', [t1], 2), Team('Team Rattata', [t2], 3)]#, Team('Team Rats 2.0', [t3], 2)]
+teams=[Team('Team Pikachu', [t1], 1), Team('Team Rattata', [t2], 1)]#, Team('Team Rats 2.0', [t3], 2)]
 testBattle=Battle(teams)
 
 testBattle.runBattle()

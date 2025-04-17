@@ -113,6 +113,8 @@ class StatusSingleTarget(ExecutionBehavior):
         assert(len(defenderLocs)==1 and len(defenders)==1)
 
         defender=defenders[0]
+        if defender.status is not None:
+            return
         defender.status=context.inflictedStatus
 
 '''

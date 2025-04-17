@@ -3,6 +3,7 @@ from globals import *
 from behaviors import *
 from battleaction import *
 from event import *
+from decorators import *
 class Move(ABC):
     """Abstract class for moves.
 
@@ -62,6 +63,7 @@ class Tackle(Move):
         self.type=Type.NORMAL
         self.priority=Prio.MOVE
         self.name=self.__class__.__name__
+    @moveDecorator
     def enact(self, context):
         AttackSingleTarget.do(context)
     def select(self, context, attackerLoc):
@@ -89,6 +91,7 @@ class Earthquake(Move):
         self.type=Type.GROUND
         self.priority=Prio.MOVE
         self.name=self.__class__.__name__
+    @moveDecorator
     def enact(self, context):
         AttackSingleTarget.do(context)
     def select(self, context, attackerLoc):
@@ -114,8 +117,9 @@ class Thunder(Move):
         self.critChance=CRITCHANCE
         self.isPhys=False
         self.type=Type.ELECTRIC
-        self.priority=Prio.MOVE
+        self.priority=Prio.FASTMOVE
         self.name=self.__class__.__name__
+    @moveDecorator
     def enact(self, context):
         AttackSingleTarget.do(context)
     def select(self, context, attackerLoc):
@@ -135,9 +139,31 @@ class Burn(Move):
         self.name=self.__class__.__name__
         self.priority=Prio.MOVE
         self.type=Type.FIRE
-    
+    @moveDecorator
     def enact(self, context):
         context.inflictedStatus=Burned()
+        StatusSingleTarget.do(context)
+        context.inflictedStatus=None
+    def select(self, context, attackerLoc):
+        return SelectSingleTarget.select(context, attackerLoc)
+    
+class Freeze(Move):
+    """Freeze move
+
+    Freezes target
+
+    Attributes:
+        type (Type): Type of move
+        priority (Prio): Priority of move
+        name (str): Name of move
+    """
+    def __init__(self):
+        self.name=self.__class__.__name__
+        self.priority=Prio.MOVE
+        self.type=Type.ICE
+    @moveDecorator
+    def enact(self, context):
+        context.inflictedStatus=Frozen()
         StatusSingleTarget.do(context)
         context.inflictedStatus=None
     def select(self, context, attackerLoc):

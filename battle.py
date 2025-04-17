@@ -34,8 +34,13 @@ class Battle:
 
         while True:
             # return winning team if that team is only team that remains
-            remainingTeams=[i for i in range(len(self.context.teams)) if not self.context.teams[i].isWhiteOut()]
+            remainingTeams=[team for team in self.context.teams if not team.isWhiteOut()]
             if len(remainingTeams)==1:
+                self.context.window['combatLog'].update(f'{remainingTeams[0].teamName} wins!\n', append=True)
+                while True:
+                    e, v = self.context.window.read(timeout=50)
+                    if e == sg.WINDOW_CLOSED or e == "Exit":
+                        break
                 return remainingTeams[0]
             
             e, v = self.context.window.read(timeout=50)
@@ -60,3 +65,4 @@ class Battle:
             refreshWindow(self.context)
 
             self.context.turn+=1
+        
