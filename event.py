@@ -158,7 +158,7 @@ class Paralyzed(Status):
             if random()<self.paraChance:
                 context.cancelMove=True
                 context.window['combatLog'].update(f'{context.triggerPokemon.name} was stuck in paralysis!\n', append=True)
-        if context.trigger==Trigger.AFTER_STATUS:
+        if context.trigger==Trigger.AFTER_STATUS and context.inflictedPokemon==context.triggerPokemon:
             context.inflictedPokemon.stats[Stat.SPE]*=0.5
             context.window['combatLog'].update(f'{context.inflictedPokemon.name} has been slowed by paralysis!\n', append=True)
 

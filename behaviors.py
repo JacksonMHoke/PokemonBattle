@@ -57,8 +57,9 @@ class AttackSingleTarget(ExecutionBehavior):
         eff=1
         for t in defender.typing:
             eff*=getEffectiveness(move.type, t)
-
-        if random()>move.accuracy:                  # TODO: Add evasiveness as a stat for miss calculation
+        r=random()
+        print(move.name, move.accuracy, r)
+        if r>move.accuracy:                  # TODO: Add evasiveness as a stat for miss calculation
             print(move.name, 'missed!', flush=True)
             context.window['combatLog'].update(f'{move.name} missed!\n', append=True)
             context.missedMove=True
