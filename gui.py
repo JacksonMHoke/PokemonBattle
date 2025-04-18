@@ -15,6 +15,8 @@ def refreshWindow(context):
     '''Refreshes GUI with values from context'''
     if context.weather is not None:
         context.window['weather'].update(background_color=context.weather.color)
+    else:
+        context.window['weather'].update(background_color='gray')
     for i, team in enumerate(context.teams):
         for j, slot in enumerate(team.slots):
             if slot.pokemon is None or slot.pokemon.state==State.FAINTED:
