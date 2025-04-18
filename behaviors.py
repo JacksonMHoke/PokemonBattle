@@ -61,7 +61,9 @@ class AttackSingleTarget(ExecutionBehavior):
         if random()>move.accuracy:                  # TODO: Add evasiveness as a stat for miss calculation
             print(move.name, 'missed!', flush=True)
             context.window['combatLog'].update(f'{move.name} missed!\n', append=True)
+            context.missedMove=True
             return
+        context.missedMove=False
         
         if eff>1:
             print(f'{move.name} was super effective!', flush=True)
@@ -70,7 +72,7 @@ class AttackSingleTarget(ExecutionBehavior):
             print(f'{move.name} was ineffective...', flush=True)
             context.window['combatLog'].update(f'{move.name} was ineffective!\n', append=True)
 
-        dmg=attackMult*move.power*stab*eff
+        dmg=attackMult*move.power*stab*eff*context.attackMult
         if random()<move.critChance:
             print('A critical hit!', flush=True)
             context.window['combatLog'].update(f'A critical hit!\n', append=True)
@@ -116,6 +118,27 @@ class HealSingleTarget(ExecutionBehavior):
 '''
 Misc Behavior
 '''
+
+class SetWeather(ExecutionBehavior):
+    """Implements execution behavior for setting weather effect.
+
+    This class provides logic and implementation for executing a move that sets or overrides a weather effect on the field.
+    Weather effect set is passed in through context object in context.setWeather
+    """
+    def do(context):
+        """Executes set weather
+
+        Arguments:
+            context (Context): The battle context
+        """
+        if context.weather is not None and context.weather.name!=context.setWeather.name:
+            context.window['combatLog'].update(f'{context.weather.name} was replaced with {context.setWeather.name}\n', append=True)
+        elif context.weather is not None:
+            context.window['combatLog'].update(f'{context.weather.name} is already active!\n', append=True)
+            return
+        else:
+            context.window['combatLog'].update(f'{context.setWeather.name} is set!\n', append=True)
+        context.weather=context.setWeather
 
 class StatusSingleTarget(ExecutionBehavior):
     """Implements execution behavior for a single target status
@@ -248,3 +271,11 @@ class SelectSelf(SelectionBehavior):
             attackerLoc (BattleLocation): Location of attacker
         """
         return [attackerLoc]
+    
+class SelectNoTarget(SelectionBehavior):
+    """Implements selection behavior for selecting no target.
+
+    Note: This class is used as a namspace for a static method `select` and should not be instantiated.
+    """
+    def select(context, attackerLoc):
+        return []

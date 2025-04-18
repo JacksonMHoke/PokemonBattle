@@ -6,7 +6,7 @@ from globals import *
 from team import *
 from event import *
 
-moves=[Tackle(), Freeze(), Thunder(), Burn(), Earthquake(), ThunderWave(), Rest()]
+moves=[Tackle(), Freeze(), Thunder(), Burn(), Earthquake(), ThunderWave(), Rest(), RainDance(), WaterLance()]
 pikachuStats={
     Stat.HP : 200,
     Stat.ATT : 100,

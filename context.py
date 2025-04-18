@@ -22,6 +22,7 @@ class Context:
         self.defenderLocs=None
         self.move=None
         self.events=[]
+        self.weather=None
         self.trigger=None
         self.triggerPokemon=None
         self.teams=teams

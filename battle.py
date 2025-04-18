@@ -66,4 +66,3 @@ class Battle:
             refreshWindow(self.context)
 
             self.context.turn+=1
-        

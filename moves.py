@@ -123,7 +123,7 @@ class Thunder(Move):
     @moveDecorator
     def enact(self, context):
         AttackSingleTarget.do(context)
-        if random()<self.paraChance:
+        if context.missedMove==False and random()<self.paraChance:
             context.inflictedStatus=Paralyzed()
             StatusSingleTarget.do(context)
     def select(self, context, attackerLoc):
@@ -218,3 +218,57 @@ class Rest(Move):
         HealSingleTarget.do(context)
     def select(self, context, attackerLoc):
         return SelectSelf.select(context, attackerLoc)
+    
+class RainDance(Move):
+    """Rain Dance move
+
+    Sets rain for 4 turns
+
+    Attributes:
+        type (Type): Type of move
+        priority (Priority): Priority of move
+        name (str): Name of move
+    """
+    def __init__(self):
+        self.name=self.__class__.__name__
+        self.priority=Prio.MOVE
+        self.type=Type.WATER
+    @moveDecorator
+    def enact(self, context):
+        context.setWeather=Rain()
+        SetWeather.do(context)
+        context.setWeather=None
+    def select(self, context, attackerLoc):
+        return SelectNoTarget.select(context, attackerLoc)
+
+class WaterLance(Move):
+    """Water Lance move
+
+    Deals low damage multiple times.
+
+    Attributes:
+    Attributes:
+        power (int): Power of move
+        accuracy (float): Accuracy of move between 0 and 1
+        critChance (float): Critical hit chance of move between 0 and 1
+        isPhys (bool): Determines whether move is physical or not
+        type (Type): Type of move
+        priority (Prio): Priority of move
+        name (str): Name of move
+        numHits (int): Number of times move hits
+    """
+    def __init__(self):
+        self.power=25
+        self.accuracy=1
+        self.critChance=CRITCHANCE
+        self.isPhys=True
+        self.type=Type.WATER
+        self.priority=Prio.MOVE
+        self.name=self.__class__.__name__
+        self.numHits=2
+    @moveDecorator
+    def enact(self, context):
+        for i in range(self.numHits):
+            AttackSingleTarget.do(context)
+    def select(self, context, attackerLoc):
+        return SelectSingleTarget.select(context, attackerLoc)

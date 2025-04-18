@@ -13,6 +13,8 @@ def waitForSubmit(context, team):
 
 def refreshWindow(context):
     '''Refreshes GUI with values from context'''
+    if context.weather is not None:
+        context.window['weather'].update(background_color=context.weather.color)
     for i, team in enumerate(context.teams):
         for j, slot in enumerate(team.slots):
             if slot.pokemon is None or slot.pokemon.state==State.FAINTED:
@@ -73,10 +75,8 @@ def getLayout(context):
 
     print('TeamSlots', teamSlots, flush=True)
     
-    teamLayouts=[]
+    teamLayouts=[sg.Column([[sg.Text('Weather: '), sg.Text('    ', background_color='gray', key='weather')]])]
     for i, (slots, dd) in enumerate(zip(teamSlots, teamDDs)):
-        print('Individual slots', slots, flush=True)
-        print(dd)
         teamLayouts.append(sg.Column([
             [sg.Text(f'Team {i+1}')],
             [sg.Column([slots])],
