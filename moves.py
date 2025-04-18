@@ -194,3 +194,27 @@ class ThunderWave(Move):
         context.inflictedStatus=None
     def select(self, context, attackerLoc):
         return SelectSingleTarget.select(context, attackerLoc)
+    
+class Rest(Move):
+    """Rest move
+    
+    Sleep and restore health to full.
+    
+    Attributes:
+        type (Type): Type of move
+        priority (Prio): Priority of move
+        name (str): Name of move
+    """
+    def __init__(self):
+        self.name=self.__class__.__name__
+        self.priority=Prio.MOVE
+        self.type=Type.NORMAL
+        self.healPower=9999
+    @moveDecorator
+    def enact(self, context):
+        context.inflictedStatus=Asleep()
+        StatusSelf.do(context)
+        context.inflictedStatus=None
+        HealSingleTarget.do(context)
+    def select(self, context, attackerLoc):
+        return SelectSelf.select(context, attackerLoc)

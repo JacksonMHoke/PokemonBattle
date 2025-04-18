@@ -121,6 +121,26 @@ class Paralyzed(Status):
         if context.trigger==Trigger.AFTER_STATUS:
             context.inflictedPokemon.stats[Stat.SPE]*=0.5
             context.window['combatLog'].update(f'{context.inflictedPokemon.name} has been slowed by paralysis!\n', append=True)
+
+class Asleep(Status):
+    """Cannot move. 30% chance to escape after each turn. Guaranteed to awake after 3 turns."""
+    def __init__(self):
+        triggers=[Trigger.BEFORE_MOVE]
+        super().__init__(name=self.__class__.__name__, triggers=triggers)
+        self.color='purple'
+        self.turnsAsleep=1
+        self.maxTurns=3
+        self.wakeupChance=0.01
+
+    def trigger(self, context):
+        if context.trigger==Trigger.BEFORE_MOVE and context.attacker==context.triggerPokemon:
+            if random()<self.wakeupChance or self.turnsAsleep>=self.maxTurns:
+                context.window['combatLog'].update(f'{context.triggerPokemon.name} woke up!\n', append=True)
+                context.triggerPokemon.status=None
+                return
+            context.cancelMove=True
+            context.window['combatLog'].update(f'{context.triggerPokemon.name} is fast asleep!\n', append=True)
+            self.turnsAsleep+=1
             
 """
 Abilities

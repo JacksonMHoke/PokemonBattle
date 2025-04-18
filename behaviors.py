@@ -82,6 +82,37 @@ class AttackSingleTarget(ExecutionBehavior):
 Buffing Behavior
 '''
 
+class HealSingleTarget(ExecutionBehavior):
+    """Implements execution behavior for a single target heal
+
+    This class provides the logic for executing a move that heals a single target. It heals based on the healing
+    power of the move. Healing does not scale off of att/spa.
+
+    Note:
+        This class is used as a namespace for a static method `do` and is not intended to be instantiated
+    """
+    def do(context):
+        """Executes a single target heal.
+
+        Arguments:
+            context (Context): The battle context.
+        
+        Raises:
+            AssertionError: If `defenderLocs` does not contain exactly 1 target.
+        """
+        defenderLocs=context.defenderLocs
+        attackerLoc=context.attackerLoc
+
+        attacker=context.attacker
+        defenders=context.defenders
+
+        move=context.move
+
+        assert(len(defenderLocs)==1 and len(defenders)==1)
+
+        defender=defenders[0]
+        defender.heal(move.healPower, context)
+
 '''
 Misc Behavior
 '''
@@ -121,6 +152,24 @@ class StatusSingleTarget(ExecutionBehavior):
 
         triggerAllEvents(context, Trigger.AFTER_STATUS)
 
+class StatusSelf(ExecutionBehavior):
+    """Implements execution behavior for statusing self
+    
+    This class implements a statusing self behavior.
+    
+    Arguments:
+        context (Context): The battle context
+    """
+    def do(context):
+        """
+        Statuses self with status stored in context.inflictedStatus
+        """
+        if context.attacker.status is not None:
+            return
+        context.attacker.status=context.inflictedStatus
+        context.inflictedPokemon=context.attacker
+
+        triggerAllEvents(context, Trigger.AFTER_STATUS)
 '''
 Selection Behavior
 '''
@@ -145,7 +194,7 @@ class SelectSingleTarget(SelectionBehavior):
     This class provides the logic for selecting a single target on the battlefield
     from any team except user itself.
 
-    Note: This class is used as a namespace for a static method `do` and is not intended to be instantiated
+    Note: This class is used as a namespace for a static method `select` and is not intended to be instantiated
     """
     def select(context, attackerLoc):
         """Returns list of a single target that is selected from user input.
@@ -183,3 +232,19 @@ class SelectSingleTarget(SelectionBehavior):
         if loc[1]==-1:
             return SelectSingleTarget.select(context, attackerLoc)
         return [context.teams[loc[0]].slots[loc[1]]]
+    
+class SelectSelf(SelectionBehavior):
+    """Implements selection behavior for self targetting selection.
+
+    This class contains logic for selecting self in target selection.
+
+    Note: This class is used as a namespace for a static method `select` and should not be instantiated.
+    """
+    def select(context, attackerLoc):
+        """Selects self and returns loc
+        
+        Arguments:
+            context (Context): The battle context
+            attackerLoc (BattleLocation): Location of attacker
+        """
+        return [attackerLoc]

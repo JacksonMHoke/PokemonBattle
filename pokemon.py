@@ -35,6 +35,11 @@ class Pokemon(ABC):
         print(f'{self.name} has fainted!', flush=True)
         self.state=State.FAINTED
 
+    def heal(self, amount, context):
+        """Heal"""
+        self.stats[Stat.HP]=min(self.baseStats[Stat.HP], amount+self.stats[Stat.HP])
+        context.window['combatLog'].update(f'{self.name} healed to {self.stats[Stat.HP]} HP!\n', append=True)
+
     def takeDamage(self, dmg, context):
         """Take damage"""
         self.stats[Stat.HP]-=dmg

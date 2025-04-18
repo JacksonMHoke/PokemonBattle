@@ -51,6 +51,7 @@ class Battle:
             for team in self.context.teams:
                 team.populateEmptySlots(self.context)
 
+            self.context.window['combatLog'].update(f'-------------Turn {self.context.turn}-------------\n', append=True)
             refreshWindow(self.context)
 
             # choose moves                                 TODO: allow for other options like run, bag, etc
