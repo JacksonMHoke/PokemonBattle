@@ -2,6 +2,7 @@ from globals import *
 from abc import ABC, abstractmethod
 from random import random
 from battleaction import *
+from event import *
 
 class ExecutionBehavior(ABC):
     """Abstract class for move behavior
@@ -116,6 +117,9 @@ class StatusSingleTarget(ExecutionBehavior):
         if defender.status is not None:
             return
         defender.status=context.inflictedStatus
+        context.inflictedPokemon=defender
+
+        triggerAllEvents(context, Trigger.AFTER_STATUS)
 
 '''
 Selection Behavior

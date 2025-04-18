@@ -6,7 +6,7 @@ from globals import *
 from team import *
 from event import *
 
-moves=[Tackle(), Freeze(), Thunder(), Burn()]
+moves=[Tackle(), Freeze(), Thunder(), Burn(), Earthquake(), ThunderWave()]
 pikachuStats={
     Stat.HP : 200,
     Stat.ATT : 100,
@@ -33,5 +33,3 @@ teams=[Team('Team Pikachu', [t1], 1), Team('Team Rattata', [t2], 1)]#, Team('Tea
 testBattle=Battle(teams)
 
 testBattle.runBattle()
-# TODO: sync pokemon fainted status with corresponding slot being empty
-# TODO: only show trainers when swapping and sending out pokemon if they have pokemon available

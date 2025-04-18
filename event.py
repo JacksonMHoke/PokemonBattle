@@ -95,7 +95,7 @@ class Frozen(Status):
         self.unfreezeChance=0.2
 
     def trigger(self, context):
-        if context.trigger not in self.triggers or not isinstance(context.attacker.status, Frozen):
+        if context.trigger not in self.triggers or context.attacker!=context.triggerPokemon:
             return
         if random()<self.unfreezeChance:
             context.triggerPokemon.status=None
@@ -103,6 +103,25 @@ class Frozen(Status):
         else:
             context.cancelMove=True
             context.window['combatLog'].update(f'{context.triggerPokemon.name} is frozen and cannot move!\n', append=True)
+
+class Paralyzed(Status):
+    """Half speed. 30% chance to be unable to move"""
+    def __init__(self):
+        triggers=[Trigger.BEFORE_MOVE, Trigger.AFTER_STATUS]
+        super().__init__(name=self.__class__.__name__, triggers=triggers)
+        self.color='yellow'
+        self.speedDebuff=0.5
+        self.paraChance=0.3
+
+    def trigger(self, context):
+        if context.trigger==Trigger.BEFORE_MOVE and context.attacker==context.triggerPokemon:
+            if random()<self.paraChance:
+                context.cancelMove=True
+                context.window['combatLog'].update(f'{context.triggerPokemon.name} was stuck in paralysis!\n', append=True)
+        if context.trigger==Trigger.AFTER_STATUS:
+            context.inflictedPokemon.stats[Stat.SPE]*=0.5
+            context.window['combatLog'].update(f'{context.inflictedPokemon.name} has been slowed by paralysis!\n', append=True)
+            
 """
 Abilities
 """

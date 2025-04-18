@@ -117,11 +117,15 @@ class Thunder(Move):
         self.critChance=CRITCHANCE
         self.isPhys=False
         self.type=Type.ELECTRIC
-        self.priority=Prio.FASTMOVE
+        self.priority=Prio.MOVE
+        self.paraChance=0.3
         self.name=self.__class__.__name__
     @moveDecorator
     def enact(self, context):
         AttackSingleTarget.do(context)
+        if random()<self.paraChance:
+            context.inflictedStatus=Paralyzed()
+            StatusSingleTarget.do(context)
     def select(self, context, attackerLoc):
         return SelectSingleTarget.select(context, attackerLoc)
     
@@ -164,6 +168,28 @@ class Freeze(Move):
     @moveDecorator
     def enact(self, context):
         context.inflictedStatus=Frozen()
+        StatusSingleTarget.do(context)
+        context.inflictedStatus=None
+    def select(self, context, attackerLoc):
+        return SelectSingleTarget.select(context, attackerLoc)
+    
+class ThunderWave(Move):
+    """Thunder Wave move
+
+    Paralyzes target
+
+    Attributes:
+        type (Type): Type of move
+        priority (Prio): Priority of move
+        name (str): Name of move
+    """
+    def __init__(self):
+        self.name=self.__class__.__name__
+        self.priority=Prio.MOVE
+        self.type=Type.ELECTRIC
+    @moveDecorator
+    def enact(self, context):
+        context.inflictedStatus=Paralyzed()
         StatusSingleTarget.do(context)
         context.inflictedStatus=None
     def select(self, context, attackerLoc):
