@@ -6,7 +6,7 @@ from globals import *
 from team import *
 from event import *
 
-moves=[Tackle(), Freeze(), Thunder(), Burn(), Earthquake(), ThunderWave(), Rest(), RainDance(), WaterLance()]
+moves=[Tackle(), Freeze(), Thunder(), Burn(), Earthquake(), ThunderWave(), Rest(), RainDance(), WaterLance(), SwordsDance()]
 pikachuStats=Stats(200,100,100,100,100,100)
 pikachus=[Pikachu('pika1', 15, pikachuStats, moves)]#, Pikachu('pika2', 15, pikachuStats, moves), Pikachu('pika3', 15, pikachuStats, moves), Pikachu('pika4', 15, pikachuStats, moves)]
 

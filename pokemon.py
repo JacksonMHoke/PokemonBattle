@@ -92,6 +92,10 @@ class Pokemon(ABC):
             self.faint()
             context.window['combatLog'].update(f'{self.name} fainted!\n', append=True)
 
+    def buffStatMult(self, stat, amount, context):
+        context.window['combatLog'].update(f'{self.name}\'s {stat} was buffed by {amount} multiplier!\n', append=True)
+        self.stats.addMult(stat, amount)
+
 class Pikachu(Pokemon):
     def __init__(self, name, level, stats, moves, item=None, ability=None):
         super().__init__(name, level, stats, moves, item, ability)

@@ -247,7 +247,6 @@ class WaterLance(Move):
     Deals low damage multiple times.
 
     Attributes:
-    Attributes:
         power (int): Power of move
         accuracy (float): Accuracy of move between 0 and 1
         critChance (float): Critical hit chance of move between 0 and 1
@@ -272,3 +271,29 @@ class WaterLance(Move):
             AttackSingleTarget.do(context)
     def select(self, context, attackerLoc):
         return SelectSingleTarget.select(context, attackerLoc)
+    
+class SwordsDance(Move):
+    """Swords Dance
+
+    Buffs attack by 1 mult.
+    
+    Attributes:
+        type (Type): Type of move
+        priority (Prio): Priority of move
+        name (str): Name of move
+        statToBuff (str): Name of stat
+        buffMult (float): Multiplier to add to stat multiplier
+    """
+    def __init__(self):
+        self.type=Type.NORMAL
+        self.priority=Prio.MOVE
+        self.name=self.__class__.__name__
+        self.statToBuff='ATT'
+        self.buffMult=1.0
+    @moveDecorator
+    def enact(self, context):
+        context.statToBuff=self.statToBuff
+        context.buffMult=self.buffMult
+        BuffSingleTarget.do(context)
+    def select(self, context, attackerLoc):
+        return SelectSelf.select(context, attackerLoc)

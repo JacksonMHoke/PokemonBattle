@@ -85,6 +85,37 @@ class AttackSingleTarget(ExecutionBehavior):
 Buffing Behavior
 '''
 
+class BuffSingleTarget(ExecutionBehavior):
+    """Implements execution behavior for a single target buff
+
+    This class provides the logic for executing a move that buffs a single target using information stored 
+    in the context object.
+
+    Note:
+        This class is used as a namespace for a static method `do` and is not intended to be instantiated
+    """
+    def do(context):
+        """Executes a single target buff.
+
+        Arguments:
+            context (Context): The battle context.
+        
+        Raises:
+            AssertionError: If `defenderLocs` does not contain exactly 1 target.
+        """
+        defenderLocs=context.defenderLocs
+        attackerLoc=context.attackerLoc
+
+        attacker=context.attacker
+        defenders=context.defenders
+
+        move=context.move
+
+        assert(len(defenderLocs)==1 and len(defenders)==1)
+
+        defender=defenders[0]
+        defender.buffStatMult(context.statToBuff, context.buffMult, context)
+
 class HealSingleTarget(ExecutionBehavior):
     """Implements execution behavior for a single target heal
 

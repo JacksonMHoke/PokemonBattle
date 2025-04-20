@@ -75,7 +75,7 @@ class Team:
                 slot.swapPokemon(trainer, pokemon)
 
                 context.window[f'team{self.teamIdx+1}:{i}PokemonName'].update(value=f'Name: {pokemon.name}')
-                context.window[f'team{self.teamIdx+1}:{i}HP'].update(value=f'HP: {pokemon.stats.HP}')
+                context.window[f'team{self.teamIdx+1}:{i}HP'].update(value=f'HP: {pokemon.stats.currentHP}')
                 refreshWindow(context)
 
     def selectActions(self, context):
