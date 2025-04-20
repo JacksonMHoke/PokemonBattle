@@ -17,14 +17,8 @@ clamp(n, smallest, largest)
 STAB=1.5
 CRIT=1.5
 CRITCHANCE=0.1
-
-class Stat(Enum):
-    HP=1
-    ATT=2
-    SPA=3
-    DEF=4
-    SPD=5
-    SPE=6
+MINMULT=0
+MAXMULT=4
 
 class Type(Enum):
     NORMAL=1

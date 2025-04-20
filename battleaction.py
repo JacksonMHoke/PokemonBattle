@@ -42,7 +42,7 @@ class MoveAction(BattleAction):
     to execute the move from the attacker to the targets.
     """
     def __init__(self, turn, move, attackerLoc, defenderLocs):
-        super().__init__(turn, move.priority, attackerLoc.pokemon.stats[Stat.SPE])
+        super().__init__(turn, move.priority, attackerLoc.pokemon.stats.SPE)
         self.move=move
         self.attackerLoc=attackerLoc
         self.defenderLocs=defenderLocs

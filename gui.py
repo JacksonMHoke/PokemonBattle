@@ -26,7 +26,7 @@ def refreshWindow(context):
                 context.window[f'team{i+1}:{j}Sprite'].update(filename=f'./sprites/default.png')
                 continue
             context.window[f'team{i+1}:{j}PokemonName'].update(value=f'Name: {slot.pokemon.name}')
-            context.window[f'team{i+1}:{j}HP'].update(value=f'HP: {slot.pokemon.stats[Stat.HP]}')
+            context.window[f'team{i+1}:{j}HP'].update(value=f'HP: {slot.pokemon.stats.HP}')
             context.window[f'team{i+1}:{j}Status'].update(value='   ', background_color='gray' if slot.pokemon.status is None else slot.pokemon.status.color)
             context.window[f'team{i+1}:{j}Sprite'].update(filename=f'./sprites/{type(slot.pokemon).__name__.lower()}.png')
     context.window.refresh()

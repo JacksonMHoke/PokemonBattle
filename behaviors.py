@@ -53,7 +53,7 @@ class AttackSingleTarget(ExecutionBehavior):
 
         # calc mults
         stab=STAB if move.type in attacker.typing else 1
-        attackMult=attacker.stats[Stat.ATT]/defender.stats[Stat.DEF] if move.isPhys else attacker.stats[Stat.SPA]/defender.stats[Stat.SPD]
+        attackMult=attacker.stats.ATT/defender.stats.DEF if move.isPhys else attacker.stats.SPA/defender.stats.SPD
         eff=1
         for t in defender.typing:
             eff*=getEffectiveness(move.type, t)

@@ -159,7 +159,7 @@ class Paralyzed(Status):
                 context.cancelMove=True
                 context.window['combatLog'].update(f'{context.triggerPokemon.name} was stuck in paralysis!\n', append=True)
         if context.trigger==Trigger.AFTER_STATUS and context.inflictedPokemon==context.triggerPokemon:
-            context.inflictedPokemon.stats[Stat.SPE]*=0.5
+            context.inflictedPokemon.stats.addMult('SPE', -self.speedDebuff)
             context.window['combatLog'].update(f'{context.inflictedPokemon.name} has been slowed by paralysis!\n', append=True)
 
 class Asleep(Status):
@@ -201,5 +201,5 @@ class Sword(Item):
         if context.trigger not in self.triggers:
             return
         assert(self.timesUsed==0)
-        context.triggerPokemon.stats[Stat.ATT]+=self.attackBuff
+        context.triggerPokemon.stats.ATT+=self.attackBuff
         self.timesUsed+=1
