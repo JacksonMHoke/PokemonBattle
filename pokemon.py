@@ -80,7 +80,7 @@ class Pokemon(ABC):
 
     def heal(self, amount, context):
         """Heal"""
-        self.currentHP=min(self.stats.HP, amount+self.stats.currentHP)
+        self.stats.currentHP=min(self.stats.HP, amount+self.stats.currentHP)
         context.window['combatLog'].update(f'{self.name} healed to {self.stats.currentHP} HP!\n', append=True)
 
     def takeDamage(self, dmg, context):
@@ -105,3 +105,13 @@ class Rattata(Pokemon):
     def __init__(self, name, level, stats, moves, item=None, ability=None):
         super().__init__(name, level, stats, moves, item, ability)
         self.typing=[Type.NORMAL]
+
+class Bell(Pokemon):
+    def __init__(self, name, level, stats, moves, item=None, ability=None):
+        super().__init__(name, level, stats, moves, item, ability)
+        self.typing=[Type.ROCK, Type.STEEL]
+
+class Shroomhog(Pokemon):
+    def __init__(self, name, level, stats, moves, item=None, ability=None):
+        super().__init__(name, level, stats, moves, item, ability)
+        self.typing=[Type.GROUND, Type.POISON]

@@ -12,10 +12,15 @@ pikachus=[Pikachu('pika1', 15, pikachuStats, moves)]#, Pikachu('pika2', 15, pika
 
 ratStats=Stats(200,100,100,100,100,101)
 rats=[Rattata('rat1', 20, ratStats, moves, Sword())]#, Rattata('rat2', 20, ratStats, moves), Rattata('rat3', 20, ratStats, moves), Rattata('rat4', 20, ratStats, moves)]
-t1=Trainer('Trainer 1', pikachus, None)
-t2=Trainer('Trainer 2', rats, None)
-# t3=Trainer('Trainer 3', deepcopy(rats[:1]), None)
-teams=[Team('Team Pikachu', [t1], 1), Team('Team Rattata', [t2], 1)]#, Team('Team Rats 2.0', [t3], 2)]
+
+bellStats=Stats(200, 75, 100, 150, 150, 30)
+bell=Bell('Bong', 15, bellStats, moves, None, None)
+
+shroomHogStats=Stats(150, 100, 75, 150, 150, 75)
+shroomHog=Shroomhog('SadHog', 15, shroomHogStats, moves, None, None)
+t1=Trainer('Trainer 1', [bell, pikachus[0]], None)
+t2=Trainer('Trainer 2', [rats[0], shroomHog], None)
+teams=[Team('Team Bell', [t1], 1), Team('Team Shrooms', [t2], 1)]
 testBattle=Battle(teams)
 
 testBattle.runBattle()

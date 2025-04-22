@@ -28,7 +28,7 @@ class Battle:
         queue=BattleQueue()
         self.context.turn=1
         
-        self.context.window = sg.Window('Battle Window', getLayout(self.context), size=(800, 600), resizable=True, finalize=True, return_keyboard_events=True, element_justification='center')
+        self.context.window = sg.Window('Battle Window', getLayout(self.context), size=(800, 1080), resizable=True, finalize=True, return_keyboard_events=True, element_justification='center')
 
         triggerAllEvents(self.context, Trigger.START)   # Triggers all events that are conditional on battle start
 
