@@ -7,7 +7,7 @@ def waitForSubmit(context, team):
         e, v=context.window.read()
         if e==sg.WINDOW_CLOSED or e=="Exit":
             break
-        if v[f'team{team+1}DDChoice']!='' and ('submit' in e or '\r' in e):
+        if (v[f'team{team+1}DDChoice']!='' or v[f'team{team+1}DDSwapChoice']!='') and ('submit' in e or '\r' in e):
             break
     return v
 
@@ -41,6 +41,13 @@ def showDropdown(context, team, text, values):
 def hideDropdown(context, team):
     context.window[f'team{team+1}DD'].update(visible=False)
 
+def showSwapDropdown(context, team, text, values):
+    context.window[f'team{team+1}DDSwapChoice'].update(values=values, visible=True)
+
+def hideSwapDropdown(context, team):
+    context.window[f'team{team+1}DDSwapChoice'].update(visible=False)
+
+
 def getLayout(context):
     """Gets layout for battle"""
     sg.LOOK_AND_FEEL_TABLE['FlatTheme']={
@@ -62,7 +69,7 @@ def getLayout(context):
     for i, team in enumerate(context.teams):
         teamDDs.append(sg.Column([
             [sg.Text('Select a _', key=f'team{i+1}DDTitle')],
-            [sg.Combo(['choice 1', 'choice 2'], readonly=True, size=(50, 1), auto_size_text=False, key=f'team{i+1}DDChoice')],
+            [sg.Combo(['choice 1', 'choice 2'], readonly=True, size=(25, 1), auto_size_text=False, key=f'team{i+1}DDChoice'), sg.Combo(['swapChoice1', 'swapChoice2'], readonly=True, size=(25, 1), auto_size_text=False, key=f'team{i+1}DDSwapChoice', visible=False)],
             [sg.Button('Submit', key=f'submit{i+1}')]
         ], visible=False, key=f'team{i+1}DD'))
         teamSlots.append([])
@@ -74,8 +81,6 @@ def getLayout(context):
             ]))
             teamSlots[i].append(sg.VerticalSeparator())
         teamSlots[i].pop()
-
-    print('TeamSlots', teamSlots, flush=True)
     
     teamLayouts=[sg.Column([[sg.Text('Weather: '), sg.Text('    ', background_color='gray', key='weather')]])]
     for i, (slots, dd) in enumerate(zip(teamSlots, teamDDs)):
@@ -86,9 +91,6 @@ def getLayout(context):
         ]))
         teamLayouts.append(sg.HorizontalSeparator())
     teamLayouts.pop()
-
-    print('Team Layouts', teamLayouts, flush=True)
-    print(teamSlots[0][0].Layout)
     rightLayout=sg.Column([[sg.Text('Combat Log')], [sg.Multiline('', key='combatLog', size=(250, 600), disabled=True, autoscroll=True)]], vertical_alignment='top', element_justification='right')
     return [[sg.Column([[l] for l in teamLayouts]), sg.VerticalSeparator(), rightLayout]]
 

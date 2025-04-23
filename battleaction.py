@@ -30,6 +30,30 @@ class BattleAction(ABC):
             return self.speed>other.speed
         return random()<0.5
     
+class SwapAction(BattleAction):
+    """Represents a swap action activated using the execute function
+
+    Attributes:
+        swapLocation (BattleLocation): BattleLocation of the pokemon to be swapped out
+        swapInPokemon (Pokemon): Pokemon to be swapped in
+        trainer (Trainer): Trainer of the pokemon to be swapped in
+    """
+    def __init__(self, turn, swapLocation, swapInPokemon, trainer):
+        super().__init__(turn, Prio.SWAP, 0)
+        self.swapLocation=swapLocation
+        self.swapInPokemon=swapInPokemon
+        self.trainer=trainer
+    def execute(self, context):
+        """Executes the move using the context, attacker location, and target locations.
+
+        Arguments:
+            context (Context): Battle context
+        """
+        if self.swapInPokemon.status==State.FAINTED:
+            context.window['combatLog'].update(f'Could not swap in {self.swapInPokemon.name} because it has already fainted!!\n', append=True)
+            return
+        self.swapLocation.swapPokemon(self.trainer, self.swapInPokemon, context)
+    
 class MoveAction(BattleAction):
     """Represents a move action activated using the execute function.
 
@@ -52,7 +76,7 @@ class MoveAction(BattleAction):
         Arguments:
             context (Context): Battle context
         """
-        if self.attackerLoc.pokemonAtSelection.state!=State.ACTIVE:                                     # TODO: will have to change for moves like future sight
+        if self.attackerLoc.pokemonAtSelection.state!=State.ACTIVE:
             return
         context.prepareMove(attackerLoc=self.attackerLoc, defenderLocs=self.defenderLocs, move=self.move)
         self.move.enact(context=context)
@@ -90,18 +114,23 @@ class BattleLocation:
         self.pokemonAtSelection=self.pokemon
         validMoves=self.pokemon.moves
         moveNames=[DropdownItem(move.name, i) for i, move in enumerate(validMoves)]
-
-        print('before selectaction dropdown', flush=True)
+        
+        team=context.teams[self.teamIdx]
+        swapNames=[DropdownItem(f'{trainer.name}: {pokemon.name}', (trainer, pokemon)) for trainer in team.trainers for pokemon in trainer.getBenchedPokemon()]
 
         showDropdown(context=context, team=context.currentTeam, text='Select a move:', values=moveNames)
+        showSwapDropdown(context=context, team=context.currentTeam, text='', values=swapNames)
         v=waitForSubmit(context, context.currentTeam)
         hideDropdown(context=context, team=context.currentTeam)
-
-        print('after selectaction dropdown', flush=True)
-
-        move=validMoves[v[f'team{context.currentTeam+1}DDChoice'].id]
-        targetsLoc=move.select(context, self)
-        action=MoveAction(context.turn, move, self, targetsLoc)
+        hideSwapDropdown(context, context.currentTeam)
+        action=None
+        if v[f'team{context.currentTeam+1}DDChoice']!='':
+            move=validMoves[v[f'team{context.currentTeam+1}DDChoice'].id]
+            targetsLoc=move.select(context, self)
+            action=MoveAction(context.turn, move, self, targetsLoc)
+        if v[f'team{context.currentTeam+1}DDSwapChoice']!='':
+            trainer, pokemon=v[f'team{context.currentTeam+1}DDSwapChoice'].id
+            action=SwapAction(context.turn, self, pokemon, trainer)
         return action
     
     def clear(self):
@@ -115,7 +144,7 @@ class BattleLocation:
         self.pokemon=None
         self.trainer=None
     
-    def swapPokemon(self, trainer, pokemon):
+    def swapPokemon(self, trainer, pokemon, context):
         """Swaps pokemon off this slot in place for a new pokemon and their trainer.
 
         Arguments:
@@ -123,6 +152,11 @@ class BattleLocation:
             pokemon (Pokemon): Pokemon to be swapped in
         """
         assert pokemon.state==State.BENCHED
+
+        if self.pokemon is None:
+            context.window['combatLog'].update(f'Sending out {pokemon.name}!\n', append=True)
+        else:
+            context.window['combatLog'].update(f'Swapped {self.pokemon.name} and {pokemon.name}!\n', append=True)
 
         self.clear()
         self.pokemon=pokemon
