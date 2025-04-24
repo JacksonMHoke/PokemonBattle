@@ -2,7 +2,6 @@ from globals import *
 from abc import ABC, abstractmethod
 from random import random
 from battleaction import *
-from event import *
 
 class ExecutionBehavior(ABC):
     """Abstract class for move behavior

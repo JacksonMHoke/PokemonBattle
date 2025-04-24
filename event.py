@@ -1,24 +1,7 @@
 from abc import ABC, abstractmethod
 from globals import *
 from random import random
-
-def triggerAllEvents(context, trigger):
-    """Triggers all events"""
-    context.trigger=trigger
-    for team in context.teams:
-        for trainer in team.trainers:
-            for pokemon in trainer.party:
-                context.triggerPokemon=pokemon
-                if pokemon.item is not None:
-                    pokemon.item.trigger(context)
-                if pokemon.ability is not None:
-                    pokemon.ability.trigger(context)
-                if pokemon.status is not None:
-                    pokemon.status.trigger(context)
-    for event in context.events:
-        event.trigger(context)
-    if context.weather is not None:
-        context.weather.trigger(context)
+from behaviors import StatusSingleTarget
 
 class Event(ABC):
     """
@@ -110,6 +93,32 @@ class Rain(Weather):
                 context.window['combatLog'].update(f'Rain ended!\n', append=True)
                 context.weather=None
 
+class MagmaStorm(Weather):              # TODO: Event handler to order events and multi status behavior
+    """Weather effect that causes burn on everyone every turn and deals 15 damage. Ends after 4 turns."""
+    def __init__(self):
+        triggers=[Trigger.AFTER_MOVE, Trigger.END_TURN_STATUS]
+        super().__init__(self.__class__.__name__, triggers)
+        self.remainingTurns=4
+        self.dmgPerTurn=15
+        self.color='red'
+    
+    def trigger(self, context):
+        if context.trigger==Trigger.AFTER_MOVE:
+            context.window['combatLog'].update(f'Magma storm has been set!\n', append=True)
+        if context.trigger==Trigger.END_TURN_STATUS:
+            for team in context.teams:
+                for slot in team.slots:
+                    if slot.pokemon is None:
+                        continue
+                    context.setDefenders([slot])
+                    context.inflictedStatus=Burned()
+                    StatusSingleTarget.do(context)
+                    slot.pokemon.takeDamage(self.dmgPerTurn, context)
+
+            self.remainingTurns-=1
+            if self.remainingTurns<=0:
+                context.window['combatLog'].update(f'Magma storm has ended!\n', append=True)
+                context.weather=None
 """
 Statuses
 """
@@ -196,7 +205,7 @@ class Sword(Item):
         triggers=[Trigger.START, Trigger.EQUIP, Trigger.UNEQUIP]
         super().__init__(name=self.__class__.__name__, triggers=triggers)
         self.attackBuff=10
-    
+
     def trigger(self, context):
         if context.trigger not in self.triggers or (context.triggerItem is not None and context.triggerItem!=self):
             return

@@ -348,7 +348,7 @@ class FireSwipe(Move):
         self.power=60
         self.accuracy=1
         self.critChance=CRITCHANCE
-        self.isPhys=False
+        self.isPhys=True
         self.type=Type.FIRE
         self.priority=Prio.MOVE
         self.name=self.__class__.__name__
@@ -358,3 +358,25 @@ class FireSwipe(Move):
         StealItem.do(context)
     def select(self, context, attackerLoc):
         return SelectSingleTarget.select(context, attackerLoc)
+    
+class Conflagration(Move):
+    """Conflagration
+    
+    Sets magma storm weather on field for 4 turns
+    
+    Attributes:
+        type (Type): Type of move
+        priorty (Prio): Priority of move
+        name (str): Name of move
+    """
+    def __init__(self):
+        self.type=Type.FIRE
+        self.priority=Prio.MOVE
+        self.name=self.__class__.__name__
+    @moveDecorator
+    def enact(self, context):
+        context.setWeather=MagmaStorm()
+        SetWeather.do(context)
+        context.setWeather=None
+    def select(self, context, attackerLoc):
+        return SelectNoTarget.select(context, attackerLoc)

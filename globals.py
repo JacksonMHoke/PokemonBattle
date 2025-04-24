@@ -230,3 +230,21 @@ def getEffectiveness(attackingType, defendingType):
 def clamp(n, smallest, largest):
     """Returns n clamped between smallest and largest inclusive"""
     return min(max(smallest, n), largest)
+
+def triggerAllEvents(context, trigger):
+    """Triggers all events"""
+    context.trigger=trigger
+    for team in context.teams:
+        for trainer in team.trainers:
+            for pokemon in trainer.party:
+                context.triggerPokemon=pokemon
+                if pokemon.item is not None:
+                    pokemon.item.trigger(context)
+                if pokemon.ability is not None:
+                    pokemon.ability.trigger(context)
+                if pokemon.status is not None:
+                    pokemon.status.trigger(context)
+    for event in context.events:
+        event.trigger(context)
+    if context.weather is not None:
+        context.weather.trigger(context)
