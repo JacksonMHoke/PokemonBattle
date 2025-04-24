@@ -123,6 +123,7 @@ class BattleLocation:
         v=waitForSubmit(context, context.currentTeam)
         hideDropdown(context=context, team=context.currentTeam)
         hideSwapDropdown(context, context.currentTeam)
+        
         action=None
         if v[f'team{context.currentTeam+1}DDChoice']!='':
             move=validMoves[v[f'team{context.currentTeam+1}DDChoice'].id]
