@@ -150,6 +150,43 @@ class HealSingleTarget(ExecutionBehavior):
 '''
 Misc Behavior
 '''
+class StealItem(ExecutionBehavior):
+    """Implements execution behavior for stealing defender's item.
+
+    This class provides logic and implementation for executing a move that steals the defender's item
+    """
+    def do(context):
+        """Steals target's item
+        
+        Arguments:
+            context (Context): The battle context
+        """
+        defenderLocs=context.defenderLocs
+        attackerLoc=context.attackerLoc
+
+        attacker=context.attacker
+        defenders=context.defenders
+
+        move=context.move
+
+        assert(len(defenderLocs)==1 and len(defenders)==1)
+
+        defender=defenders[0]
+        if attacker.item is not None or defender.item is None:
+            return
+        context.window['combatLog'].update(f'{attacker.name} has stolen {defender.name}\'s {defender.item.name} item!\n', append=True)
+
+        context.triggerItem=attacker.item
+        context.triggerPokemon=defender
+        triggerAllEvents(context, Trigger.UNEQUIP)
+
+
+        attacker.item=defender.item
+        defender.item=None
+        context.triggerPokemon=attacker
+        triggerAllEvents(context, Trigger.EQUIP)
+
+
 
 class SetWeather(ExecutionBehavior):
     """Implements execution behavior for setting weather effect.
@@ -225,10 +262,10 @@ class StatusSelf(ExecutionBehavior):
         context.inflictedPokemon=context.attacker
 
         triggerAllEvents(context, Trigger.AFTER_STATUS)
+
 '''
 Selection Behavior
 '''
-
 class SelectionBehavior(ABC):
     """Abstract class for selection behavior.
 

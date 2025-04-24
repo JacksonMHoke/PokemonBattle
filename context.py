@@ -25,6 +25,7 @@ class Context:
         self.weather=None
         self.trigger=None
         self.triggerPokemon=None
+        self.triggerItem=None
         self.teams=teams
     
     def setAttacker(self, attackerLoc):

@@ -54,10 +54,12 @@ class State(Enum):
 
 class Trigger(Enum):
     START=0
-    BEFORE_MOVE=1
-    AFTER_STATUS=2
-    AFTER_MOVE=3
-    END_TURN_STATUS=4
+    EQUIP=1
+    UNEQUIP=2
+    BEFORE_MOVE=3
+    AFTER_STATUS=4
+    AFTER_MOVE=5
+    END_TURN_STATUS=6
 
 # Effectiveness multipliers:
 # For any (attacker, defender) pair not listed, assume a multiplier of 1.
