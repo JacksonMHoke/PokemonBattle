@@ -1,7 +1,8 @@
-from trainer import *
+from entities.trainer import *
 from globals import *
 from gui import *
 from tabulate import tabulate
+from battle.battleaction import BattleLocation
 class Team:
     """Represents team in a battle.
 

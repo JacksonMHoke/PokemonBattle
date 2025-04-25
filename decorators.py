@@ -1,4 +1,3 @@
-from event import *
 from globals import *
 def moveDecorator(func):
     """Decorator around move that takes in the enact function from a move class. Triggers events for before and after a move is used."""

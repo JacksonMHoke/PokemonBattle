@@ -1,10 +1,13 @@
 from battle import *
-from trainer import *
-from pokemon import *
-from moves import *
+from entities.trainer import *
+from entities.pokemon import *
+from moves.moves import *
 from globals import *
-from team import *
-from event import *
+from entities.team import *
+from events.items import *
+from events.statuses import *
+from events.weathers import *
+from battle.battle import *
 
 moves=[Tackle(), Freeze(), Thunder(), Burn(), Earthquake(), ThunderWave(), Rest(), RainDance(), WaterLance(), SwordsDance(), FireBall(), FireSwipe(), Conflagration()]
 pikachuStats=Stats(200,100,100,100,100,100)

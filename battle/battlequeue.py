@@ -1,5 +1,5 @@
-from battleaction import *
-from event import *
+from battle.battleaction import *
+from globals import *
 from heapq import heappush, heappop
 
 class BattleQueue:

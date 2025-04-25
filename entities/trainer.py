@@ -1,5 +1,5 @@
-from pokemon import *
-from battleaction import *
+from entities.pokemon import *
+from battle.battleaction import *
 from gui import *
 class Trainer:
     """Represents a pokemon trainer
