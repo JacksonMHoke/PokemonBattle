@@ -127,7 +127,7 @@ class BattleLocation:
         action=None
         if v[f'team{context.currentTeam+1}DDChoice']!='':
             move=validMoves[v[f'team{context.currentTeam+1}DDChoice'].id]
-            targetsLoc=move.select(context, self)
+            targetsLoc=move.select(context, attackerLoc=self)
             action=MoveAction(context.turn, move, self, targetsLoc)
         if v[f'team{context.currentTeam+1}DDSwapChoice']!='':
             trainer, pokemon=v[f'team{context.currentTeam+1}DDSwapChoice'].id

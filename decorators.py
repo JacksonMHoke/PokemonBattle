@@ -4,9 +4,9 @@ def moveDecorator(func):
     def wrapper(self, context):
         context.cancelMove=False
         context.attackMult=1
-        triggerAllEvents(context, Trigger.BEFORE_MOVE)
+        triggerAllEvents(context=context, trigger=Trigger.BEFORE_MOVE)
         if context.cancelMove==False:
-            func(self, context)
-        triggerAllEvents(context, Trigger.AFTER_MOVE)
+            func(self, context=context)
+        triggerAllEvents(context=context, trigger=Trigger.AFTER_MOVE)
         context.attackMult=1
     return wrapper

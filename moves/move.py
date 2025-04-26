@@ -25,7 +25,7 @@ class Move(ABC):
         """
         pass
     @abstractmethod
-    def select(self, context, attackerLoc):
+    def select(self, context, **kwargs):
         """Selects targets and returns a list of the target's BattleLocations.
 
         Arguments:

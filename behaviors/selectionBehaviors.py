@@ -11,16 +11,18 @@ class SelectSingleTarget(SelectionBehavior):
 
     Note: This class is used as a namespace for a static method `select` and is not intended to be instantiated
     """
-    def select(context, attackerLoc):
+    def select(context, **kwargs):
         """Returns list of a single target that is selected from user input.
 
         Arguments:
             context (Context): The battle context
-            attackerLoc (BattleLocation): The attacker's location in the battle
+        Keyword Arguments:
+            attackerLoc (BattleLocation): Location of attacker
 
         Returns:
             list: List that consists of the BattleLocation of the target selected.  
         """
+        attackerLoc=kwargs['attackerLoc']
         attacker=attackerLoc.pokemon
         validTargets=[]
         targetNames=[]
@@ -55,19 +57,26 @@ class SelectSelf(SelectionBehavior):
 
     Note: This class is used as a namespace for a static method `select` and should not be instantiated.
     """
-    def select(context, attackerLoc):
+    def select(context, **kwargs):
         """Selects self and returns loc
         
         Arguments:
             context (Context): The battle context
+        Keyword Arguments:
             attackerLoc (BattleLocation): Location of attacker
+
+        Returns:
+            list: List that consists of the BattleLocation of self.  
         """
-        return [attackerLoc]
+        return [kwargs['attackerLoc']]
     
 class SelectNoTarget(SelectionBehavior):
     """Implements selection behavior for selecting no target.
 
     Note: This class is used as a namspace for a static method `select` and should not be instantiated.
+
+    Returns:
+            list: Empty list
     """
-    def select(context, attackerLoc):
+    def select(context, **kwargs):
         return []

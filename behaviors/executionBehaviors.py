@@ -15,7 +15,7 @@ class AttackSingleTarget(ExecutionBehavior):
     Note:
         This class is used as a namespace for a static method `do` and is not intended to be instantiated
     """
-    def do(context):
+    def do(context, **kwargs):
         """Executes a single target attack.
 
         Arguments:
@@ -41,9 +41,8 @@ class AttackSingleTarget(ExecutionBehavior):
         attackMult=attacker.stats.ATT/defender.stats.DEF if move.isPhys else attacker.stats.SPA/defender.stats.SPD
         eff=1
         for t in defender.typing:
-            eff*=getEffectiveness(move.type, t)
+            eff*=getEffectiveness(attackingType=move.type, defendingType=t)
         r=random()
-        print(move.name, move.accuracy, r)
         if r>move.accuracy:                  # TODO: Add evasiveness as a stat for miss calculation
             print(move.name, 'missed!', flush=True)
             context.window['combatLog'].update(f'{move.name} missed!\n', append=True)
@@ -56,7 +55,7 @@ class AttackSingleTarget(ExecutionBehavior):
             context.window['combatLog'].update(f'{move.name} was super effective!\n', append=True)
         elif eff<1:
             print(f'{move.name} was ineffective...', flush=True)
-            context.window['combatLog'].update(f'{move.name} was ineffective!\n', append=True)
+            context.window['combatLog'].update(f'{move.name} was ineffective...\n', append=True)
 
         dmg=attackMult*move.power*stab*eff*context.attackMult
         if random()<move.critChance:
@@ -64,7 +63,7 @@ class AttackSingleTarget(ExecutionBehavior):
             context.window['combatLog'].update(f'A critical hit!\n', append=True)
             dmg*=CRIT
 
-        defender.takeDamage(dmg, context)
+        defender.takeDamage(dmg=dmg, context=context)
 
 '''
 Buffing Behavior
@@ -79,11 +78,14 @@ class BuffSingleTarget(ExecutionBehavior):
     Note:
         This class is used as a namespace for a static method `do` and is not intended to be instantiated
     """
-    def do(context):
+    def do(context, **kwargs):
         """Executes a single target buff.
 
         Arguments:
             context (Context): The battle context.
+        Keyword Arguments:
+            buffMult (float): Multiplier to add to stat
+            statToBuff (str): String representation for stat (ex: 'HP' or 'ATT')
         
         Raises:
             AssertionError: If `defenderLocs` does not contain exactly 1 target.
@@ -99,7 +101,7 @@ class BuffSingleTarget(ExecutionBehavior):
         assert(len(defenderLocs)==1 and len(defenders)==1)
 
         defender=defenders[0]
-        defender.buffStatMult(context.statToBuff, context.buffMult, context)
+        defender.buffStatMult(stat=kwargs['statToBuff'], amount=kwargs['buffMult'], context=context)
 
 class HealSingleTarget(ExecutionBehavior):
     """Implements execution behavior for a single target heal
@@ -110,7 +112,7 @@ class HealSingleTarget(ExecutionBehavior):
     Note:
         This class is used as a namespace for a static method `do` and is not intended to be instantiated
     """
-    def do(context):
+    def do(context, **kwargs):
         """Executes a single target heal.
 
         Arguments:
@@ -140,7 +142,7 @@ class StealItem(ExecutionBehavior):
 
     This class provides logic and implementation for executing a move that steals the defender's item
     """
-    def do(context):
+    def do(context, **kwargs):
         """Steals target's item
         
         Arguments:
@@ -161,14 +163,14 @@ class StealItem(ExecutionBehavior):
             return
         context.window['combatLog'].update(f'{attacker.name} has stolen {defender.name}\'s {defender.item.name} item!\n', append=True)
 
-        context.triggerItem=attacker.item
-        context.triggerPokemon=defender
+        context.triggerItem=attacker.item                               # TODO: SCUFFED CONTEXT
+        context.triggerPokemon=defender                                 # TODO: SCUFFED CONTEXT
         triggerAllEvents(context, Trigger.UNEQUIP)
 
 
         attacker.item=defender.item
         defender.item=None
-        context.triggerPokemon=attacker
+        context.triggerPokemon=attacker                                 # TODO: SCUFFED CONTEXT
         triggerAllEvents(context, Trigger.EQUIP)
 
 
@@ -179,20 +181,23 @@ class SetWeather(ExecutionBehavior):
     This class provides logic and implementation for executing a move that sets or overrides a weather effect on the field.
     Weather effect set is passed in through context object in context.setWeather
     """
-    def do(context):
+    def do(context, **kwargs):
         """Executes set weather
 
         Arguments:
             context (Context): The battle context
+        Keyword Arguements:
+            weatherToSet (Weather): Weather effect to set
         """
-        if context.weather is not None and context.weather.name!=context.setWeather.name:
-            context.window['combatLog'].update(f'{context.weather.name} was replaced with {context.setWeather.name}\n', append=True)
+        weatherToSet=kwargs['weatherToSet']
+        if context.weather is not None and context.weather.name!=weatherToSet.name:
+            context.window['combatLog'].update(f'{context.weather.name} was replaced with {weatherToSet.name}\n', append=True)
         elif context.weather is not None:
             context.window['combatLog'].update(f'{context.weather.name} is already active!\n', append=True)
             return
         else:
-            context.window['combatLog'].update(f'{context.setWeather.name} is set!\n', append=True)
-        context.weather=context.setWeather
+            context.window['combatLog'].update(f'{weatherToSet.name} is set!\n', append=True)
+        context.weather=weatherToSet
 
 class StatusSingleTarget(ExecutionBehavior):
     """Implements execution behavior for a single target status
@@ -202,11 +207,13 @@ class StatusSingleTarget(ExecutionBehavior):
     Note:
         This class is used as a namespace for a static method `do` and is not intended to be instantiated
     """
-    def do(context):
+    def do(context, **kwargs):
         """Statuses target with a status
 
         Arguments:
             context (Context): The battle context.
+        Keyword Arguments:
+            inflictedStatus (Status): Status being inflicted onto defender
         
         Raises:
             AssertionError: If `defenderLocs` does not contain exactly 1 target.
@@ -224,8 +231,8 @@ class StatusSingleTarget(ExecutionBehavior):
         defender=defenders[0]
         if defender.status is not None:
             return
-        defender.status=context.inflictedStatus
-        context.inflictedPokemon=defender
+        defender.status=kwargs['inflictedStatus']
+        context.inflictedPokemon=defender                           # TODO: SCUFFED CONTEXT
 
         triggerAllEvents(context, Trigger.AFTER_STATUS)
 
@@ -236,14 +243,16 @@ class StatusSelf(ExecutionBehavior):
     
     Arguments:
         context (Context): The battle context
+    Keyword Arguments:
+        inflictedStatus (Status): Status to inflict on self
     """
-    def do(context):
+    def do(context, **kwargs):
         """
         Statuses self with status stored in context.inflictedStatus
         """
         if context.attacker.status is not None:
             return
-        context.attacker.status=context.inflictedStatus
-        context.inflictedPokemon=context.attacker
+        context.attacker.status=kwargs['inflictedStatus']
+        context.inflictedPokemon=context.attacker               # TODO: SCUFFED CONTEXT
 
         triggerAllEvents(context, Trigger.AFTER_STATUS)

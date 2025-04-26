@@ -44,8 +44,7 @@ class MagmaStorm(Weather):              # TODO: Event handler to order events an
                     if slot.pokemon is None:
                         continue
                     context.setDefenders([slot])
-                    context.inflictedStatus=Burned()
-                    StatusSingleTarget.do(context)
+                    StatusSingleTarget.do(context, inflictedStatus=Burned())
                     slot.pokemon.takeDamage(self.dmgPerTurn, context)
 
             self.remainingTurns-=1

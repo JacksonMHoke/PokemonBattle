@@ -30,9 +30,9 @@ class Tackle(Move):
         self.name=self.__class__.__name__
     @moveDecorator
     def enact(self, context):
-        AttackSingleTarget.do(context)
-    def select(self, context, attackerLoc):
-        return SelectSingleTarget.select(context, attackerLoc)
+        AttackSingleTarget.do(context=context)
+    def select(self, context, **kwargs):
+        return SelectSingleTarget.select(context=context, **kwargs)
 
 class Earthquake(Move):
     """Earthquake move
@@ -58,9 +58,9 @@ class Earthquake(Move):
         self.name=self.__class__.__name__
     @moveDecorator
     def enact(self, context):
-        AttackSingleTarget.do(context)
-    def select(self, context, attackerLoc):
-        return SelectSingleTarget.select(context, attackerLoc)
+        AttackSingleTarget.do(context=context)
+    def select(self, context, **kwargs):
+        return SelectSingleTarget.select(context=context, **kwargs)
 
 class Thunder(Move):
     """Thunder move
@@ -89,10 +89,9 @@ class Thunder(Move):
     def enact(self, context):
         AttackSingleTarget.do(context)
         if context.missedMove==False and random()<self.paraChance:
-            context.inflictedStatus=Paralyzed()
-            StatusSingleTarget.do(context)
-    def select(self, context, attackerLoc):
-        return SelectSingleTarget.select(context, attackerLoc)
+            StatusSingleTarget.do(context=context, inflictedStatus=Paralyzed())
+    def select(self, context, **kwargs):
+        return SelectSingleTarget.select(context=context, **kwargs)
     
 class Burn(Move):
     """Burn move
@@ -110,11 +109,9 @@ class Burn(Move):
         self.type=Type.FIRE
     @moveDecorator
     def enact(self, context):
-        context.inflictedStatus=Burned()
-        StatusSingleTarget.do(context)
-        context.inflictedStatus=None
-    def select(self, context, attackerLoc):
-        return SelectSingleTarget.select(context, attackerLoc)
+        StatusSingleTarget.do(context=context, inflictedStatus=Burned())
+    def select(self, context, **kwargs):
+        return SelectSingleTarget.select(context=context, **kwargs)
     
 class Freeze(Move):
     """Freeze move
@@ -132,11 +129,9 @@ class Freeze(Move):
         self.type=Type.ICE
     @moveDecorator
     def enact(self, context):
-        context.inflictedStatus=Frozen()
-        StatusSingleTarget.do(context)
-        context.inflictedStatus=None
-    def select(self, context, attackerLoc):
-        return SelectSingleTarget.select(context, attackerLoc)
+        StatusSingleTarget.do(context=context, inflictedStatus=Frozen())
+    def select(self, context, **kwargs):
+        return SelectSingleTarget.select(context=context, **kwargs)
     
 class ThunderWave(Move):
     """Thunder Wave move
@@ -154,11 +149,9 @@ class ThunderWave(Move):
         self.type=Type.ELECTRIC
     @moveDecorator
     def enact(self, context):
-        context.inflictedStatus=Paralyzed()
-        StatusSingleTarget.do(context)
-        context.inflictedStatus=None
-    def select(self, context, attackerLoc):
-        return SelectSingleTarget.select(context, attackerLoc)
+        StatusSingleTarget.do(context=context, inflictedStatus=Paralyzed())
+    def select(self, context, **kwargs):
+        return SelectSingleTarget.select(context=context, **kwargs)
     
 class Rest(Move):
     """Rest move
@@ -177,12 +170,10 @@ class Rest(Move):
         self.healPower=9999
     @moveDecorator
     def enact(self, context):
-        context.inflictedStatus=Asleep()
-        StatusSelf.do(context)
-        context.inflictedStatus=None
-        HealSingleTarget.do(context)
-    def select(self, context, attackerLoc):
-        return SelectSelf.select(context, attackerLoc)
+        StatusSelf.do(context=context, inflictedStatus=Asleep())
+        HealSingleTarget.do(context=context)
+    def select(self, context, **kwargs):
+        return SelectSelf.select(context=context, **kwargs)
     
 class RainDance(Move):
     """Rain Dance move
@@ -200,11 +191,9 @@ class RainDance(Move):
         self.type=Type.WATER
     @moveDecorator
     def enact(self, context):
-        context.setWeather=Rain()
-        SetWeather.do(context)
-        context.setWeather=None
-    def select(self, context, attackerLoc):
-        return SelectNoTarget.select(context, attackerLoc)
+        SetWeather.do(context=context, weatherToSet=Rain())
+    def select(self, context, **kwargs):
+        return SelectNoTarget.select(context=context, **kwargs)
 
 class WaterLance(Move):
     """Water Lance move
@@ -233,9 +222,9 @@ class WaterLance(Move):
     @moveDecorator
     def enact(self, context):
         for i in range(self.numHits):
-            AttackSingleTarget.do(context)
-    def select(self, context, attackerLoc):
-        return SelectSingleTarget.select(context, attackerLoc)
+            AttackSingleTarget.do(context=context)
+    def select(self, context, **kwargs):
+        return SelectSingleTarget.select(context=context, **kwargs)
     
 class SwordsDance(Move):
     """Swords Dance
@@ -257,11 +246,9 @@ class SwordsDance(Move):
         self.buffMult=1.0
     @moveDecorator
     def enact(self, context):
-        context.statToBuff=self.statToBuff
-        context.buffMult=self.buffMult
-        BuffSingleTarget.do(context)
-    def select(self, context, attackerLoc):
-        return SelectSelf.select(context, attackerLoc)
+        BuffSingleTarget.do(context=context, statToBuff=self.statToBuff, buffMult=self.buffMult)
+    def select(self, context, **kwargs):
+        return SelectSelf.select(context=context, **kwargs)
     
 class FireBall(Move):
     """Fire Ball
@@ -288,12 +275,11 @@ class FireBall(Move):
         self.name=self.__class__.__name__
     @moveDecorator
     def enact(self, context):
-        AttackSingleTarget.do(context)
-        if context.missedMove==False and random()<self.paraChance:
-            context.inflictedStatus=Burned()
-            StatusSingleTarget.do(context)
-    def select(self, context, attackerLoc):
-        return SelectSingleTarget.select(context, attackerLoc)
+        AttackSingleTarget.do(context=context)
+        if context.missedMove==False and random()<self.burnChance:
+            StatusSingleTarget.do(context=context, inflictedStatus=Burned())
+    def select(self, context, **kwargs):
+        return SelectSingleTarget.select(context=context, **kwargs)
     
 class FireSwipe(Move):
     """Fire Swipe
@@ -319,10 +305,10 @@ class FireSwipe(Move):
         self.name=self.__class__.__name__
     @moveDecorator
     def enact(self, context):
-        AttackSingleTarget.do(context)
-        StealItem.do(context)
-    def select(self, context, attackerLoc):
-        return SelectSingleTarget.select(context, attackerLoc)
+        AttackSingleTarget.do(context=context)
+        StealItem.do(context=context)
+    def select(self, context, **kwargs):
+        return SelectSingleTarget.select(context=context, **kwargs)
     
 class Conflagration(Move):
     """Conflagration
@@ -340,8 +326,6 @@ class Conflagration(Move):
         self.name=self.__class__.__name__
     @moveDecorator
     def enact(self, context):
-        context.setWeather=MagmaStorm()
-        SetWeather.do(context)
-        context.setWeather=None
-    def select(self, context, attackerLoc):
-        return SelectNoTarget.select(context, attackerLoc)
+        SetWeather.do(context=context, weatherToSet=MagmaStorm())
+    def select(self, context, **kwargs):
+        return SelectNoTarget.select(context=context, **kwargs)
