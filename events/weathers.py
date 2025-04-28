@@ -14,7 +14,7 @@ class Rain(Weather):
         self.buffedThisMove=False
         self.color='blue'
     
-    def trigger(self, context):
+    def trigger(self, context, eventContext, trigger):
         if context.trigger==Trigger.BEFORE_MOVE and context.move.type==Type.WATER:
             context.attackMult+=self.powerBuff
             context.window['combatLog'].update(f'Rain buffs the moves power by {self.powerBuff} multiplier!\n', append=True)
@@ -37,7 +37,7 @@ class MagmaStorm(Weather):              # TODO: Event handler to order events an
         self.dmgPerTurn=15
         self.color='red'
     
-    def trigger(self, context):
+    def trigger(self, context, eventContext, trigger):
         if context.trigger==Trigger.END_TURN_STATUS:
             for team in context.teams:
                 for slot in team.slots:

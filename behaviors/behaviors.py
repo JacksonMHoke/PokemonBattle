@@ -11,7 +11,7 @@ class ExecutionBehavior(ABC):
     """
     @staticmethod
     @abstractmethod
-    def do(context, **kwargs):
+    def do(battleContext, **kwargs):
         pass
 
 '''
@@ -28,5 +28,5 @@ class SelectionBehavior(ABC):
     """
     @staticmethod
     @abstractmethod
-    def select(context, **kwargs):
+    def select(battleContext, **kwargs):
         pass

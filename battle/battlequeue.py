@@ -18,19 +18,19 @@ class BattleQueue:
         """Pushes action onto queue"""
         heappush(self.pq, action)
 
-    def executeAction(self, context):
+    def executeAction(self, battleContext):
         """Executes next BattleAction"""
         action=self.pq[0]
         heappop(self.pq)
-        action.execute(context)
+        action.execute(battleContext)
 
-    def executeTurn(self, context):
+    def executeTurn(self, battleContext):
         """Executes all actions in the current turn"""
         if len(self.pq)==0:
             return
         
         currentTurn=self.pq[0].turn
         while len(self.pq)>0 and self.pq[0].turn==currentTurn:
-            self.executeAction(context)
+            self.executeAction(battleContext)
 
-        triggerAllEvents(context, Trigger.END_TURN_STATUS)
+        triggerAllEvents(battleContext, Trigger.END_TURN_STATUS)

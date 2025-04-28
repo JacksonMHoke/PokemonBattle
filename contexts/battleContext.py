@@ -1,4 +1,4 @@
-class Context:
+class BattleContext:
     """
     Holds all battle context
 

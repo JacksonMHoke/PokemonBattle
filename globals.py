@@ -47,6 +47,13 @@ class Prio(IntEnum):
     FASTMOVE=1
     MOVE=0
 
+class EventPrio(IntEnum):
+    DEFAULT=0
+    WEATHER=1
+    STATUS=2
+    ITEM=3
+    ABILITY=4
+
 class State(Enum):
     FAINTED=0
     BENCHED=1

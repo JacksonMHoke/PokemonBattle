@@ -2,7 +2,7 @@ from entities.trainer import *
 from entities.pokemon import *
 from moves.move import *
 from battle.battlequeue import *
-from battle.context import *
+from contexts.battleContext import *
 from gui import *
 import FreeSimpleGUI as sg
 from tabulate import tabulate
@@ -15,53 +15,53 @@ class Battle:
 
     Attributes:
         teams (list): A list of teams to be in battle
-        context (Context): Battle context
+        battleContext (battleContext): Battle battleContext
     """
     def __init__(self, teams):
-        self.context=Context(teams=teams)
+        self.battleContext=BattleContext(teams=teams)
         for i in range(len(teams)):
-            self.context.teams[i].initializeField(i)
+            self.battleContext.teams[i].initializeField(i)
 
     def runBattle(self):
         """Runs the battle."""
         queue=BattleQueue()
-        self.context.turn=1
+        self.battleContext.turn=1
         
-        self.context.window = sg.Window('Battle Window', getLayout(self.context), size=(800, 1080), resizable=True, finalize=True, return_keyboard_events=True, element_justification='center')
+        self.battleContext.window = sg.Window('Battle Window', getLayout(self.battleContext), size=(800, 1080), resizable=True, finalize=True, return_keyboard_events=True, element_justification='center')
 
-        triggerAllEvents(self.context, Trigger.START)   # Triggers all events that are conditional on battle start
+        triggerAllEvents(self.battleContext, Trigger.START)   # Triggers all events that are conditional on battle start
 
         while True:
             # return winning team if that team is only team that remains
-            remainingTeams=[team for team in self.context.teams if not team.isWhiteOut()]
+            remainingTeams=[team for team in self.battleContext.teams if not team.isWhiteOut()]
             if len(remainingTeams)==1:
-                self.context.window['combatLog'].update(f'{remainingTeams[0].teamName} wins!\n', append=True)
+                self.battleContext.window['combatLog'].update(f'{remainingTeams[0].teamName} wins!\n', append=True)
                 while True:
-                    e, v = self.context.window.read(timeout=50)
+                    e, v = self.battleContext.window.read(timeout=50)
                     if e == sg.WINDOW_CLOSED or e == "Exit":
                         break
                 return remainingTeams[0]
             
-            e, v = self.context.window.read(timeout=50)
+            e, v = self.battleContext.window.read(timeout=50)
             if e == sg.WINDOW_CLOSED or e == "Exit":
                 break
             
             # if no active pokemon, send out new pokemon
-            for team in self.context.teams:
-                team.populateEmptySlots(self.context)
+            for team in self.battleContext.teams:
+                team.populateEmptySlots(self.battleContext)
 
-            self.context.window['combatLog'].update(f'-------------Turn {self.context.turn}-------------\n', append=True)
-            refreshWindow(self.context)
+            self.battleContext.window['combatLog'].update(f'-------------Turn {self.battleContext.turn}-------------\n', append=True)
+            refreshWindow(self.battleContext)
 
             # choose moves                                 TODO: allow for other options like run, bag, etc
-            for team in self.context.teams:
-                actions=team.selectActions(self.context)
+            for team in self.battleContext.teams:
+                actions=team.selectActions(self.battleContext)
                 for action in actions:
                     queue.push(action)
                 
             # enact moves in correct order
-            queue.executeTurn(self.context)
+            queue.executeTurn(self.battleContext)
 
-            refreshWindow(self.context)
+            refreshWindow(self.battleContext)
 
-            self.context.turn+=1
+            self.battleContext.turn+=1

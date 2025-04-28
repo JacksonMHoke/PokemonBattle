@@ -27,3 +27,7 @@ teams=[Team('Team Bell', [t1], 1), Team('Team Shrooms', [t2], 1)]
 testBattle=Battle(teams)
 
 testBattle.runBattle()
+
+# event context variables so far
+# cancelMove
+# item (when equipping/unequipping)
