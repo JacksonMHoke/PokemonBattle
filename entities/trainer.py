@@ -20,7 +20,7 @@ class Trainer:
     def getBenchedPokemon(self):
         return [mon for mon in self.party if mon.state==State.BENCHED]
     
-    def selectPokemon(self, context): # TODO: create general select function vs select benched pokemon
+    def selectPokemon(self, battleContext): # TODO: create general select function vs select benched pokemon
         """Selects a pokemon from the list of benched pokemon in party."""
         validPokemon=self.getBenchedPokemon()
         pokemonNames=[DropdownItem(pokemon.name, i) for i, pokemon in enumerate(validPokemon)]
@@ -28,11 +28,11 @@ class Trainer:
         if len(validPokemon)==0:
             return None
 
-        showDropdown(context=context, team=context.currentTeam, text='Select a pokemon to send out:', values=pokemonNames)
-        v=waitForSubmit(context, context.currentTeam)
-        hideDropdown(context=context, team=context.currentTeam)
+        showDropdown(battleContext=battleContext, team=battleContext.currentTeam, text='Select a pokemon to send out:', values=pokemonNames)
+        v=waitForSubmit(battleContext, battleContext.currentTeam)
+        hideDropdown(battleContext=battleContext, team=battleContext.currentTeam)
 
-        return validPokemon[v[f'team{context.currentTeam+1}DDChoice'].id]
+        return validPokemon[v[f'team{battleContext.currentTeam+1}DDChoice'].id]
 
     def isWhiteOut(self):
         """Returns if trainer is whited out."""

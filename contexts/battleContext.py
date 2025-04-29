@@ -1,3 +1,5 @@
+from eventQueue.eventQueue import EventQueue
+
 class BattleContext:
     """
     Holds all battle context
@@ -10,8 +12,8 @@ class BattleContext:
         defenderLocs (list): list of defending pokemon locations
         move (Move): move being used right now
         events (list): list of events
-        trigger (Trigger): current trigger for events
-        triggerPokemon (Pokemon): current pokemon that is being triggered(ability or item)
+        weather (Weather): Current weather
+        eventQueue (EventQueue): Event handler
         teams (list): list of teams
     """
     def __init__(self, teams):
@@ -23,9 +25,7 @@ class BattleContext:
         self.move=None
         self.events=[]
         self.weather=None
-        self.trigger=None
-        self.triggerPokemon=None
-        self.triggerItem=None
+        self.eventQueue=EventQueue()
         self.teams=teams
     
     def setAttacker(self, attackerLoc):

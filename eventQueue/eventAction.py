@@ -26,6 +26,6 @@ class EventAction:
             return self.priority>other.priority
         return random()<0.5
     
-    def execute(self, context, eventContext, trigger):
+    def execute(self, battleContext, eventContext, trigger):
         """Execute event"""
-        self.event.trigger(self, context, eventContext, trigger)
+        self.event.trigger(battleContext, eventContext, trigger)

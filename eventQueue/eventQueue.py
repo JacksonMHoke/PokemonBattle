@@ -13,9 +13,9 @@ class EventQueue:
         eventsDict (dict): Dictionary that holds all event actions scheduled by trigger
     """
     def __init__(self):
-        self.eventsDict=defaultdict([])
+        self.eventsDict=defaultdict(list)
 
-    def schedule(self, context, event, trigger):
+    def schedule(self, battleContext, event, trigger):
         """Schedule event to be triggered in the future
         
         Arguments:
@@ -23,9 +23,9 @@ class EventQueue:
             turn (int): Turn to trigger event on
             trigger (Trigger): Which trigger to trigger event on
         """
-        heappush(self.eventsDict[trigger], EventAction(event=event, turn=context.turn, priority=event.priority))
+        heappush(self.eventsDict[trigger], EventAction(event=event, turn=battleContext.turn, priority=event.priority))
 
-    def trigger(self, context, eventContext, trigger):
+    def trigger(self, battleContext, eventContext, trigger):
         """Triggers all events scheduled for trigger passed in
         
         Triggers all events scheduled for trigger passed in and fills eventContext with any information
@@ -36,28 +36,31 @@ class EventQueue:
             eventContext (EventContext): Event context
             trigger (Trigger): Trigger to activate events for
         """
-        while len(self.eventsDict[trigger])>0 and self.eventsDict[trigger][0].turn==context.turn:
+        while len(self.eventsDict[trigger])>0 and self.eventsDict[trigger][0].turn==battleContext.turn:
             e=self.eventsDict[trigger][0]
             heappop(self.eventsDict[trigger])
-            e.trigger(context=context, eventContext=eventContext, trigger=trigger)
+            e.execute(battleContext=battleContext, eventContext=eventContext, trigger=trigger)
+        if battleContext.weather is not None:
+            battleContext.weather.trigger(battleContext=battleContext, eventContext=eventContext, trigger=trigger)
+        
     
-def scheduleAllEvents(context):
+def scheduleAllEvents(battleContext):
     """Schedule all events"""
-    for team in context.teams:
+    for team in battleContext.teams:
         for trainer in team.trainers:
             for pokemon in trainer.party:
                 for event in [pokemon.item, pokemon.ability, pokemon.status]:   
                     if event is None:
                         continue
                     for trigger in event.triggers:
-                        context.eventQueue.schedule(context=context, event=event, trigger=trigger)
-    for event in context.events:
+                        battleContext.eventQueue.schedule(battleContext=battleContext, event=event, trigger=trigger)
+    for event in battleContext.events:
         for trigger in event.triggers:
-            event.eventQueue.schedule(context=context, event=event, trigger=trigger)
-    if context.weather is not None:
-        for trigger in context.weather.triggers:
-            context.eventQueue.schedule(context=context, event=context.weather, trigger=trigger)
+            event.eventQueue.schedule(battleContext=battleContext, event=event, trigger=trigger)
+    if battleContext.weather is not None:
+        for trigger in battleContext.weather.triggers:
+            battleContext.eventQueue.schedule(battleContext=battleContext, event=battleContext.weather, trigger=trigger)
 
-def scheduleForAllTriggers(context, event):
+def scheduleEventAllTriggers(battleContext, event):
     for trigger in event.triggers:
-        context.eventQueue.schedule(context=context, event=event, trigger=trigger)
+        battleContext.eventQueue.schedule(battleContext=battleContext, event=event, trigger=trigger)

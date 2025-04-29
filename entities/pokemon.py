@@ -78,22 +78,22 @@ class Pokemon(ABC):
         print(f'{self.name} has fainted!', flush=True)
         self.state=State.FAINTED
 
-    def heal(self, amount, context):
+    def heal(self, amount, battleContext):
         """Heal"""
         self.stats.currentHP=min(self.stats.HP, amount+self.stats.currentHP)
-        context.window['combatLog'].update(f'{self.name} healed to {self.stats.currentHP} HP!\n', append=True)
+        battleContext.window['combatLog'].update(f'{self.name} healed to {self.stats.currentHP} HP!\n', append=True)
 
-    def takeDamage(self, dmg, context):
+    def takeDamage(self, dmg, battleContext):
         """Take damage"""
         self.stats.currentHP-=dmg
         print(f'{self.name} took {dmg} damage!', flush=True)
-        context.window['combatLog'].update(f'{self.name} took {dmg} damage!\n', append=True)
+        battleContext.window['combatLog'].update(f'{self.name} took {dmg} damage!\n', append=True)
         if self.stats.currentHP<=0:
             self.faint()
-            context.window['combatLog'].update(f'{self.name} fainted!\n', append=True)
+            battleContext.window['combatLog'].update(f'{self.name} fainted!\n', append=True)
 
-    def buffStatMult(self, stat, amount, context):
-        context.window['combatLog'].update(f'{self.name}\'s {stat} was buffed by {amount} multiplier!\n', append=True)
+    def buffStatMult(self, stat, amount, battleContext):
+        battleContext.window['combatLog'].update(f'{self.name}\'s {stat} was buffed by {amount} multiplier!\n', append=True)
         self.stats.addMult(stat, amount)
 
 class Pikachu(Pokemon):

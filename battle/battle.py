@@ -3,6 +3,8 @@ from entities.pokemon import *
 from moves.move import *
 from battle.battlequeue import *
 from contexts.battleContext import *
+from contexts.eventContext import *
+from eventQueue.eventQueue import scheduleAllEvents
 from gui import *
 import FreeSimpleGUI as sg
 from tabulate import tabulate
@@ -29,8 +31,6 @@ class Battle:
         
         self.battleContext.window = sg.Window('Battle Window', getLayout(self.battleContext), size=(800, 1080), resizable=True, finalize=True, return_keyboard_events=True, element_justification='center')
 
-        triggerAllEvents(self.battleContext, Trigger.START)   # Triggers all events that are conditional on battle start
-
         while True:
             # return winning team if that team is only team that remains
             remainingTeams=[team for team in self.battleContext.teams if not team.isWhiteOut()]
@@ -41,6 +41,11 @@ class Battle:
                     if e == sg.WINDOW_CLOSED or e == "Exit":
                         break
                 return remainingTeams[0]
+            
+            scheduleAllEvents(self.battleContext)
+            
+            if self.battleContext.turn==0:
+                self.battleContext.eventQueue.trigger(battleContext=self.battleContext, eventContext=EventContext(), trigger=Trigger.START)
             
             e, v = self.battleContext.window.read(timeout=50)
             if e == sg.WINDOW_CLOSED or e == "Exit":

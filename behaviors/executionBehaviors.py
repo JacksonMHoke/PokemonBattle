@@ -2,7 +2,7 @@ from behaviors.behaviors import ExecutionBehavior
 from random import random
 from battle.battleaction import *
 from eventQueue.eventQueue import scheduleEventAllTriggers
-from contexts.battleContext import EventbattleContext
+from contexts.battleContext import BattleContext
 
 '''
 Attacking Behavior
@@ -17,7 +17,7 @@ class AttackSingleTarget(ExecutionBehavior):
     Note:
         This class is used as a namespace for a static method `do` and is not intended to be instantiated
     """
-    def do(battleContext, **kwargs):
+    def do(battleContext, eventContext, **kwargs):
         """Executes a single target attack.
 
         Arguments:
@@ -48,9 +48,9 @@ class AttackSingleTarget(ExecutionBehavior):
         if r>move.accuracy:                  # TODO: Add evasiveness as a stat for miss calculation
             print(move.name, 'missed!', flush=True)
             battleContext.window['combatLog'].update(f'{move.name} missed!\n', append=True)
-            battleContext.missedMove=True
+            eventContext.missedMove=True
             return
-        battleContext.missedMove=False
+        eventContext.missedMove=False
         
         if eff>1:
             print(f'{move.name} was super effective!', flush=True)
@@ -59,7 +59,7 @@ class AttackSingleTarget(ExecutionBehavior):
             print(f'{move.name} was ineffective...', flush=True)
             battleContext.window['combatLog'].update(f'{move.name} was ineffective...\n', append=True)
 
-        dmg=attackMult*move.power*stab*eff*battleContext.attackMult
+        dmg=attackMult*move.power*stab*eff*eventContext.attackMult
         if random()<move.critChance:
             print('A critical hit!', flush=True)
             battleContext.window['combatLog'].update(f'A critical hit!\n', append=True)
@@ -80,7 +80,7 @@ class BuffSingleTarget(ExecutionBehavior):
     Note:
         This class is used as a namespace for a static method `do` and is not intended to be instantiated
     """
-    def do(battleContext, **kwargs):
+    def do(battleContext, eventContext, **kwargs):
         """Executes a single target buff.
 
         Arguments:
@@ -114,7 +114,7 @@ class HealSingleTarget(ExecutionBehavior):
     Note:
         This class is used as a namespace for a static method `do` and is not intended to be instantiated
     """
-    def do(battleContext, **kwargs):
+    def do(battleContext, eventContext, **kwargs):
         """Executes a single target heal.
 
         Arguments:
@@ -144,7 +144,7 @@ class StealItem(ExecutionBehavior):
 
     This class provides logic and implementation for executing a move that steals the defender's item
     """
-    def do(battleContext, **kwargs):
+    def do(battleContext, eventContext, **kwargs):
         """Steals target's item
         
         Arguments:
@@ -165,15 +165,14 @@ class StealItem(ExecutionBehavior):
             return
         battleContext.window['combatLog'].update(f'{attacker.name} has stolen {defender.name}\'s {defender.item.name} item!\n', append=True)
 
-        battleContext.triggerItem=attacker.item                               # TODO: SCUFFED battleContext
-        battleContext.triggerPokemon=defender                                 # TODO: SCUFFED battleContext
-        triggerAllEvents(battleContext, Trigger.UNEQUIP)
+        eventContext.item=defender.item
+        battleContext.eventQueue.trigger(battleContext=battleContext, eventContext=eventContext, trigger=Trigger.UNEQUIP)
 
 
         attacker.item=defender.item
+        attacker.item.owner=attacker
         defender.item=None
-        battleContext.triggerPokemon=attacker                                 # TODO: SCUFFED battleContext
-        triggerAllEvents(battleContext, Trigger.EQUIP)
+        battleContext.eventQueue.trigger(battleContext=battleContext, eventContext=eventContext, trigger=Trigger.EQUIP)
 
 
 
@@ -183,7 +182,7 @@ class SetWeather(ExecutionBehavior):
     This class provides logic and implementation for executing a move that sets or overrides a weather effect on the field.
     Weather effect set is passed in through battleContext object in battleContext.setWeather
     """
-    def do(battleContext, **kwargs):
+    def do(battleContext, eventContext, **kwargs):
         """Executes set weather
 
         Arguments:
@@ -200,7 +199,6 @@ class SetWeather(ExecutionBehavior):
         else:
             battleContext.window['combatLog'].update(f'{weatherToSet.name} is set!\n', append=True)
         battleContext.weather=weatherToSet
-        scheduleEventAllTriggers(battleContext, weatherToSet)
 
 class StatusSingleTarget(ExecutionBehavior):
     """Implements execution behavior for a single target status
@@ -210,7 +208,7 @@ class StatusSingleTarget(ExecutionBehavior):
     Note:
         This class is used as a namespace for a static method `do` and is not intended to be instantiated
     """
-    def do(battleContext, **kwargs):
+    def do(battleContext, eventContext, **kwargs):
         """Statuses target with a status
 
         Arguments:
@@ -235,8 +233,9 @@ class StatusSingleTarget(ExecutionBehavior):
         if defender.status is not None:
             return
         defender.status=kwargs['inflictedStatus']
-
-        triggerAllEvents(battleContext, Trigger.AFTER_STATUS)
+        kwargs['inflictedStatus'].owner=defender
+        scheduleEventAllTriggers(battleContext=battleContext, event=kwargs['inflictedStatus'])
+        battleContext.eventQueue.trigger(battleContext=battleContext, eventContext=eventContext, trigger=Trigger.AFTER_STATUS)
 
 class StatusSelf(ExecutionBehavior):
     """Implements execution behavior for statusing self
@@ -248,7 +247,7 @@ class StatusSelf(ExecutionBehavior):
     Keyword Arguments:
         inflictedStatus (Status): Status to inflict on self
     """
-    def do(battleContext, **kwargs):
+    def do(battleContext, eventContext, **kwargs):
         """
         Statuses self
 
@@ -260,6 +259,6 @@ class StatusSelf(ExecutionBehavior):
         if battleContext.attacker.status is not None:
             return
         battleContext.attacker.status=kwargs['inflictedStatus']
-
-        battleContext.eventQueue.trigger(battleContext=battleContext, )
-        triggerAllEvents(battleContext, Trigger.AFTER_STATUS)
+        kwargs['inflictedStatus'].owner=battleContext.attacker
+        scheduleEventAllTriggers(battleContext=battleContext, event=kwargs['inflictedStatus'])
+        battleContext.eventQueue.trigger(battleContext=battleContext, eventContext=eventContext, trigger=Trigger.AFTER_STATUS)

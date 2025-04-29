@@ -11,11 +11,11 @@ class SelectSingleTarget(SelectionBehavior):
 
     Note: This class is used as a namespace for a static method `select` and is not intended to be instantiated
     """
-    def select(context, **kwargs):
+    def select(battleContext, **kwargs):
         """Returns list of a single target that is selected from user input.
 
         Arguments:
-            context (Context): The battle context
+            battleContext (BattleContext): The battle context
         Keyword Arguments:
             attackerLoc (BattleLocation): Location of attacker
 
@@ -26,7 +26,7 @@ class SelectSingleTarget(SelectionBehavior):
         attacker=attackerLoc.pokemon
         validTargets=[]
         targetNames=[]
-        for i, team in enumerate(context.teams):
+        for i, team in enumerate(battleContext.teams):
             targetNames.append(DropdownItem(f'--{team.teamName}--', len(targetNames)))
             validTargets.append((i, -1))
             for j, slot in enumerate(team.slots):
@@ -35,20 +35,20 @@ class SelectSingleTarget(SelectionBehavior):
                 else:
                     targetNames.append(DropdownItem(slot.pokemon.name, len(targetNames)))
                     validTargets.append((i, j))
-        if len(validTargets)==len(context.teams):
+        if len(validTargets)==len(battleContext.teams):
             raise Exception('No targets found!')
-        if len(validTargets)==len(context.teams)+1:
+        if len(validTargets)==len(battleContext.teams)+1:
             loc=[l for l in validTargets if l[1]!=-1][0]
-            return [context.teams[loc[0]].slots[loc[1]]]
+            return [battleContext.teams[loc[0]].slots[loc[1]]]
 
-        showDropdown(context=context, team=context.currentTeam, text='Select a target:', values=targetNames)
-        v=waitForSubmit(context, context.currentTeam)
-        hideDropdown(context=context, team=context.currentTeam)
+        showDropdown(battleContext=battleContext, team=battleContext.currentTeam, text='Select a target:', values=targetNames)
+        v=waitForSubmit(battleContext, battleContext.currentTeam)
+        hideDropdown(battleContext=battleContext, team=battleContext.currentTeam)
 
-        loc=validTargets[v[f'team{context.currentTeam+1}DDChoice'].id]
+        loc=validTargets[v[f'team{battleContext.currentTeam+1}DDChoice'].id]
         if loc[1]==-1:
-            return SelectSingleTarget.select(context, attackerLoc)
-        return [context.teams[loc[0]].slots[loc[1]]]
+            return SelectSingleTarget.select(battleContext, attackerLoc)
+        return [battleContext.teams[loc[0]].slots[loc[1]]]
     
 class SelectSelf(SelectionBehavior):
     """Implements selection behavior for self targetting selection.
@@ -57,11 +57,11 @@ class SelectSelf(SelectionBehavior):
 
     Note: This class is used as a namespace for a static method `select` and should not be instantiated.
     """
-    def select(context, **kwargs):
+    def select(battleContext, **kwargs):
         """Selects self and returns loc
         
         Arguments:
-            context (Context): The battle context
+            battleContext (BattleContext): The battle context
         Keyword Arguments:
             attackerLoc (BattleLocation): Location of attacker
 
@@ -75,8 +75,11 @@ class SelectNoTarget(SelectionBehavior):
 
     Note: This class is used as a namspace for a static method `select` and should not be instantiated.
 
+    Arguments:
+        battleContext (BattleContext): The battle context
+
     Returns:
             list: Empty list
     """
-    def select(context, **kwargs):
+    def select(battleContext, **kwargs):
         return []

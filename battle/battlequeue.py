@@ -33,4 +33,4 @@ class BattleQueue:
         while len(self.pq)>0 and self.pq[0].turn==currentTurn:
             self.executeAction(battleContext)
 
-        triggerAllEvents(battleContext, Trigger.END_TURN_STATUS)
+        battleContext.eventQueue.trigger(battleContext=battleContext, eventContext=None, trigger=Trigger.END_TURN_STATUS)

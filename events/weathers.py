@@ -14,19 +14,19 @@ class Rain(Weather):
         self.buffedThisMove=False
         self.color='blue'
     
-    def trigger(self, context, eventContext, trigger):
-        if context.trigger==Trigger.BEFORE_MOVE and context.move.type==Type.WATER:
-            context.attackMult+=self.powerBuff
-            context.window['combatLog'].update(f'Rain buffs the moves power by {self.powerBuff} multiplier!\n', append=True)
+    def trigger(self, battleContext, eventContext, trigger):
+        if trigger==Trigger.BEFORE_MOVE and battleContext.move.type==Type.WATER:
+            eventContext.attackMult+=self.powerBuff
+            battleContext.window['combatLog'].update(f'Rain buffs the moves power by {self.powerBuff} multiplier!\n', append=True)
             self.buffedThisMove=True
-        if context.trigger==Trigger.AFTER_MOVE and self.buffedThisMove:
-            context.attackMult-=self.powerBuff
+        if trigger==Trigger.AFTER_MOVE and self.buffedThisMove:
+            eventContext.attackMult-=self.powerBuff
             self.buffedThisMove=False
-        if context.trigger==Trigger.END_TURN_STATUS:
+        if trigger==Trigger.END_TURN_STATUS:
             self.remainingTurns-=1
             if self.remainingTurns<=0:
-                context.window['combatLog'].update(f'Rain ended!\n', append=True)
-                context.weather=None
+                battleContext.window['combatLog'].update(f'Rain ended!\n', append=True)
+                battleContext.weather=None
 
 class MagmaStorm(Weather):              # TODO: Event handler to order events and multi status behavior
     """Weather effect that causes burn on everyone every turn and deals 15 damage. Ends after 4 turns."""
@@ -37,17 +37,17 @@ class MagmaStorm(Weather):              # TODO: Event handler to order events an
         self.dmgPerTurn=15
         self.color='red'
     
-    def trigger(self, context, eventContext, trigger):
-        if context.trigger==Trigger.END_TURN_STATUS:
-            for team in context.teams:
+    def trigger(self, battleContext, eventContext, trigger):
+        if trigger==Trigger.END_TURN_STATUS:
+            for team in battleContext.teams:
                 for slot in team.slots:
                     if slot.pokemon is None:
                         continue
-                    context.setDefenders([slot])
-                    StatusSingleTarget.do(context, inflictedStatus=Burned())
-                    slot.pokemon.takeDamage(self.dmgPerTurn, context)
+                    battleContext.setDefenders([slot])
+                    StatusSingleTarget.do(battleContext, inflictedStatus=Burned())
+                    slot.pokemon.takeDamage(self.dmgPerTurn, battleContext)
 
             self.remainingTurns-=1
             if self.remainingTurns<=0:
-                context.window['combatLog'].update(f'Magma storm has ended!\n', append=True)
-                context.weather=None
+                battleContext.window['combatLog'].update(f'Magma storm has ended!\n', append=True)
+                battleContext.weather=None
