@@ -23,6 +23,7 @@ class EventQueue:
             turn (int): Turn to trigger event on
             trigger (Trigger): Which trigger to trigger event on
         """
+        print(f'EVENTQUEUE SCHEDULE {event.name}')
         heappush(self.eventsDict[trigger], EventAction(event=event, turn=battleContext.turn, priority=event.priority))
 
     def trigger(self, battleContext, eventContext, trigger):
@@ -51,6 +52,9 @@ def scheduleAllEvents(battleContext):
             for pokemon in trainer.party:
                 for event in [pokemon.item, pokemon.ability, pokemon.status]:   
                     if event is None:
+                        continue
+                    if event.name=='Sword':
+                        event.schedule(battleContext)
                         continue
                     for trigger in event.triggers:
                         battleContext.eventQueue.schedule(battleContext=battleContext, event=event, trigger=trigger)

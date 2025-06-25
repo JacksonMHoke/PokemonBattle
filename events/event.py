@@ -7,6 +7,7 @@ class Event(ABC):
     Event that can be triggered from specific trigger
 
     Attributes:
+        name (str): name of event
         triggers (list): list of triggers that trigger event
         priority (EventPrio): Priority of event
     """

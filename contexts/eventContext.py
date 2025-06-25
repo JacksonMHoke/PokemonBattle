@@ -1,3 +1,5 @@
 class EventContext:
     def __init__(self):
-        self.name="TEMP"
+        self.cancelMove=False
+        self.item=None
+        self.attackMult=1
