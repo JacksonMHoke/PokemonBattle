@@ -67,6 +67,7 @@ class Trigger(Enum):
     AFTER_STATUS=4
     AFTER_MOVE=5
     END_TURN_STATUS=6
+    END_TURN=7
 
 # Effectiveness multipliers:
 # For any (attacker, defender) pair not listed, assume a multiplier of 1.
