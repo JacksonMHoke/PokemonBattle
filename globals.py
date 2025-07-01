@@ -12,6 +12,7 @@ Stat, Type, Prio, State
 Helper Functions:
 get_effectiveness(attackingType, defendingType)
 clamp(n, smallest, largest)
+getUniqueID()
 """
 
 STAB=1.5
@@ -238,3 +239,9 @@ def getEffectiveness(attackingType, defendingType):
 def clamp(n, smallest, largest):
     """Returns n clamped between smallest and largest inclusive"""
     return min(max(smallest, n), largest)
+
+uniqueID=0
+def getUniqueID():
+    """Returns a unique ID"""
+    uniqueID+=1
+    return uniqueID-1

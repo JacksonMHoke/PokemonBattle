@@ -1,7 +1,6 @@
 from globals import *
 from heapq import heappush, heappop
 from collections import defaultdict
-from eventQueue.eventAction import EventAction
 
 class EventQueue:
     """Handles event actions put into the queue and executes them in a specific order.
@@ -24,7 +23,7 @@ class EventQueue:
             trigger (Trigger): Which trigger to trigger event on
         """
         print(f'EVENTQUEUE SCHEDULE {event.name}')
-        heappush(self.eventsDict[trigger], EventAction(event=event, turn=battleContext.turn, priority=event.priority))
+        heappush(self.eventsDict[trigger], event)
 
     def trigger(self, battleContext, eventContext, trigger):
         """Triggers all events scheduled for trigger passed in
@@ -40,7 +39,7 @@ class EventQueue:
         while len(self.eventsDict[trigger])>0 and self.eventsDict[trigger][0].turn==battleContext.turn:
             e=self.eventsDict[trigger][0]
             heappop(self.eventsDict[trigger])
-            e.execute(battleContext=battleContext, eventContext=eventContext, trigger=trigger)
+            e.trigger(battleContext=battleContext, eventContext=eventContext, trigger=trigger)
         if battleContext.weather is not None:
             battleContext.weather.trigger(battleContext=battleContext, eventContext=eventContext, trigger=trigger)
         
