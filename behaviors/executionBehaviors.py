@@ -1,7 +1,7 @@
 from behaviors.behaviors import ExecutionBehavior
 from random import random
 from battle.battleaction import *
-from eventQueue.eventQueue import scheduleEventAllTriggers
+from events.eventQueue import scheduleEventAllTriggers
 from contexts.battleContext import BattleContext
 
 '''

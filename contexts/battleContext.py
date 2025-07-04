@@ -1,4 +1,4 @@
-from eventQueue.eventQueue import EventQueue
+from events.eventQueue import EventQueue
 
 class BattleContext:
     """

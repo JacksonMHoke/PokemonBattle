@@ -4,7 +4,7 @@ from moves.move import *
 from battle.battlequeue import *
 from contexts.battleContext import *
 from contexts.eventContext import *
-from eventQueue.eventQueue import scheduleAllEvents
+from events.eventQueue import scheduleAllEvents
 from gui import *
 import FreeSimpleGUI as sg
 from tabulate import tabulate
