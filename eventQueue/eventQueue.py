@@ -14,16 +14,50 @@ class EventQueue:
     def __init__(self):
         self.eventsDict=defaultdict(list)
 
-    def schedule(self, battleContext, event, trigger):
-        """Schedule event to be triggered in the future
+    def push(self, event, trigger):
+        """Push event onto the queue for specific trigger
         
         Arguments:
             event (Event): Event to be triggered in the future
-            turn (int): Turn to trigger event on
             trigger (Trigger): Which trigger to trigger event on
         """
         print(f'EVENTQUEUE SCHEDULE {event.name}')
         heappush(self.eventsDict[trigger], event)
+
+    def top(self, trigger):
+        """Return next event in queue for specified trigger.
+        
+        Arguments:
+            trigger (Trigger): Which trigger to get next event for
+
+        Returns:
+            Event
+        """
+        if len(self.eventsDict[trigger])==0:
+            return None
+        return self.eventsDict[trigger][0]
+    
+    def pop(self, trigger):
+        """Remove top event in queue for specified trigger
+        
+        Arguments:
+            trigger (Trigger): Which trigger to remove the next event for
+        """
+        if len(self.eventsDict[trigger]==0):
+            print(f'EventQueue: Tried to pop from empty list. Trigger: {trigger.name}')
+            return
+        heappop(self.eventsDict[trigger])
+
+    def empty(self, trigger):
+        """Returns true if there are no events for specified trigger
+        
+        Arguments:
+            trigger (Trigger): Which trigger to check emptiness for
+
+        Returns:
+            Bool
+        """
+        return len(self.eventsDict[trigger])<=0
 
     def trigger(self, battleContext, eventContext, trigger):
         """Triggers all events scheduled for trigger passed in

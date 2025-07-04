@@ -24,7 +24,7 @@ class Event(ABC):
         self.id=getUniqueID()
 
     def trigger(self, battleContext, eventContext, trigger):
-        """Attempt to trigger event"""
+        """Attempt to trigger event. Returns true if event was procced, false otherwise."""
         pass
 
     def __lt__(self, other):
@@ -43,21 +43,7 @@ class Event(ABC):
 # Will cause a circular dependency, but will make things much much simpler in the future and will reduce the need for 
 # a super bloated context class
 
-class Item(Event):
-    """
-    Item that triggers in battle
-
-    Attributes:
-        name (str): name of item
-        owner (Pokemon): Owner of item
-        timesUsed (int): number of times item has been triggered
-    """
-    def __init__(self, name, triggers, owner=None, priority=EventPrio.ITEM):
-        super().__init__(triggers=triggers, priority=priority)
-        self.name=name
-        self.owner=owner
-        self.timesUsed=0
-
+# To handle nested triggers, have each flush of the event system to create a new EventQueue to handle everything
 class Ability(Event):
     """
     Ability that triggers in battle
