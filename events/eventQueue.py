@@ -11,7 +11,7 @@ class EventQueue:
         eventsDict (dict): Dictionary that holds all event actions scheduled by trigger
     """
     def __init__(self):
-        self.events=list
+        self.events=[]
 
     def push(self, event):
         """Push event onto the queue
@@ -39,11 +39,8 @@ class EventQueue:
             return
         heappop(self.events)
 
-    def empty(self, trigger):
+    def empty(self):
         """Returns true if there are no events for specified trigger
-        
-        Arguments:
-            trigger (Trigger): Which trigger to check emptiness for
 
         Returns:
             Bool

@@ -1,4 +1,5 @@
 from events.eventQueue import *
+from events.eventUtils import *
 from collections import defaultdict
 from collections.abc import Iterable
 
@@ -33,7 +34,7 @@ class EventSystem:
 
     def removePermanentEvent(self, shouldRemoveFn, triggers=None):
         """Removes all permanent events from the specified triggers that satisfy the removal function.
-        If no triggers are passed in, the event's default triggers will be used.
+        If no triggers are passed in, it will remove from all triggers.
 
         Arguments:
             shouldRemoveFn (Callable[[Event], bool]): Function used to determine whether to remove event or not
@@ -69,7 +70,7 @@ class EventSystem:
 
     def unschedule(self, shouldRemoveFn, triggers=None):
         """Removes all temporary events from the specified triggers that satisfy the removal function.
-        If no triggers are passed in, the event's default triggers will be used.
+        If no triggers are passed in, it will remove from all triggers
 
         Arguments:
             shouldRemoveFn (Callable[[Event], bool]): Function used to determine whether to remove event or not
@@ -85,7 +86,7 @@ class EventSystem:
 
     def remove(self, shouldRemoveFn, triggers=None):
         """Removes all temporary and permanent events from the specified triggers that satisfy the removal function.
-        If no triggers are passed in, the event's default triggers will be used.
+        If no triggers are passed in, it will remove from all triggers
         
         Arguments:
             shouldRemoveFn (Callable[[Event], bool]): Function used to determine whether to remove event or not
@@ -104,10 +105,10 @@ class EventSystem:
         """
         for event in self.scheduledEvents[trigger]:
             if event.startTurn<=battleContext.turn<=event.startTurn+event.duration-1:
-                eventQueue.push(event, trigger)
+                eventQueue.push(event)
 
         for event in self.permanentEvents[trigger]:
-            eventQueue.push(event, trigger)
+            eventQueue.push(event)
 
     def trigger(self, battleContext, eventContext, trigger):
         """Triggers the specified event type, evaluating all active scheduled and permanent events.
@@ -128,7 +129,7 @@ class EventSystem:
             if event.trigger(battleContext=battleContext, eventContext=eventContext, trigger=trigger):
                 event.procs-=1
                 if event.procs<=0:
-                    self.remove(lambda x: x.id==event.id, event.triggers)
+                    self.remove(matchById(event), event.triggers)
 
         if trigger==Trigger.END_TURN:
             for trig, events in self.scheduledEvents.items():

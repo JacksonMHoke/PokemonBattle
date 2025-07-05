@@ -3,8 +3,7 @@ from globals import *
 from random import random
 
 class Event(ABC):
-    """
-    Event that can be triggered from specific trigger
+    """Event that can be triggered from specific trigger
 
     Attributes:
         name (str): name of event
@@ -32,6 +31,19 @@ class Event(ABC):
             return self.priority>other.priority
         return random()<0.5
     
+class TimedEvent(Event):
+    """Temporary event that lasts for a duration starting from a
+    starting turn that can be triggered from specific trigger.
+
+    Attrbiutes:
+        startTurn (int): Turn to start firing the event
+        duration (int) Number of turns to last for
+    """
+    def __init__(self, triggers, startTurn, duration, priority=EventPrio.DEFAULT, procs=float('inf')):
+        super().__init__(triggers=triggers, priority=priority, procs=procs)
+        self.startTurn=startTurn
+        self.duration=duration
+    
 # IDEA: Handle equipping and unequipping at the Item level instead of trying to handle it at the Event level. This way when
 # for example we are swapping the sword from one pokemon to another, we just remove the buff event stored in the item and create a new
 # persisting buff event for the new owner
@@ -42,8 +54,6 @@ class Event(ABC):
 # Modify trainer to have a reference to the team they are on and modify pokemon to have a reference to their trainer
 # Will cause a circular dependency, but will make things much much simpler in the future and will reduce the need for 
 # a super bloated context class
-
-# To handle nested triggers, have each flush of the event system to create a new EventQueue to handle everything
 class Ability(Event):
     """
     Ability that triggers in battle
