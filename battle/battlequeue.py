@@ -10,6 +10,8 @@ class BattleQueue:
 
     Attributes:
         pq (list): Priority queue that holds all actions
+
+        battleContext (BattleContext): Current battle context. Will be set automatically at start of battle
     """
     def __init__(self):
         self.pq=[]
@@ -18,19 +20,34 @@ class BattleQueue:
         """Pushes action onto queue"""
         heappush(self.pq, action)
 
-    def executeAction(self, battleContext):
+    def executeAction(self):
         """Executes next BattleAction"""
         action=self.pq[0]
         heappop(self.pq)
-        action.execute(battleContext)
+        action.execute(self.battleContext)
 
-    def executeTurn(self, battleContext):
+    def executeTurn(self):
         """Executes all actions in the current turn"""
         if len(self.pq)==0:
             return
         
-        currentTurn=self.pq[0].turn
+        currentTurn=self.battleContext.turn
         while len(self.pq)>0 and self.pq[0].turn==currentTurn:
-            self.executeAction(battleContext)
+            self.executeAction()
 
-        battleContext.eventQueue.trigger(battleContext=battleContext, eventContext=None, trigger=Trigger.END_TURN_STATUS)
+        self.battleContext.eventSystem.trigger(eventContext=None, trigger=Trigger.END_TURN_STATUS)
+
+    # Enforces that battleContext is set before used
+    @property
+    def battleContext(self):
+        if not hasattr(self, '_battleContext') or self._battleContext is None:
+            raise AttributeError(f'{self.__class__.__name__} is missing battleContext.')
+        return self._battleContext
+    
+    @battleContext.setter
+    def battleContext(self, val):
+        self._battleContext=val
+
+    def setBattleContext(self, battleContext):
+        """Sets battle context"""
+        self.battleContext=battleContext

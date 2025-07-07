@@ -1,4 +1,4 @@
-from events.eventQueue import EventQueue
+from events.eventSystem import EventSystem
 
 class BattleContext:
     """
@@ -25,7 +25,7 @@ class BattleContext:
         self.move=None
         self.events=[]
         self.weather=None
-        self.eventQueue=EventQueue()
+        self.eventSystem=EventSystem()
         self.teams=teams
     
     def setAttacker(self, attackerLoc):

@@ -93,6 +93,8 @@ class BattleLocation:
         pokemonAtSelection (Pokemon): Pokemon at this location when action was selected
         pokemon (Pokemon): Pokemon at this location right now
 
+        battleContext (BattleContext): Current battle context. Will be set automatically at start of battle
+
     Note: pokemonAtSelection is mainly used for specific moves like Pursuit
     """
     def __init__(self, teamIdx, slotIdx, trainer, pokemon):
@@ -102,12 +104,8 @@ class BattleLocation:
         self.pokemonAtSelection=None
         self.pokemon=pokemon
 
-    def selectAction(self, battleContext):
-        """Selects action for the trainer and pokemon at this slot.
-
-        Arguments:
-            battleContext (BattleContext): Battle Context
-        """
+    def selectAction(self):
+        """Selects action for the trainer and pokemon at this slot."""
         if self.pokemon is None:
             raise Exception('Selecting action from empty slot!')
 
@@ -115,23 +113,23 @@ class BattleLocation:
         validMoves=self.pokemon.moves
         moveNames=[DropdownItem(move.name, i) for i, move in enumerate(validMoves)]
         
-        team=battleContext.teams[self.teamIdx]
+        team=self.battleContext.teams[self.teamIdx]
         swapNames=[DropdownItem(f'{trainer.name}: {pokemon.name}', (trainer, pokemon)) for trainer in team.trainers for pokemon in trainer.getBenchedPokemon()]
 
-        showDropdown(battleContext=battleContext, team=battleContext.currentTeam, text='Select a move:', values=moveNames)
-        showSwapDropdown(battleContext=battleContext, team=battleContext.currentTeam, text='', values=swapNames)
-        v=waitForSubmit(battleContext, battleContext.currentTeam)
-        hideDropdown(battleContext=battleContext, team=battleContext.currentTeam)
-        hideSwapDropdown(battleContext, battleContext.currentTeam)
+        showDropdown(battleContext=self.battleContext, team=self.battleContext.currentTeam, text='Select a move:', values=moveNames)
+        showSwapDropdown(battleContext=self.battleContext, team=self.battleContext.currentTeam, text='', values=swapNames)
+        v=waitForSubmit(self.battleContext, self.battleContext.currentTeam)
+        hideDropdown(battleContext=self.battleContext, team=self.battleContext.currentTeam)
+        hideSwapDropdown(self.battleContext, self.battleContext.currentTeam)
         
         action=None
-        if v[f'team{battleContext.currentTeam+1}DDChoice']!='':
-            move=validMoves[v[f'team{battleContext.currentTeam+1}DDChoice'].id]
-            targetsLoc=move.select(battleContext, attackerLoc=self)
-            action=MoveAction(battleContext.turn, move, self, targetsLoc)
-        if v[f'team{battleContext.currentTeam+1}DDSwapChoice']!='':
-            trainer, pokemon=v[f'team{battleContext.currentTeam+1}DDSwapChoice'].id
-            action=SwapAction(battleContext.turn, self, pokemon, trainer)
+        if v[f'team{self.battleContext.currentTeam+1}DDChoice']!='':
+            move=validMoves[v[f'team{self.battleContext.currentTeam+1}DDChoice'].id]
+            targetsLoc=move.select(self.battleContext, attackerLoc=self)
+            action=MoveAction(self.battleContext.turn, move, self, targetsLoc)
+        if v[f'team{self.battleContext.currentTeam+1}DDSwapChoice']!='':
+            trainer, pokemon=v[f'team{self.battleContext.currentTeam+1}DDSwapChoice'].id
+            action=SwapAction(self.battleContext.turn, self, pokemon, trainer)
         return action
     
     def clear(self):
@@ -145,7 +143,7 @@ class BattleLocation:
         self.pokemon=None
         self.trainer=None
     
-    def swapPokemon(self, trainer, pokemon, battleContext):
+    def swapPokemon(self, trainer, pokemon):
         """Swaps pokemon off this slot in place for a new pokemon and their trainer.
 
         Arguments:
@@ -155,11 +153,26 @@ class BattleLocation:
         assert pokemon.state==State.BENCHED
 
         if self.pokemon is None:
-            battleContext.window['combatLog'].update(f'Sending out {pokemon.name}!\n', append=True)
+            self.battleContext.window['combatLog'].update(f'Sending out {pokemon.name}!\n', append=True)
         else:
-            battleContext.window['combatLog'].update(f'Swapped {self.pokemon.name} and {pokemon.name}!\n', append=True)
+            self.battleContext.window['combatLog'].update(f'Swapped {self.pokemon.name} and {pokemon.name}!\n', append=True)
 
         self.clear()
         self.pokemon=pokemon
         self.pokemon.state=State.ACTIVE
         self.trainer=trainer
+
+    # Enforces that battleContext is set before used
+    @property
+    def battleContext(self):
+        if not hasattr(self, '_battleContext') or self._battleContext is None:
+            raise AttributeError(f'{self.__class__.__name__} is missing battleContext.')
+        return self._battleContext
+    
+    @battleContext.setter
+    def battleContext(self, val):
+        self._battleContext=val
+
+    def setBattleContext(self, battleContext):
+        """Sets battle context"""
+        self.battleContext=battleContext
