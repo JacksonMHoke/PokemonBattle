@@ -1,7 +1,7 @@
 from behaviors.behaviors import SelectionBehavior
 from gui import DropdownItem, showDropdown, waitForSubmit, hideDropdown
 from random import random
-from battle.battleaction import *
+from battle.battleAction import *
 
 class SelectSingleTarget(SelectionBehavior):
     """Implements selection behavior for single target selection.

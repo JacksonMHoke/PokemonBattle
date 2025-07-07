@@ -3,7 +3,7 @@ from behaviors.selectionBehaviors import *
 from behaviors.executionBehaviors import *
 from events.statuses import *
 from events.weathers import *
-from battle.battleaction import *
+from battle.battleAction import *
 from decorators import *
 
 class Tackle(Move):

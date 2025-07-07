@@ -1,7 +1,7 @@
 from entities.trainer import *
 from entities.pokemon import *
 from moves.move import *
-from battle.battlequeue import *
+from battle.battleQueue import *
 from contexts.battleContext import *
 from contexts.eventContext import *
 from events.eventQueue import scheduleAllEvents
@@ -23,6 +23,7 @@ class Battle:
         self.battleContext=BattleContext(teams=teams)
         for i in range(len(teams)):
             self.battleContext.teams[i].initializeField(i)
+            self.battleContext.teams[i].bindRelationships()
 
     def runBattle(self):
         """Runs the battle."""

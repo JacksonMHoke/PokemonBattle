@@ -1,5 +1,5 @@
 from entities.pokemon import *
-from battle.battleaction import *
+from battle.battleAction import *
 from gui import *
 class Trainer:
     """Represents a pokemon trainer
@@ -10,6 +10,7 @@ class Trainer:
         bag (Bag): Trainer's bag(TODO: implement bag class)
 
         battleContext (BattleContext): Current battle context. Will be set automatically at start of battle
+        team (Team): Team. Will be set automatically at start of battle
     """
     def __init__(self, name, party, bag):
         self.name=name
@@ -40,6 +41,11 @@ class Trainer:
         """Returns if trainer is whited out."""
         return len(self._getAlivePokemon())==0
     
+    def bindRelationships(self, team):
+        self.team=team
+        for mon in self.party:
+            mon.bindRelationships(self)
+    
     # Enforces that battleContext is set before used
     @property
     def battleContext(self):
@@ -56,3 +62,13 @@ class Trainer:
         self.battleContext=battleContext
         for mon in self.party:
             mon.setBattleContext(battleContext)
+
+    @property
+    def team(self):
+        if not hasattr(self, '_team') or self._team is None:
+            raise AttributeError(f'{self.__class__.__name__} is missing team.')
+        return self._team
+        
+    @team.setter
+    def team(self, val):
+        self._team=val

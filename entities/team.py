@@ -2,7 +2,7 @@ from entities.trainer import *
 from globals import *
 from gui import *
 from tabulate import tabulate
-from battle.battleaction import BattleLocation
+from battle.battleAction import BattleLocation
 class Team:
     """Represents team in a battle.
 
@@ -33,6 +33,11 @@ class Team:
         self.teamIdx=teamIdx
         for i in range(self.fieldSize):
             self.slots.append(BattleLocation(teamIdx, i))
+
+    def bindRelationships(self):
+        """Stores the team in each trainer and each trainer in each pokemon, binding the relationships between them."""
+        for trainer in self.trainers:
+            trainer.bindRelationships(self)
 
     def _getAliveTrainers(self):
         return [trainer for trainer in self.trainers if not trainer.isWhiteOut()]

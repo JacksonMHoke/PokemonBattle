@@ -61,6 +61,7 @@ class Pokemon(ABC):
         typing (list): List of types
 
         battleContext (BattleContext): Current battle context. Will be set automatically at start of battle
+        trainer (Trainer): Owner. Will be set automatically at start of battle
 
     Note: Pokemon is an abstract class and should not be instantiated. Typing is defined in subclasses.
     """
@@ -82,7 +83,7 @@ class Pokemon(ABC):
 
     def heal(self, amount):
         """Heal"""
-        self.stats.currentHP=min(self.stats.HP, amount+self.stats.currentHP)
+        self.stats.currentHP=min(self.stats.effectiveMaxHp, amount+self.stats.currentHP)
         self.battleContext.window['combatLog'].update(f'{self.name} healed to {self.stats.currentHP} HP!\n', append=True)
 
     def takeDamage(self, dmg):
@@ -94,9 +95,8 @@ class Pokemon(ABC):
             self.faint()
             self.battleContext.window['combatLog'].update(f'{self.name} fainted!\n', append=True)
 
-    def buffStatMult(self, stat, amount):
-        self.battleContext.window['combatLog'].update(f'{self.name}\'s {stat} was buffed by {amount} multiplier!\n', append=True)
-        self.stats.addMult(stat, amount)
+    def bindRelationships(self, trainer):
+        self.trainer=trainer
 
     # Enforces that battleContext is set before used
     @property
@@ -113,6 +113,16 @@ class Pokemon(ABC):
         """Sets battle context"""
         self.battleContext=battleContext
         self.stats.setBattleContext(battleContext)
+
+    @property
+    def trainer(self):
+        if not hasattr(self, '_trainer') or self._trainer is None:
+            raise AttributeError(f'{self.__class__.__name__} is missing trainer.')
+        return self._trainer
+        
+    @trainer.setter
+    def trainer(self, val):
+        self._trainer=val
 
 class Pikachu(Pokemon):
     def __init__(self, name, level, stats, moves, item=None, ability=None):
