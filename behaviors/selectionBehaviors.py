@@ -11,7 +11,7 @@ class SelectSingleTarget(SelectionBehavior):
 
     Note: This class is used as a namespace for a static method `select` and is not intended to be instantiated
     """
-    def select(battleContext, **kwargs):
+    def select(battleContext, eventContext, **kwargs):
         """Returns list of a single target that is selected from user input.
 
         Arguments:
@@ -57,7 +57,7 @@ class SelectSelf(SelectionBehavior):
 
     Note: This class is used as a namespace for a static method `select` and should not be instantiated.
     """
-    def select(battleContext, **kwargs):
+    def select(battleContext, eventContext, **kwargs):
         """Selects self and returns loc
         
         Arguments:
@@ -81,5 +81,5 @@ class SelectNoTarget(SelectionBehavior):
     Returns:
             list: Empty list
     """
-    def select(battleContext, **kwargs):
+    def select(battleContext, eventContext, **kwargs):
         return []

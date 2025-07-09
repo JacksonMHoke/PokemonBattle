@@ -31,11 +31,11 @@ class Trainer:
         if len(validPokemon)==0:
             return None
 
-        showDropdown(battleContext=self.battleContext, team=self.battleContext.currentTeam, text='Select a pokemon to send out:', values=pokemonNames)
-        v=waitForSubmit(self.battleContext, self.battleContext.currentTeam)
-        hideDropdown(battleContext=self.battleContext, team=self.battleContext.currentTeam)
+        showDropdown(battleContext=self.battleContext, team=self.team.teamIdx, text='Select a pokemon to send out:', values=pokemonNames)
+        v=waitForSubmit(self.battleContext, self.team.teamIdx)
+        hideDropdown(battleContext=self.battleContext, team=self.team.teamIdx)
 
-        return validPokemon[v[f'team{self.battleContext.currentTeam+1}DDChoice'].id]
+        return validPokemon[v[f'team{self.team.teamIdx}DDChoice'].id]
 
     def isWhiteOut(self):
         """Returns if trainer is whited out."""

@@ -4,7 +4,6 @@ from moves.move import *
 from battle.battleQueue import *
 from contexts.battleContext import *
 from contexts.eventContext import *
-from events.eventQueue import scheduleAllEvents
 from gui import *
 import FreeSimpleGUI as sg
 from tabulate import tabulate
@@ -28,6 +27,8 @@ class Battle:
     def runBattle(self):
         """Runs the battle."""
         queue=BattleQueue()
+        self.battleContext.attachItems()
+        self.battleContext.attachAbilities()
         self.battleContext.turn=1
         
         self.battleContext.window = sg.Window('Battle Window', getLayout(self.battleContext), size=(800, 1080), resizable=True, finalize=True, return_keyboard_events=True, element_justification='center')
@@ -43,10 +44,8 @@ class Battle:
                         break
                 return remainingTeams[0]
             
-            scheduleAllEvents(self.battleContext)
-            
             if self.battleContext.turn==0:
-                self.battleContext.eventQueue.trigger(battleContext=self.battleContext, eventContext=EventContext(), trigger=Trigger.START)
+                self.battleContext.eventSystem.trigger(eventContext=EventContext(), trigger=Trigger.START)
             
             e, v = self.battleContext.window.read(timeout=50)
             if e == sg.WINDOW_CLOSED or e == "Exit":
@@ -54,14 +53,14 @@ class Battle:
             
             # if no active pokemon, send out new pokemon
             for team in self.battleContext.teams:
-                team.populateEmptySlots(self.battleContext)
+                team.populateEmptySlots()
 
             self.battleContext.window['combatLog'].update(f'-------------Turn {self.battleContext.turn}-------------\n', append=True)
             refreshWindow(self.battleContext)
 
             # choose moves                                 TODO: allow for other options like run, bag, etc
             for team in self.battleContext.teams:
-                actions=team.selectActions(self.battleContext)
+                actions=team.selectActions()
                 for action in actions:
                     queue.push(action)
                 

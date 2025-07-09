@@ -116,19 +116,19 @@ class BattleLocation:
         team=self.battleContext.teams[self.teamIdx]
         swapNames=[DropdownItem(f'{trainer.name}: {pokemon.name}', (trainer, pokemon)) for trainer in team.trainers for pokemon in trainer.getBenchedPokemon()]
 
-        showDropdown(battleContext=self.battleContext, team=self.battleContext.currentTeam, text='Select a move:', values=moveNames)
-        showSwapDropdown(battleContext=self.battleContext, team=self.battleContext.currentTeam, text='', values=swapNames)
-        v=waitForSubmit(self.battleContext, self.battleContext.currentTeam)
-        hideDropdown(battleContext=self.battleContext, team=self.battleContext.currentTeam)
-        hideSwapDropdown(self.battleContext, self.battleContext.currentTeam)
+        showDropdown(battleContext=self.battleContext, team=self.teamIdx, text='Select a move:', values=moveNames)
+        showSwapDropdown(battleContext=self.battleContext, team=self.teamIdx, text='', values=swapNames)
+        v=waitForSubmit(self.battleContext, self.teamIdx)
+        hideDropdown(battleContext=self.battleContext, team=self.teamIdx)
+        hideSwapDropdown(self.battleContext, self.teamIdx)
         
         action=None
-        if v[f'team{self.battleContext.currentTeam+1}DDChoice']!='':
-            move=validMoves[v[f'team{self.battleContext.currentTeam+1}DDChoice'].id]
+        if v[f'team{self.teamIdx+1}DDChoice']!='':
+            move=validMoves[v[f'team{self.teamIdx+1}DDChoice'].id]
             targetsLoc=move.select(self.battleContext, attackerLoc=self)
             action=MoveAction(self.battleContext.turn, move, self, targetsLoc)
-        if v[f'team{self.battleContext.currentTeam+1}DDSwapChoice']!='':
-            trainer, pokemon=v[f'team{self.battleContext.currentTeam+1}DDSwapChoice'].id
+        if v[f'team{self.teamIdx+1}DDSwapChoice']!='':
+            trainer, pokemon=v[f'team{self.teamIdx+1}DDSwapChoice'].id
             action=SwapAction(self.battleContext.turn, self, pokemon, trainer)
         return action
     

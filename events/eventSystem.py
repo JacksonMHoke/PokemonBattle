@@ -17,7 +17,7 @@ class EventSystem:
     def __init__(self):
         self.scheduledEvents=defaultdict(list)
         self.permanentEvents=defaultdict(list)
-
+        
     def addPermanentEvent(self, event, triggers=None):
         """Adds a permanent event to the EventSystem that will be fired when the triggers are activated.
         If no triggers are passed in, the event's default triggers will be used.

@@ -49,3 +49,17 @@ class BattleContext:
         self.move=move
         self.setAttacker(attackerLoc)
         self.setDefenders(defenderLocs)
+
+    def attachItems(self):
+        for team in self.teams:
+            for trainer in team.trainers:
+                for mon in trainer.party:
+                    if mon.item is not None:
+                        mon.item.attach(mon)
+
+    def attachAbilities(self):
+        for team in self.teams:
+            for trainer in team.trainers:
+                for mon in trainer.party:
+                    if mon.ability is not None:
+                        mon.ability.attach(mon)
