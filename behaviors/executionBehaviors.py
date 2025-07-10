@@ -1,7 +1,7 @@
 from behaviors.behaviors import ExecutionBehavior
 from random import random
-from battle.battleaction import *
-from eventQueue.eventQueue import scheduleEventAllTriggers
+from battle.battleAction import *
+from globals import *
 from contexts.battleContext import BattleContext
 
 '''
@@ -40,7 +40,7 @@ class AttackSingleTarget(ExecutionBehavior):
 
         # calc mults
         stab=STAB if move.type in attacker.typing else 1
-        attackMult=attacker.stats.ATT/defender.stats.DEF if move.isPhys else attacker.stats.SPA/defender.stats.SPD
+        attackMult=attacker.stats.effectiveAtt/defender.stats.effectiveDef if move.isPhys else attacker.stats.effectiveSpa/defender.stats.effectiveSpd
         eff=1
         for t in defender.typing:
             eff*=getEffectiveness(attackingType=move.type, defendingType=t)
@@ -65,7 +65,7 @@ class AttackSingleTarget(ExecutionBehavior):
             battleContext.window['combatLog'].update(f'A critical hit!\n', append=True)
             dmg*=CRIT
 
-        defender.takeDamage(dmg=dmg, battleContext=battleContext)
+        defender.takeDamage(dmg=dmg)
 
 '''
 Buffing Behavior
@@ -86,8 +86,8 @@ class BuffSingleTarget(ExecutionBehavior):
         Arguments:
             battleContext (battleContext): The battle battleContext.
         Keyword Arguments:
-            buffMult (float): Multiplier to add to stat
-            statToBuff (str): String representation for stat (ex: 'HP' or 'ATT')
+            buff (StatBuff): Buff to apply to target
+            stat (str): Stat to apply the buff to
         
         Raises:
             AssertionError: If `defenderLocs` does not contain exactly 1 target.
@@ -103,7 +103,7 @@ class BuffSingleTarget(ExecutionBehavior):
         assert(len(defenderLocs)==1 and len(defenders)==1)
 
         defender=defenders[0]
-        defender.buffStatMult(stat=kwargs['statToBuff'], amount=kwargs['buffMult'], battleContext=battleContext)
+        defender.stats.addBuff(buff=kwargs['buff'], stat=kwargs['stat'])
 
 class HealSingleTarget(ExecutionBehavior):
     """Implements execution behavior for a single target heal
@@ -119,6 +119,9 @@ class HealSingleTarget(ExecutionBehavior):
 
         Arguments:
             battleContext (battleContext): The battle battleContext.
+
+        Keyword Arguments:
+            healAmount (int): Amount to heal target
         
         Raises:
             AssertionError: If `defenderLocs` does not contain exactly 1 target.
@@ -134,131 +137,131 @@ class HealSingleTarget(ExecutionBehavior):
         assert(len(defenderLocs)==1 and len(defenders)==1)
 
         defender=defenders[0]
-        defender.heal(move.healPower, battleContext)
+        defender.heal(kwargs['healAmount'])
 
 '''
 Misc Behavior
 '''
-class StealItem(ExecutionBehavior):
-    """Implements execution behavior for stealing defender's item.
+# class StealItem(ExecutionBehavior):
+#     """Implements execution behavior for stealing defender's item.
 
-    This class provides logic and implementation for executing a move that steals the defender's item
-    """
-    def do(battleContext, eventContext, **kwargs):
-        """Steals target's item
+#     This class provides logic and implementation for executing a move that steals the defender's item
+#     """
+#     def do(battleContext, eventContext, **kwargs):
+#         """Steals target's item
         
-        Arguments:
-            battleContext (battleContext): The battle battleContext
-        """
-        defenderLocs=battleContext.defenderLocs
-        attackerLoc=battleContext.attackerLoc
+#         Arguments:
+#             battleContext (battleContext): The battle battleContext
+#         """
+#         defenderLocs=battleContext.defenderLocs
+#         attackerLoc=battleContext.attackerLoc
 
-        attacker=battleContext.attacker
-        defenders=battleContext.defenders
+#         attacker=battleContext.attacker
+#         defenders=battleContext.defenders
 
-        move=battleContext.move
+#         move=battleContext.move
 
-        assert(len(defenderLocs)==1 and len(defenders)==1)
+#         assert(len(defenderLocs)==1 and len(defenders)==1)
 
-        defender=defenders[0]
-        if attacker.item is not None or defender.item is None:
-            return
-        battleContext.window['combatLog'].update(f'{attacker.name} has stolen {defender.name}\'s {defender.item.name} item!\n', append=True)
+#         defender=defenders[0]
+#         if attacker.item is not None or defender.item is None:
+#             return
+#         battleContext.window['combatLog'].update(f'{attacker.name} has stolen {defender.name}\'s {defender.item.name} item!\n', append=True)
 
-        eventContext.item=defender.item
-        battleContext.eventQueue.trigger(battleContext=battleContext, eventContext=eventContext, trigger=Trigger.UNEQUIP)
-
-
-        attacker.item=defender.item
-        attacker.item.owner=attacker
-        defender.item=None
-        battleContext.eventQueue.trigger(battleContext=battleContext, eventContext=eventContext, trigger=Trigger.EQUIP)
+#         eventContext.item=defender.item
+#         battleContext.eventQueue.trigger(battleContext=battleContext, eventContext=eventContext, trigger=Trigger.UNEQUIP)
 
 
+#         attacker.item=defender.item
+#         attacker.item.owner=attacker
+#         defender.item=None
+#         battleContext.eventQueue.trigger(battleContext=battleContext, eventContext=eventContext, trigger=Trigger.EQUIP)
 
-class SetWeather(ExecutionBehavior):
-    """Implements execution behavior for setting weather effect.
 
-    This class provides logic and implementation for executing a move that sets or overrides a weather effect on the field.
-    Weather effect set is passed in through battleContext object in battleContext.setWeather
-    """
-    def do(battleContext, eventContext, **kwargs):
-        """Executes set weather
 
-        Arguments:
-            battleContext (battleContext): The battle battleContext
-        Keyword Arguements:
-            weatherToSet (Weather): Weather effect to set
-        """
-        weatherToSet=kwargs['weatherToSet']
-        if battleContext.weather is not None and battleContext.weather.name!=weatherToSet.name:
-            battleContext.window['combatLog'].update(f'{battleContext.weather.name} was replaced with {weatherToSet.name}\n', append=True)
-        elif battleContext.weather is not None:
-            battleContext.window['combatLog'].update(f'{battleContext.weather.name} is already active!\n', append=True)
-            return
-        else:
-            battleContext.window['combatLog'].update(f'{weatherToSet.name} is set!\n', append=True)
-        battleContext.weather=weatherToSet
+# class SetWeather(ExecutionBehavior):
+#     """Implements execution behavior for setting weather effect.
 
-class StatusSingleTarget(ExecutionBehavior):
-    """Implements execution behavior for a single target status
+#     This class provides logic and implementation for executing a move that sets or overrides a weather effect on the field.
+#     Weather effect set is passed in through battleContext object in battleContext.setWeather
+#     """
+#     def do(battleContext, eventContext, **kwargs):
+#         """Executes set weather
 
-    This class implements statusing a single pokemon.
+#         Arguments:
+#             battleContext (battleContext): The battle battleContext
+#         Keyword Arguements:
+#             weatherToSet (Weather): Weather effect to set
+#         """
+#         weatherToSet=kwargs['weatherToSet']
+#         if battleContext.weather is not None and battleContext.weather.name!=weatherToSet.name:
+#             battleContext.window['combatLog'].update(f'{battleContext.weather.name} was replaced with {weatherToSet.name}\n', append=True)
+#         elif battleContext.weather is not None:
+#             battleContext.window['combatLog'].update(f'{battleContext.weather.name} is already active!\n', append=True)
+#             return
+#         else:
+#             battleContext.window['combatLog'].update(f'{weatherToSet.name} is set!\n', append=True)
+#         battleContext.weather=weatherToSet
 
-    Note:
-        This class is used as a namespace for a static method `do` and is not intended to be instantiated
-    """
-    def do(battleContext, eventContext, **kwargs):
-        """Statuses target with a status
+# class StatusSingleTarget(ExecutionBehavior):
+#     """Implements execution behavior for a single target status
 
-        Arguments:
-            battleContext (battleContext): The battle battleContext.
-        Keyword Arguments:
-            inflictedStatus (Status): Status being inflicted onto defender
+#     This class implements statusing a single pokemon.
+
+#     Note:
+#         This class is used as a namespace for a static method `do` and is not intended to be instantiated
+#     """
+#     def do(battleContext, eventContext, **kwargs):
+#         """Statuses target with a status
+
+#         Arguments:
+#             battleContext (battleContext): The battle battleContext.
+#         Keyword Arguments:
+#             inflictedStatus (Status): Status being inflicted onto defender
         
-        Raises:
-            AssertionError: If `defenderLocs` does not contain exactly 1 target.
-        """
-        defenderLocs=battleContext.defenderLocs
-        attackerLoc=battleContext.attackerLoc
+#         Raises:
+#             AssertionError: If `defenderLocs` does not contain exactly 1 target.
+#         """
+#         defenderLocs=battleContext.defenderLocs
+#         attackerLoc=battleContext.attackerLoc
 
-        attacker=battleContext.attacker
-        defenders=battleContext.defenders
+#         attacker=battleContext.attacker
+#         defenders=battleContext.defenders
 
-        move=battleContext.move
+#         move=battleContext.move
 
-        assert(len(defenderLocs)==1 and len(defenders)==1)
+#         assert(len(defenderLocs)==1 and len(defenders)==1)
 
-        defender=defenders[0]
-        if defender.status is not None:
-            return
-        defender.status=kwargs['inflictedStatus']
-        kwargs['inflictedStatus'].owner=defender
-        scheduleEventAllTriggers(battleContext=battleContext, event=kwargs['inflictedStatus'])
-        battleContext.eventQueue.trigger(battleContext=battleContext, eventContext=eventContext, trigger=Trigger.AFTER_STATUS)
+#         defender=defenders[0]
+#         if defender.status is not None:
+#             return
+#         defender.status=kwargs['inflictedStatus']
+#         kwargs['inflictedStatus'].owner=defender
+#         scheduleEventAllTriggers(battleContext=battleContext, event=kwargs['inflictedStatus'])
+#         battleContext.eventQueue.trigger(battleContext=battleContext, eventContext=eventContext, trigger=Trigger.AFTER_STATUS)
 
-class StatusSelf(ExecutionBehavior):
-    """Implements execution behavior for statusing self
+# class StatusSelf(ExecutionBehavior):
+#     """Implements execution behavior for statusing self
     
-    This class implements a statusing self behavior.
+#     This class implements a statusing self behavior.
     
-    Arguments:
-        battleContext (battleContext): The battle battleContext
-    Keyword Arguments:
-        inflictedStatus (Status): Status to inflict on self
-    """
-    def do(battleContext, eventContext, **kwargs):
-        """
-        Statuses self
+#     Arguments:
+#         battleContext (battleContext): The battle battleContext
+#     Keyword Arguments:
+#         inflictedStatus (Status): Status to inflict on self
+#     """
+#     def do(battleContext, eventContext, **kwargs):
+#         """
+#         Statuses self
 
-        Arguments:
-            battleContext (battleContext): Battle battleContext
-        Keyword Arguments:
-            inflictedStatus (Status): Status to inflict
-        """
-        if battleContext.attacker.status is not None:
-            return
-        battleContext.attacker.status=kwargs['inflictedStatus']
-        kwargs['inflictedStatus'].owner=battleContext.attacker
-        scheduleEventAllTriggers(battleContext=battleContext, event=kwargs['inflictedStatus'])
-        battleContext.eventQueue.trigger(battleContext=battleContext, eventContext=eventContext, trigger=Trigger.AFTER_STATUS)
+#         Arguments:
+#             battleContext (battleContext): Battle battleContext
+#         Keyword Arguments:
+#             inflictedStatus (Status): Status to inflict
+#         """
+#         if battleContext.attacker.status is not None:
+#             return
+#         battleContext.attacker.status=kwargs['inflictedStatus']
+#         kwargs['inflictedStatus'].owner=battleContext.attacker
+#         scheduleEventAllTriggers(battleContext=battleContext, event=kwargs['inflictedStatus'])
+#         battleContext.eventQueue.trigger(battleContext=battleContext, eventContext=eventContext, trigger=Trigger.AFTER_STATUS)

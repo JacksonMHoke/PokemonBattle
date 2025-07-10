@@ -3,8 +3,9 @@ from behaviors.selectionBehaviors import *
 from behaviors.executionBehaviors import *
 from events.statuses import *
 from events.weathers import *
-from battle.battleaction import *
+from battle.battleAction import *
 from decorators import *
+from stats.statBuff import *
 
 class Tackle(Move):
     """Tackle move
@@ -32,7 +33,7 @@ class Tackle(Move):
     def enact(self, battleContext, eventContext):
         AttackSingleTarget.do(battleContext=battleContext, eventContext=eventContext)
     def select(self, battleContext, **kwargs):
-        return SelectSingleTarget.select(battleContext=battleContext, **kwargs)
+        return SelectSingleTarget.select(battleContext=battleContext, eventContext=EventContext(), **kwargs)
 
 class Earthquake(Move):
     """Earthquake move
@@ -60,140 +61,140 @@ class Earthquake(Move):
     def enact(self, battleContext, eventContext):
         AttackSingleTarget.do(battleContext=battleContext, eventContext=eventContext)
     def select(self, battleContext, **kwargs):
-        return SelectSingleTarget.select(battleContext=battleContext, **kwargs)
+        return SelectSingleTarget.select(battleContext=battleContext, eventContext=EventContext(), **kwargs)
 
-class Thunder(Move):
-    """Thunder move
+# class Thunder(Move):
+#     """Thunder move
     
-    This class encompasses all information, behavior, and targeting for the move, Thunder
+#     This class encompasses all information, behavior, and targeting for the move, Thunder
 
-    Attributes:
-        power (int): Power of move
-        accuracy (float): Accuracy of move between 0 and 1
-        critChance (float): Critical hit chance of move between 0 and 1
-        isPhys (bool): Determines whether move is physical or not
-        type (Type): Type of move
-        priority (Prio): Priority of move
-        name (str): Name of move
-    """
-    def __init__(self):
-        self.power=120
-        self.accuracy=0.7
-        self.critChance=CRITCHANCE
-        self.isPhys=False
-        self.type=Type.ELECTRIC
-        self.priority=Prio.MOVE
-        self.paraChance=0.3
-        self.name=self.__class__.__name__
-    @moveDecorator
-    def enact(self, battleContext, eventContext):
-        AttackSingleTarget.do(battleContext)
-        if battleContext.missedMove==False and random()<self.paraChance:
-            StatusSingleTarget.do(battleContext=battleContext, eventContext=eventContext, inflictedStatus=Paralyzed())
-    def select(self, battleContext, **kwargs):
-        return SelectSingleTarget.select(battleContext=battleContext, **kwargs)
+#     Attributes:
+#         power (int): Power of move
+#         accuracy (float): Accuracy of move between 0 and 1
+#         critChance (float): Critical hit chance of move between 0 and 1
+#         isPhys (bool): Determines whether move is physical or not
+#         type (Type): Type of move
+#         priority (Prio): Priority of move
+#         name (str): Name of move
+#     """
+#     def __init__(self):
+#         self.power=120
+#         self.accuracy=0.7
+#         self.critChance=CRITCHANCE
+#         self.isPhys=False
+#         self.type=Type.ELECTRIC
+#         self.priority=Prio.MOVE
+#         self.paraChance=0.3
+#         self.name=self.__class__.__name__
+#     @moveDecorator
+#     def enact(self, battleContext, eventContext):
+#         AttackSingleTarget.do(battleContext)
+#         if battleContext.missedMove==False and random()<self.paraChance:
+#             StatusSingleTarget.do(battleContext=battleContext, eventContext=eventContext, inflictedStatus=Paralyzed())
+#     def select(self, battleContext, **kwargs):
+#         return SelectSingleTarget.select(battleContext=battleContext, **kwargs)
     
-class Burn(Move):
-    """Burn move
+# class Burn(Move):
+#     """Burn move
 
-    Burns target
+#     Burns target
     
-    Attributes:
-        type (Type): Type of move
-        priority (Prio): Priority of move
-        name (str): Name of move
-    """
-    def __init__(self):
-        self.name=self.__class__.__name__
-        self.priority=Prio.MOVE
-        self.type=Type.FIRE
-    @moveDecorator
-    def enact(self, battleContext, eventContext):
-        StatusSingleTarget.do(battleContext=battleContext, eventContext=eventContext, inflictedStatus=Burned())
-    def select(self, battleContext, **kwargs):
-        return SelectSingleTarget.select(battleContext=battleContext, **kwargs)
+#     Attributes:
+#         type (Type): Type of move
+#         priority (Prio): Priority of move
+#         name (str): Name of move
+#     """
+#     def __init__(self):
+#         self.name=self.__class__.__name__
+#         self.priority=Prio.MOVE
+#         self.type=Type.FIRE
+#     @moveDecorator
+#     def enact(self, battleContext, eventContext):
+#         StatusSingleTarget.do(battleContext=battleContext, eventContext=eventContext, inflictedStatus=Burned())
+#     def select(self, battleContext, **kwargs):
+#         return SelectSingleTarget.select(battleContext=battleContext, **kwargs)
     
-class Freeze(Move):
-    """Freeze move
+# class Freeze(Move):
+#     """Freeze move
 
-    Freezes target
+#     Freezes target
 
-    Attributes:
-        type (Type): Type of move
-        priority (Prio): Priority of move
-        name (str): Name of move
-    """
-    def __init__(self):
-        self.name=self.__class__.__name__
-        self.priority=Prio.MOVE
-        self.type=Type.ICE
-    @moveDecorator
-    def enact(self, battleContext, eventContext):
-        StatusSingleTarget.do(battleContext=battleContext, eventContext=eventContext, inflictedStatus=Frozen())
-    def select(self, battleContext, **kwargs):
-        return SelectSingleTarget.select(battleContext=battleContext, **kwargs)
+#     Attributes:
+#         type (Type): Type of move
+#         priority (Prio): Priority of move
+#         name (str): Name of move
+#     """
+#     def __init__(self):
+#         self.name=self.__class__.__name__
+#         self.priority=Prio.MOVE
+#         self.type=Type.ICE
+#     @moveDecorator
+#     def enact(self, battleContext, eventContext):
+#         StatusSingleTarget.do(battleContext=battleContext, eventContext=eventContext, inflictedStatus=Frozen())
+#     def select(self, battleContext, **kwargs):
+#         return SelectSingleTarget.select(battleContext=battleContext, **kwargs)
     
-class ThunderWave(Move):
-    """Thunder Wave move
+# class ThunderWave(Move):
+#     """Thunder Wave move
 
-    Paralyzes target
+#     Paralyzes target
 
-    Attributes:
-        type (Type): Type of move
-        priority (Prio): Priority of move
-        name (str): Name of move
-    """
-    def __init__(self):
-        self.name=self.__class__.__name__
-        self.priority=Prio.MOVE
-        self.type=Type.ELECTRIC
-    @moveDecorator
-    def enact(self, battleContext, eventContext):
-        StatusSingleTarget.do(battleContext=battleContext, eventContext=eventContext, inflictedStatus=Paralyzed())
-    def select(self, battleContext, **kwargs):
-        return SelectSingleTarget.select(battleContext=battleContext, **kwargs)
+#     Attributes:
+#         type (Type): Type of move
+#         priority (Prio): Priority of move
+#         name (str): Name of move
+#     """
+#     def __init__(self):
+#         self.name=self.__class__.__name__
+#         self.priority=Prio.MOVE
+#         self.type=Type.ELECTRIC
+#     @moveDecorator
+#     def enact(self, battleContext, eventContext):
+#         StatusSingleTarget.do(battleContext=battleContext, eventContext=eventContext, inflictedStatus=Paralyzed())
+#     def select(self, battleContext, **kwargs):
+#         return SelectSingleTarget.select(battleContext=battleContext, **kwargs)
     
-class Rest(Move):
-    """Rest move
+# class Rest(Move):
+#     """Rest move
     
-    Sleep and restore health to full.
+#     Sleep and restore health to full.
     
-    Attributes:
-        type (Type): Type of move
-        priority (Prio): Priority of move
-        name (str): Name of move
-    """
-    def __init__(self):
-        self.name=self.__class__.__name__
-        self.priority=Prio.MOVE
-        self.type=Type.NORMAL
-        self.healPower=9999
-    @moveDecorator
-    def enact(self, battleContext, eventContext):
-        StatusSelf.do(battleContext=battleContext, eventContext=eventContext, inflictedStatus=Asleep())
-        HealSingleTarget.do(battleContext=battleContext, eventContext=eventContext)
-    def select(self, battleContext, **kwargs):
-        return SelectSelf.select(battleContext=battleContext, **kwargs)
+#     Attributes:
+#         type (Type): Type of move
+#         priority (Prio): Priority of move
+#         name (str): Name of move
+#     """
+#     def __init__(self):
+#         self.name=self.__class__.__name__
+#         self.priority=Prio.MOVE
+#         self.type=Type.NORMAL
+#         self.healPower=9999
+#     @moveDecorator
+#     def enact(self, battleContext, eventContext):
+#         StatusSelf.do(battleContext=battleContext, eventContext=eventContext, inflictedStatus=Asleep())
+#         HealSingleTarget.do(battleContext=battleContext, eventContext=eventContext)
+#     def select(self, battleContext, **kwargs):
+#         return SelectSelf.select(battleContext=battleContext, **kwargs)
     
-class RainDance(Move):
-    """Rain Dance move
+# class RainDance(Move):
+#     """Rain Dance move
 
-    Sets rain for 4 turns
+#     Sets rain for 4 turns
 
-    Attributes:
-        type (Type): Type of move
-        priority (Priority): Priority of move
-        name (str): Name of move
-    """
-    def __init__(self):
-        self.name=self.__class__.__name__
-        self.priority=Prio.MOVE
-        self.type=Type.WATER
-    @moveDecorator
-    def enact(self, battleContext, eventContext):
-        SetWeather.do(battleContext=battleContext, eventContext=eventContext, weatherToSet=Rain())
-    def select(self, battleContext, **kwargs):
-        return SelectNoTarget.select(battleContext=battleContext, **kwargs)
+#     Attributes:
+#         type (Type): Type of move
+#         priority (Priority): Priority of move
+#         name (str): Name of move
+#     """
+#     def __init__(self):
+#         self.name=self.__class__.__name__
+#         self.priority=Prio.MOVE
+#         self.type=Type.WATER
+#     @moveDecorator
+#     def enact(self, battleContext, eventContext):
+#         SetWeather.do(battleContext=battleContext, eventContext=eventContext, weatherToSet=Rain())
+#     def select(self, battleContext, **kwargs):
+#         return SelectNoTarget.select(battleContext=battleContext, **kwargs)
 
 class WaterLance(Move):
     """Water Lance move
@@ -224,7 +225,7 @@ class WaterLance(Move):
         for i in range(self.numHits):
             AttackSingleTarget.do(battleContext=battleContext, eventContext=eventContext)
     def select(self, battleContext, **kwargs):
-        return SelectSingleTarget.select(battleContext=battleContext, **kwargs)
+        return SelectSingleTarget.select(battleContext=battleContext, eventContext=EventContext(), **kwargs)
     
 class SwordsDance(Move):
     """Swords Dance
@@ -242,90 +243,113 @@ class SwordsDance(Move):
         self.type=Type.NORMAL
         self.priority=Prio.MOVE
         self.name=self.__class__.__name__
-        self.statToBuff='ATT'
+        self.statToBuff='Att'
         self.buffMult=1.0
     @moveDecorator
     def enact(self, battleContext, eventContext):
-        BuffSingleTarget.do(battleContext=battleContext, eventContext=eventContext, statToBuff=self.statToBuff, buffMult=self.buffMult)
+        buff=StatBuff(name='Swords Dance', flat=0, mult=self.buffMult)
+        BuffSingleTarget.do(battleContext=battleContext, eventContext=eventContext, buff=buff, stat=self.statToBuff)
     def select(self, battleContext, **kwargs):
-        return SelectSelf.select(battleContext=battleContext, **kwargs)
+        return SelectSelf.select(battleContext=battleContext, eventContext=EventContext(), **kwargs)
     
-class FireBall(Move):
-    """Fire Ball
+class Recover(Move):
+    """Recover
 
-    Deals damage to a single target, 10% chance to burn
-
+    Heals 50 Hp.
+    
     Attributes:
-        power (int): Power of move
-        accuracy (float): Accuracy of move between 0 and 1
-        critChance (float): Critical hit chance of move between 0 and 1
-        isPhys (bool): Determines whether move is physical or not
         type (Type): Type of move
         priority (Prio): Priority of move
         name (str): Name of move
+        healAmount (int): Amount to heal
     """
     def __init__(self):
-        self.power=120
-        self.accuracy=1
-        self.critChance=CRITCHANCE
-        self.isPhys=False
-        self.type=Type.FIRE
+        self.type=Type.NORMAL
         self.priority=Prio.MOVE
-        self.burnChance=0.1
         self.name=self.__class__.__name__
+        self.healAmount=50
     @moveDecorator
     def enact(self, battleContext, eventContext):
-        AttackSingleTarget.do(battleContext=battleContext, eventContext=eventContext)
-        if battleContext.missedMove==False and random()<self.burnChance:
-            StatusSingleTarget.do(battleContext=battleContext, eventContext=eventContext, inflictedStatus=Burned())
+        HealSingleTarget.do(battleContext=battleContext, eventContext=eventContext, healAmount=self.healAmount)
     def select(self, battleContext, **kwargs):
-        return SelectSingleTarget.select(battleContext=battleContext, **kwargs)
+        return SelectSelf.select(battleContext=battleContext, eventContext=EventContext(), **kwargs)
     
-class FireSwipe(Move):
-    """Fire Swipe
+# class FireBall(Move):
+#     """Fire Ball
 
-    Deals damage to target and steals target's item
+#     Deals damage to a single target, 10% chance to burn
+
+#     Attributes:
+#         power (int): Power of move
+#         accuracy (float): Accuracy of move between 0 and 1
+#         critChance (float): Critical hit chance of move between 0 and 1
+#         isPhys (bool): Determines whether move is physical or not
+#         type (Type): Type of move
+#         priority (Prio): Priority of move
+#         name (str): Name of move
+#     """
+#     def __init__(self):
+#         self.power=120
+#         self.accuracy=1
+#         self.critChance=CRITCHANCE
+#         self.isPhys=False
+#         self.type=Type.FIRE
+#         self.priority=Prio.MOVE
+#         self.burnChance=0.1
+#         self.name=self.__class__.__name__
+#     @moveDecorator
+#     def enact(self, battleContext, eventContext):
+#         AttackSingleTarget.do(battleContext=battleContext, eventContext=eventContext)
+#         if battleContext.missedMove==False and random()<self.burnChance:
+#             StatusSingleTarget.do(battleContext=battleContext, eventContext=eventContext, inflictedStatus=Burned())
+#     def select(self, battleContext, **kwargs):
+#         return SelectSingleTarget.select(battleContext=battleContext, **kwargs)
     
-    Attributes:
-        power (int): Power of move
-        accuracy (float): Accuracy of move between 0 and 1
-        critChance (float): Critical hit chance of move between 0 and 1
-        isPhys (bool): Determines whether move is physical or not
-        type (Type): Type of move
-        priority (Prio): Priority of move
-        name (str): Name of move
-    """
-    def __init__(self):
-        self.power=60
-        self.accuracy=1
-        self.critChance=CRITCHANCE
-        self.isPhys=True
-        self.type=Type.FIRE
-        self.priority=Prio.MOVE
-        self.name=self.__class__.__name__
-    @moveDecorator
-    def enact(self, battleContext, eventContext):
-        AttackSingleTarget.do(battleContext=battleContext, eventContext=eventContext)
-        StealItem.do(battleContext=battleContext, eventContext=eventContext)
-    def select(self, battleContext, **kwargs):
-        return SelectSingleTarget.select(battleContext=battleContext, **kwargs)
+# class FireSwipe(Move):
+#     """Fire Swipe
+
+#     Deals damage to target and steals target's item
     
-class Conflagration(Move):
-    """Conflagration
+#     Attributes:
+#         power (int): Power of move
+#         accuracy (float): Accuracy of move between 0 and 1
+#         critChance (float): Critical hit chance of move between 0 and 1
+#         isPhys (bool): Determines whether move is physical or not
+#         type (Type): Type of move
+#         priority (Prio): Priority of move
+#         name (str): Name of move
+#     """
+#     def __init__(self):
+#         self.power=60
+#         self.accuracy=1
+#         self.critChance=CRITCHANCE
+#         self.isPhys=True
+#         self.type=Type.FIRE
+#         self.priority=Prio.MOVE
+#         self.name=self.__class__.__name__
+#     @moveDecorator
+#     def enact(self, battleContext, eventContext):
+#         AttackSingleTarget.do(battleContext=battleContext, eventContext=eventContext)
+#         StealItem.do(battleContext=battleContext, eventContext=eventContext)
+#     def select(self, battleContext, **kwargs):
+#         return SelectSingleTarget.select(battleContext=battleContext, **kwargs)
     
-    Sets magma storm weather on field for 4 turns
+# class Conflagration(Move):
+#     """Conflagration
     
-    Attributes:
-        type (Type): Type of move
-        priorty (Prio): Priority of move
-        name (str): Name of move
-    """
-    def __init__(self):
-        self.type=Type.FIRE
-        self.priority=Prio.MOVE
-        self.name=self.__class__.__name__
-    @moveDecorator
-    def enact(self, battleContext, eventContext):
-        SetWeather.do(battleContext=battleContext, eventContext=eventContext, weatherToSet=MagmaStorm())
-    def select(self, battleContext, **kwargs):
-        return SelectNoTarget.select(battleContext=battleContext, **kwargs)
+#     Sets magma storm weather on field for 4 turns
+    
+#     Attributes:
+#         type (Type): Type of move
+#         priorty (Prio): Priority of move
+#         name (str): Name of move
+#     """
+#     def __init__(self):
+#         self.type=Type.FIRE
+#         self.priority=Prio.MOVE
+#         self.name=self.__class__.__name__
+#     @moveDecorator
+#     def enact(self, battleContext, eventContext):
+#         SetWeather.do(battleContext=battleContext, eventContext=eventContext, weatherToSet=MagmaStorm())
+#     def select(self, battleContext, **kwargs):
+#         return SelectNoTarget.select(battleContext=battleContext, **kwargs)

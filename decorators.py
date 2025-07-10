@@ -6,8 +6,8 @@ def moveDecorator(func):
         eventContext=EventContext()
         eventContext.cancelMove=False
         eventContext.attackMult=1
-        battleContext.eventQueue.trigger(battleContext=battleContext, eventContext=eventContext, trigger=Trigger.BEFORE_MOVE)
+        battleContext.eventSystem.trigger(eventContext=eventContext, trigger=Trigger.BEFORE_MOVE)
         if eventContext.cancelMove==False:
             func(self, battleContext=battleContext, eventContext=eventContext)
-            battleContext.eventQueue.trigger(battleContext=battleContext, eventContext=eventContext, trigger=Trigger.AFTER_MOVE)
+            battleContext.eventSystem.trigger(eventContext=eventContext, trigger=Trigger.AFTER_MOVE)
     return wrapper

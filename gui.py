@@ -26,7 +26,7 @@ def refreshWindow(battleContext):
                 battleContext.window[f'team{i+1}:{j}Sprite'].update(filename=f'./sprites/default.png')
                 continue
             battleContext.window[f'team{i+1}:{j}PokemonName'].update(value=f'Name: {slot.pokemon.name}')
-            battleContext.window[f'team{i+1}:{j}HP'].update(value=f'HP: {slot.pokemon.stats.currentHP}')
+            battleContext.window[f'team{i+1}:{j}HP'].update(value=f'HP: {slot.pokemon.stats.currentHp}')
             battleContext.window[f'team{i+1}:{j}Status'].update(value='   ', background_color='gray' if slot.pokemon.status is None else slot.pokemon.status.color)
             battleContext.window[f'team{i+1}:{j}Sprite'].update(filename=f'./sprites/{type(slot.pokemon).__name__.lower()}.png')
     battleContext.window.refresh()

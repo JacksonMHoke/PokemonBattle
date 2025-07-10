@@ -12,6 +12,7 @@ Stat, Type, Prio, State
 Helper Functions:
 get_effectiveness(attackingType, defendingType)
 clamp(n, smallest, largest)
+getUniqueID()
 """
 
 STAB=1.5
@@ -64,10 +65,11 @@ class Trigger(Enum):
     EQUIP=1
     UNEQUIP=2
     BEFORE_MOVE=3
-    AFTER_STATUS=4
-    AFTER_MOVE=5
-    END_TURN_STATUS=6
-    END_TURN=7
+    STAT_CALC=4
+    AFTER_STATUS=5
+    AFTER_MOVE=6
+    END_TURN_STATUS=7
+    END_TURN=8
 
 # Effectiveness multipliers:
 # For any (attacker, defender) pair not listed, assume a multiplier of 1.
@@ -238,3 +240,10 @@ def getEffectiveness(attackingType, defendingType):
 def clamp(n, smallest, largest):
     """Returns n clamped between smallest and largest inclusive"""
     return min(max(smallest, n), largest)
+
+uniqueID=0
+def getUniqueID():
+    """Returns a unique ID"""
+    global uniqueID
+    uniqueID+=1
+    return uniqueID-1
