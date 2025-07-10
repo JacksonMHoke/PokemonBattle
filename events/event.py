@@ -9,17 +9,14 @@ class Event(ABC):
         name (str): name of event
         triggers (list[Trigger]): list of triggers that trigger event
         priority (EventPrio): Priority of event
-        duration (int): Number of turns to last for
         procs (int): Number of times this event can proc
-        startTurn (int):  Turn start firing the event
         id (int): Unique ID to identify event with
     """
-    def __init__(self, triggers, priority=EventPrio.DEFAULT, startTurn=0, duration=1, procs=float('inf')):
+    def __init__(self, name, triggers, priority=EventPrio.DEFAULT, procs=float('inf')):
+        self.name=name
         self.triggers=triggers
         self.priority=priority
-        self.duration=duration
         self.procs=procs
-        self.startTurn=startTurn
         self.id=getUniqueID()
 
     def trigger(self, battleContext, eventContext, trigger):
@@ -39,8 +36,8 @@ class TimedEvent(Event):
         startTurn (int): Turn to start firing the event
         duration (int) Number of turns to last for
     """
-    def __init__(self, triggers, startTurn, duration, priority=EventPrio.DEFAULT, procs=float('inf')):
-        super().__init__(triggers=triggers, priority=priority, procs=procs)
+    def __init__(self, name, triggers, startTurn, duration, priority=EventPrio.DEFAULT, procs=float('inf')):
+        super().__init__(name=name, triggers=triggers, priority=priority, procs=procs)
         self.startTurn=startTurn
         self.duration=duration
     

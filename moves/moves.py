@@ -1,7 +1,7 @@
 from moves.move import Move
 from behaviors.selectionBehaviors import *
 from behaviors.executionBehaviors import *
-from events.statuses import *
+from statuses.statuses import *
 from events.weathers import *
 from battle.battleAction import *
 from decorators import *
@@ -63,36 +63,35 @@ class Earthquake(Move):
     def select(self, battleContext, **kwargs):
         return SelectSingleTarget.select(battleContext=battleContext, eventContext=EventContext(), **kwargs)
 
-# class Thunder(Move):
-#     """Thunder move
+class Thunder(Move):
+    """Thunder move
     
-#     This class encompasses all information, behavior, and targeting for the move, Thunder
+    This class encompasses all information, behavior, and targeting for the move, Thunder
 
-#     Attributes:
-#         power (int): Power of move
-#         accuracy (float): Accuracy of move between 0 and 1
-#         critChance (float): Critical hit chance of move between 0 and 1
-#         isPhys (bool): Determines whether move is physical or not
-#         type (Type): Type of move
-#         priority (Prio): Priority of move
-#         name (str): Name of move
-#     """
-#     def __init__(self):
-#         self.power=120
-#         self.accuracy=0.7
-#         self.critChance=CRITCHANCE
-#         self.isPhys=False
-#         self.type=Type.ELECTRIC
-#         self.priority=Prio.MOVE
-#         self.paraChance=0.3
-#         self.name=self.__class__.__name__
-#     @moveDecorator
-#     def enact(self, battleContext, eventContext):
-#         AttackSingleTarget.do(battleContext)
-#         if battleContext.missedMove==False and random()<self.paraChance:
-#             StatusSingleTarget.do(battleContext=battleContext, eventContext=eventContext, inflictedStatus=Paralyzed())
-#     def select(self, battleContext, **kwargs):
-#         return SelectSingleTarget.select(battleContext=battleContext, **kwargs)
+    Attributes:
+        power (int): Power of move
+        accuracy (float): Accuracy of move between 0 and 1
+        critChance (float): Critical hit chance of move between 0 and 1
+        isPhys (bool): Determines whether move is physical or not
+        type (Type): Type of move
+        priority (Prio): Priority of move
+        name (str): Name of move
+    """
+    def __init__(self):
+        self.power=120
+        self.accuracy=0.7
+        self.critChance=CRITCHANCE
+        self.isPhys=False
+        self.type=Type.ELECTRIC
+        self.priority=Prio.MOVE
+        self.paraChance=0.3
+        self.name=self.__class__.__name__
+    @moveDecorator
+    def enact(self, battleContext, eventContext):
+        battleContext.eventSystem.schedule(MoveStatusByChance(status=Paralyzed(), statusChance=0.5, attacker=battleContext.attacker, startTurn=battleContext.turn, duration=1, procs=1))
+        AttackSingleTarget.do(battleContext=battleContext, eventContext=eventContext)
+    def select(self, battleContext, **kwargs):
+        return SelectSingleTarget.select(battleContext=battleContext, eventContext=EventContext(), **kwargs)
     
 # class Burn(Move):
 #     """Burn move

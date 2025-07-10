@@ -1,57 +1,45 @@
 from events.event import *
+from globals import *
+from random import random
 
-# Need to implement STAT_CALC and separate currHP from stats and put it in Pokemon instead.
-# Have each event have a target that is static. If you want to change target you can manually,
-# but best practice would be to create a new event
-
-# I plan to separate the event logic from the stat buffing logic. I plan to beef up the stat class
-# logic by having the classes store a list of buffs that we can remove by removeFn like the EventSystem
-# This way we don't have to worry about copying stats and working on temporary copies, instead we can
-# modify them directly and calculate the effective stats when needed. We can add buffs that last for a
-# specific amount of turns and embed that in the buff list. This way the events are more distinguished
-# and less all encompassing
-
-class FlatStatBuff(Event):
+class PreventMoveByChance(Event):
     """
-    Event that can be triggered from specific trigger to buff pokemon's flat stat
+    Event that prevents move from occuring with a specified chance.
 
     Attributes:
-        triggers (list): list of triggers that trigger event
+        triggers (list): List of triggers that trigger event
         priority (EventPrio): Priority of event
+        preventChance (float): Probability to prevent move
     """
-    def __init__(self, triggers, target=None, source=None, buffAmount=0, statToBuff='', priority=EventPrio.DEFAULT):
-        self.triggers=triggers
-        self.priority=priority
-        self.source=source
-        self.buffAmount=buffAmount if self.source is None else self.source.buffAmount
-        self.statToBuff=statToBuff if self.source is None else self.source.statToBuff
+    def __init__(self, preventChance, target, triggers=[Trigger.BEFORE_MOVE], priority=EventPrio.DEFAULT, procs=float('inf')):
+        super().__init__(name=self.__class__.__name__, triggers=triggers, priority=priority, procs=procs)
+        self.preventChance=preventChance
         self.target=target
-        self.name='FlatStatBuff'
-
+    
     def trigger(self, battleContext, eventContext, trigger):
-        """Attempt to trigger event"""
-        print('TRIGGER OF FLAT STAT BUFF', trigger in self.triggers, eventContext.item==self.item)
-        if trigger in self.triggers and eventContext.item==self.item:
-            self.item.owner.stats.ATT+=self.item.attackBuff
-
-class FlatStatDebuff(Event):
+        if trigger==Trigger.BEFORE_MOVE and battleContext.attacker==self.target:
+            eventContext.cancelMove=random()<self.preventChance
+            return True
+        return False
+    
+class MoveStatusByChance(TimedEvent):
     """
-    Event that can be triggered from specific trigger to buff pokemon's flat stat
+    Event that inflicts a pokemon with a status by chance.
 
     Attributes:
-        triggers (list): list of triggers that trigger event
-        priority (EventPrio): Priority of event
+        status (Status): Status to inflict
+        statusChance (float): Probability to status pokemon
+        target (BattleLocation): Battle Location of target to inflict
     """
-    def __init__(self, triggers, item=None, priority=EventPrio.DEFAULT):
-        self.triggers=triggers
-        self.priority=priority
-        self.item=item
-        self.name='1234'
+    def __init__(self, status, statusChance, attacker, triggers=[Trigger.AFTER_HIT], startTurn=0, duration=1, priority=EventPrio.DEFAULT, procs=float('inf')):
+        super().__init__(name=self.__class__.__name__, triggers=triggers, startTurn=startTurn, duration=duration, priority=priority, procs=procs)
+        self.statusChance=statusChance
+        self.status=status
+        self.attacker=attacker
 
     def trigger(self, battleContext, eventContext, trigger):
-        """Attempt to trigger event"""
-        print('TRIGGER OF FLAT STAT DEBUFF')
-        if trigger in self.triggers and eventContext.item==self.item:
-            print('BEFORE', self.item.owner.stats.ATT)
-            self.item.owner.stats.ATT-=self.item.attackBuff
-            print('AFTER', self.item.owner.stats.ATT)
+        if trigger==Trigger.AFTER_HIT and eventContext.attacker==self.attacker:
+            if random()<self.statusChance:
+                eventContext.defender.inflictStatus(self.status)
+            return True
+        return False

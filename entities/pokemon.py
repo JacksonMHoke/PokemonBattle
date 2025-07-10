@@ -52,6 +52,11 @@ class Pokemon(ABC):
             self.faint()
             self.battleContext.window['combatLog'].update(f'{self.name} fainted!\n', append=True)
 
+    def inflictStatus(self, status):
+        """Inflict status"""
+        self.status=status
+        status.inflictStatus(pokemon=self, battleContext=self.battleContext)
+
     def bindRelationships(self, trainer):
         self.trainer=trainer
 

@@ -11,7 +11,7 @@ from battle.battle import *
 from stats.stats import *
 from items.items import *
 
-moves=[Tackle(), Earthquake(), WaterLance(), SwordsDance(), Recover()]
+moves=[Tackle(), Earthquake(), WaterLance(), SwordsDance(), Recover(), Thunder()]
 pikachuStats=Stats(200,100,100,100,100,100)
 pikachus=[Pikachu('pika1', 15, pikachuStats, moves)]#, Pikachu('pika2', 15, pikachuStats, moves), Pikachu('pika3', 15, pikachuStats, moves), Pikachu('pika4', 15, pikachuStats, moves)]
 

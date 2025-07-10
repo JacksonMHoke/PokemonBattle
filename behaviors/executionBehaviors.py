@@ -3,6 +3,7 @@ from random import random
 from battle.battleAction import *
 from globals import *
 from contexts.battleContext import BattleContext
+from contexts.eventContext import *
 
 '''
 Attacking Behavior
@@ -48,13 +49,14 @@ class AttackSingleTarget(ExecutionBehavior):
         if r>move.accuracy:                  # TODO: Add evasiveness as a stat for miss calculation
             print(move.name, 'missed!', flush=True)
             battleContext.window['combatLog'].update(f'{move.name} missed!\n', append=True)
-            eventContext.missedMove=True
             return
-        eventContext.missedMove=False
         
         if eff>1:
             print(f'{move.name} was super effective!', flush=True)
             battleContext.window['combatLog'].update(f'{move.name} was super effective!\n', append=True)
+        elif eff==0:
+            print(f'{move.name} was ineffective...', flush=True)
+            battleContext.window['combatLog'].update(f'{move.name} failed due to immunity...\n', append=True)
         elif eff<1:
             print(f'{move.name} was ineffective...', flush=True)
             battleContext.window['combatLog'].update(f'{move.name} was ineffective...\n', append=True)
@@ -66,6 +68,11 @@ class AttackSingleTarget(ExecutionBehavior):
             dmg*=CRIT
 
         defender.takeDamage(dmg=dmg)
+        afterHitECtx=EventContext()
+        afterHitECtx.attacker=attacker
+        afterHitECtx.defender=defender
+        battleContext.eventSystem.trigger(eventContext=afterHitECtx, trigger=Trigger.AFTER_HIT)
+
 
 '''
 Buffing Behavior
