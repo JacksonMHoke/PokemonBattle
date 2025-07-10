@@ -35,7 +35,7 @@ class Trainer:
         v=waitForSubmit(self.battleContext, self.team.teamIdx)
         hideDropdown(battleContext=self.battleContext, team=self.team.teamIdx)
 
-        return validPokemon[v[f'team{self.team.teamIdx}DDChoice'].id]
+        return validPokemon[v[f'team{self.team.teamIdx+1}DDChoice'].id]
 
     def isWhiteOut(self):
         """Returns if trainer is whited out."""

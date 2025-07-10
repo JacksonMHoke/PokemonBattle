@@ -244,5 +244,6 @@ def clamp(n, smallest, largest):
 uniqueID=0
 def getUniqueID():
     """Returns a unique ID"""
+    global uniqueID
     uniqueID+=1
     return uniqueID-1

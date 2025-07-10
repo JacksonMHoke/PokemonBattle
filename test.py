@@ -8,8 +8,10 @@ from events.items import *
 from events.statuses import *
 from events.weathers import *
 from battle.battle import *
+from stats.stats import *
+from items.items import *
 
-moves=[Tackle(), Freeze(), Thunder(), Burn(), Earthquake(), ThunderWave(), Rest(), RainDance(), WaterLance(), SwordsDance(), FireBall(), FireSwipe(), Conflagration()]
+moves=[Tackle(), Earthquake(), WaterLance(), SwordsDance(), Recover()]
 pikachuStats=Stats(200,100,100,100,100,100)
 pikachus=[Pikachu('pika1', 15, pikachuStats, moves)]#, Pikachu('pika2', 15, pikachuStats, moves), Pikachu('pika3', 15, pikachuStats, moves), Pikachu('pika4', 15, pikachuStats, moves)]
 

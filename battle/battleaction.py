@@ -52,7 +52,7 @@ class SwapAction(BattleAction):
         if self.swapInPokemon.status==State.FAINTED:
             battleContext.window['combatLog'].update(f'Could not swap in {self.swapInPokemon.name} because it has already fainted!!\n', append=True)
             return
-        self.swapLocation.swapPokemon(self.trainer, self.swapInPokemon, battleContext)
+        self.swapLocation.swapPokemon(self.trainer, self.swapInPokemon)
     
 class MoveAction(BattleAction):
     """Represents a move action activated using the execute function.
@@ -66,7 +66,7 @@ class MoveAction(BattleAction):
     to execute the move from the attacker to the targets.
     """
     def __init__(self, turn, move, attackerLoc, defenderLocs):
-        super().__init__(turn, move.priority, attackerLoc.pokemon.stats.SPE)
+        super().__init__(turn, move.priority, attackerLoc.pokemon.stats.effectiveSpe)
         self.move=move
         self.attackerLoc=attackerLoc
         self.defenderLocs=defenderLocs
@@ -97,7 +97,7 @@ class BattleLocation:
 
     Note: pokemonAtSelection is mainly used for specific moves like Pursuit
     """
-    def __init__(self, teamIdx, slotIdx, trainer, pokemon):
+    def __init__(self, teamIdx, slotIdx, trainer=None, pokemon=None):
         self.teamIdx=teamIdx
         self.slotIdx=slotIdx
         self.trainer=trainer

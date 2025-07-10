@@ -4,17 +4,19 @@ from globals import *
 from random import random
 from events.events import *
 from items.item import Item
+from stats.statBuff import *
 
 class Sword(Item):
     """Item that buffs attack by a flat amount"""
     def __init__(self, owner):
-        triggers=[Trigger.STAT_CALC]
-        super().__init__(name=self.__class__.__name__, triggers=triggers, owner=owner)
-        self.buff=10
+        super().__init__(name=self.__class__.__name__, owner=owner)
+        self.buffAmount=10
+        self.statToBuff='Att'
 
-    def attach(self, battleContext):
-        self.buffEvent=FlatStatBuff()
-        battleContext.eventSystem.addPermanentEvent(self.buffEvent)
+    def attach(self, newOwner):
+        self.buff=StatBuff(name='Sword', flat=self.buffAmount, mult=0)
+        self.owner=newOwner
+        self.owner.stats.addBuff(buff=self.buff, stat=self.statToBuff)
         
     def detach(self, battleContext):
-        battleContext.eventSystem.remove(matchById(self.buffEvent), self.triggers)
+        self.owner.stats.removeBuffs(matchById(self.buff.id), stat=self.statToBuff)

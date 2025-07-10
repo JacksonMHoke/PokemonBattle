@@ -21,12 +21,14 @@ class Battle:
     def __init__(self, teams):
         self.battleContext=BattleContext(teams=teams)
         for i in range(len(teams)):
-            self.battleContext.teams[i].initializeField(i)
             self.battleContext.teams[i].bindRelationships()
+            self.battleContext.teams[i].initializeField(i)
+            self.battleContext.teams[i].setBattleContext(self.battleContext)
 
     def runBattle(self):
         """Runs the battle."""
         queue=BattleQueue()
+        queue.setBattleContext(self.battleContext)
         self.battleContext.attachItems()
         self.battleContext.attachAbilities()
         self.battleContext.turn=1
@@ -65,7 +67,7 @@ class Battle:
                     queue.push(action)
                 
             # enact moves in correct order
-            queue.executeTurn(self.battleContext)
+            queue.executeTurn()
 
             refreshWindow(self.battleContext)
 

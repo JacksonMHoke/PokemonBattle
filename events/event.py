@@ -53,42 +53,42 @@ class TimedEvent(Event):
 
 # Modify trainer to have a reference to the team they are on and modify pokemon to have a reference to their trainer
 # Will cause a circular dependency, but will make things much much simpler in the future and will reduce the need for 
-# a super bloated context class
-class Ability(Event):
-    """
-    Ability that triggers in battle
+# # a super bloated context class
+# class Ability(Event):
+#     """
+#     Ability that triggers in battle
 
-    Attributes:
-        name (str): name of ability
-        owner (Pokemon): Owner of ability
-    """
-    def __init__(self, name, triggers, owner=None, priority=EventPrio.ABILITY):
-        super().__init__(triggers=triggers, priority=priority)
-        self.name=name
-        self.owner=owner
+#     Attributes:
+#         name (str): name of ability
+#         owner (Pokemon): Owner of ability
+#     """
+#     def __init__(self, name, triggers, owner=None, priority=EventPrio.ABILITY):
+#         super().__init__(triggers=triggers, priority=priority)
+#         self.name=name
+#         self.owner=owner
 
-class Status(Event):
-    """
-    Status that triggers in battle
+# class Status(Event):
+#     """
+#     Status that triggers in battle
 
-    Attributes:
-        name (str): name of status
-        color (str): color of status
-    """
-    def __init__(self, name, triggers, owner=None, priority=EventPrio.STATUS):
-        super().__init__(triggers=triggers, priority=priority)
-        self.name=name
-        self.owner=owner
+#     Attributes:
+#         name (str): name of status
+#         color (str): color of status
+#     """
+#     def __init__(self, name, triggers, owner=None, priority=EventPrio.STATUS):
+#         super().__init__(triggers=triggers, priority=priority)
+#         self.name=name
+#         self.owner=owner
 
-class Weather(Event):
-    """
-    Weather that effects the battlefield in various ways
+# class Weather(Event):
+#     """
+#     Weather that effects the battlefield in various ways
 
-    Attributes:
-        name (str): Name of Weather
-        color (str): String name of color to display on UI
-    """
-    def __init__(self, name, triggers, priority=EventPrio.WEATHER):
-        super().__init__(triggers=triggers, priority=priority)
-        self.name=name
-        self.color='gray'
+#     Attributes:
+#         name (str): Name of Weather
+#         color (str): String name of color to display on UI
+#     """
+#     def __init__(self, name, triggers, priority=EventPrio.WEATHER):
+#         super().__init__(triggers=triggers, priority=priority)
+#         self.name=name
+#         self.color='gray'

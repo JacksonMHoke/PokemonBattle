@@ -82,7 +82,7 @@ class Team:
                 slot.swapPokemon(trainer, pokemon)
 
                 self.battleContext.window[f'team{self.teamIdx+1}:{i}PokemonName'].update(value=f'Name: {pokemon.name}')
-                self.battleContext.window[f'team{self.teamIdx+1}:{i}HP'].update(value=f'HP: {pokemon.stats.currentHP}')
+                self.battleContext.window[f'team{self.teamIdx+1}:{i}HP'].update(value=f'HP: {pokemon.stats.currentHp}')
                 refreshWindow(self.battleContext)
 
     def selectActions(self):
@@ -111,3 +111,5 @@ class Team:
         self.battleContext=battleContext
         for trainer in self.trainers:
             trainer.setBattleContext(battleContext)
+        for slot in self.slots:
+            slot.setBattleContext(battleContext)

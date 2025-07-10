@@ -26,6 +26,7 @@ class BattleContext:
         self.events=[]
         self.weather=None
         self.eventSystem=EventSystem()
+        self.eventSystem.setBattleContext(self)
         self.teams=teams
     
     def setAttacker(self, attackerLoc):
