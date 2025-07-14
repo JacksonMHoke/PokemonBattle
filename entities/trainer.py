@@ -54,14 +54,11 @@ class Trainer:
         return self._battleContext
     
     @battleContext.setter
-    def battleContext(self, val):
-        self._battleContext=val
-
-    def setBattleContext(self, battleContext):
+    def battleContext(self, battleContext):
         """Sets battle context"""
-        self.battleContext=battleContext
+        self._battleContext=battleContext
         for mon in self.party:
-            mon.setBattleContext(battleContext)
+            mon.battleContext=battleContext
 
     @property
     def team(self):

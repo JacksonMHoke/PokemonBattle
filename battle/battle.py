@@ -21,14 +21,14 @@ class Battle:
     def __init__(self, teams):
         self.battleContext=BattleContext(teams=teams)
         for i in range(len(teams)):
-            self.battleContext.teams[i].bindRelationships()
-            self.battleContext.teams[i].initializeField(i)
-            self.battleContext.teams[i].setBattleContext(self.battleContext)
+            teams[i].bindRelationships()
+            teams[i].initializeField(i)
+            teams[i].battleContext=self.battleContext
 
     def runBattle(self):
         """Runs the battle."""
         queue=BattleQueue()
-        queue.setBattleContext(self.battleContext)
+        queue.battleContext=self.battleContext
         self.battleContext.attachItems()
         self.battleContext.attachAbilities()
         self.battleContext.turn=1
@@ -36,7 +36,6 @@ class Battle:
         self.battleContext.window = sg.Window('Battle Window', getLayout(self.battleContext), size=(800, 1080), resizable=True, finalize=True, return_keyboard_events=True, element_justification='center')
 
         while True:
-            # return winning team if that team is only team that remains
             remainingTeams=[team for team in self.battleContext.teams if not team.isWhiteOut()]
             if len(remainingTeams)==1:
                 self.battleContext.window['combatLog'].update(f'{remainingTeams[0].teamName} wins!\n', append=True)
@@ -53,14 +52,13 @@ class Battle:
             if e == sg.WINDOW_CLOSED or e == "Exit":
                 break
             
-            # if no active pokemon, send out new pokemon
             for team in self.battleContext.teams:
                 team.populateEmptySlots()
 
             self.battleContext.window['combatLog'].update(f'-------------Turn {self.battleContext.turn}-------------\n', append=True)
             refreshWindow(self.battleContext)
 
-            # choose moves                                 TODO: allow for other options like run, bag, etc
+            # TODO: allow for other options like run, bag, etc
             for team in self.battleContext.teams:
                 actions=team.selectActions()
                 for action in actions:

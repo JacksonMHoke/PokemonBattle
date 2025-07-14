@@ -19,6 +19,8 @@ class BattleContext:
     def __init__(self, teams):
         self.turn=0
         self.attacker=None
+        self.defender=None
+        self.defenderLoc=None
         self.defenders=None
         self.attackerLoc=None
         self.defenderLocs=None
@@ -26,7 +28,7 @@ class BattleContext:
         self.events=[]
         self.weather=None
         self.eventSystem=EventSystem()
-        self.eventSystem.setBattleContext(self)
+        self.eventSystem.battleContext=self
         self.teams=teams
     
     def setAttacker(self, attackerLoc):
@@ -38,6 +40,13 @@ class BattleContext:
         """Updates context for new defenders"""
         self.defenders=[loc.pokemon for loc in defenderLocs]
         self.defenderLocs=defenderLocs
+        if len(defenderLocs)==1:
+            self.defenderLoc=defenderLocs[0]
+            self.defender=self.defenderLoc.pokemon
+        else:
+            # Defender should be specified in move enact function for more complex logic
+            self.defenderLoc=None
+            self.defender=None
     
     def addDefender(self, defender):
         """Updates context for an additional defender"""

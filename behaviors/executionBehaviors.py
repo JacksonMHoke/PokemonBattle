@@ -4,6 +4,7 @@ from battle.battleAction import *
 from globals import *
 from contexts.battleContext import BattleContext
 from contexts.eventContext import *
+from decorators import executionBehaviorDecorator
 
 '''
 Attacking Behavior
@@ -18,6 +19,7 @@ class AttackSingleTarget(ExecutionBehavior):
     Note:
         This class is used as a namespace for a static method `do` and is not intended to be instantiated
     """
+    @executionBehaviorDecorator
     def do(battleContext, eventContext, **kwargs):
         """Executes a single target attack.
 
@@ -87,6 +89,7 @@ class BuffSingleTarget(ExecutionBehavior):
     Note:
         This class is used as a namespace for a static method `do` and is not intended to be instantiated
     """
+    @executionBehaviorDecorator
     def do(battleContext, eventContext, **kwargs):
         """Executes a single target buff.
 
@@ -121,6 +124,7 @@ class HealSingleTarget(ExecutionBehavior):
     Note:
         This class is used as a namespace for a static method `do` and is not intended to be instantiated
     """
+    @executionBehaviorDecorator
     def do(battleContext, eventContext, **kwargs):
         """Executes a single target heal.
 

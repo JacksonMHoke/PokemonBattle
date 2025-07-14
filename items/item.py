@@ -14,10 +14,20 @@ class Item:
         self.owner=owner
         self.id=getUniqueID()
 
-    def attach(self, battleContext, eventContext, pokemon):
+    def attach(self, newOwner, **kwargs):
         """Attach item to pokemon"""
-        pass
 
-    def detach(self, battleContext, eventContext):
+    def detach(self, **kwargs):
         """Detach from current owner"""
         pass
+
+    @property
+    def battleContext(self):
+        if not hasattr(self, '_battleContext') or self._battleContext is None:
+            raise AttributeError(f'{self.__class__.__name__} is missing battleContext.')
+        return self._battleContext
+    
+    @battleContext.setter
+    def battleContext(self, battleContext):
+        """Sets battle context"""
+        self._battleContext=battleContext

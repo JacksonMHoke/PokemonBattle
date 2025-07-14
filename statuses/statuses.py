@@ -5,6 +5,9 @@ from stats.statBuff import *
 from globals import *
 
 class Paralyzed(Status):
+    """
+    Paralyzed status. Paralyzed pokemon are slowed and have a chance to have their moves be canceled.
+    """
     def __init__(self):
         super().__init__(name=self.__class__.__name__, color='yellow')
         self.paralyzedChance=0.3

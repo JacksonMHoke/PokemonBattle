@@ -103,13 +103,10 @@ class Team:
         return self._battleContext
     
     @battleContext.setter
-    def battleContext(self, val):
-        self._battleContext=val
-
-    def setBattleContext(self, battleContext):
+    def battleContext(self, battleContext):
         """Sets battle context"""
-        self.battleContext=battleContext
+        self._battleContext=battleContext
         for trainer in self.trainers:
-            trainer.setBattleContext(battleContext)
+            trainer.battleContext=battleContext
         for slot in self.slots:
-            slot.setBattleContext(battleContext)
+            slot.battleContext=battleContext

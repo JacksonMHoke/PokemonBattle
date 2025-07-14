@@ -7,7 +7,18 @@ def moveDecorator(func):
         eventContext.cancelMove=False
         eventContext.attackMult=1
         battleContext.eventSystem.trigger(eventContext=eventContext, trigger=Trigger.BEFORE_MOVE)
-        if eventContext.cancelMove==False:
+        if not eventContext.cancelMove:
             func(self, battleContext=battleContext, eventContext=eventContext)
             battleContext.eventSystem.trigger(eventContext=eventContext, trigger=Trigger.AFTER_MOVE)
+    return wrapper
+
+def executionBehaviorDecorator(func):
+    """Decorator around execution behaviors. Triggers events before execution occurs"""
+    def wrapper(battleContext, eventContext):
+        eventBehaviorContext=eventContext#(eventContext) TODO: Swap to custom context
+        eventBehaviorContext.cancelBehavior=False
+        battleContext.eventSystem.trigger(eventContext=eventBehaviorContext, trigger=Trigger.BEFORE_EX_BEHAVIOR)
+        if not eventBehaviorContext.cancelBehavior:
+            func(battleContext=battleContext, eventContext=eventBehaviorContext)
+            battleContext.eventSystem.trigger(eventContext=eventBehaviorContext, trigger=Trigger.AFTER_EX_BEHAVIOR)
     return wrapper

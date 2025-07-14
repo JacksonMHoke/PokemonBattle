@@ -4,7 +4,6 @@ from entities.pokemon import *
 from moves.moves import *
 from globals import *
 from entities.team import *
-from events.items import *
 from events.statuses import *
 from events.weathers import *
 from battle.battle import *
@@ -21,6 +20,7 @@ rats[0].item=Sword(rats[0])
 
 bellStats=Stats(200, 75, 100, 150, 150, 30)
 bell=Bell('Bong', 15, bellStats, moves, None, None)
+bell.item=GravityBall(bell)
 
 shroomHogStats=Stats(150, 100, 75, 150, 150, 75)
 shroomHog=Shroomhog('SadHog', 15, shroomHogStats, moves)

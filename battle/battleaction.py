@@ -168,11 +168,8 @@ class BattleLocation:
         if not hasattr(self, '_battleContext') or self._battleContext is None:
             raise AttributeError(f'{self.__class__.__name__} is missing battleContext.')
         return self._battleContext
-    
-    @battleContext.setter
-    def battleContext(self, val):
-        self._battleContext=val
 
-    def setBattleContext(self, battleContext):
+    @battleContext.setter
+    def battleContext(self, battleContext):
         """Sets battle context"""
-        self.battleContext=battleContext
+        self._battleContext=battleContext

@@ -114,9 +114,6 @@ class Stats:
         return self._battleContext
     
     @battleContext.setter
-    def battleContext(self, val):
-        self._battleContext=val
-
-    def setBattleContext(self, battleContext):
+    def battleContext(self, battleContext):
         """Sets battle context"""
-        self.battleContext=battleContext
+        self._battleContext=battleContext
