@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from random import random
 from globals import *
 from gui import *
+from contexts.moveContext import *
 class BattleAction(ABC):
     """Represents an action in battle.
 
@@ -79,7 +80,7 @@ class MoveAction(BattleAction):
         if self.attackerLoc.pokemonAtSelection.state!=State.ACTIVE:
             return
         battleContext.prepareMove(attackerLoc=self.attackerLoc, defenderLocs=self.defenderLocs, move=self.move)
-        self.move.enact(battleContext=battleContext)
+        self.move.enact(battleContext=battleContext, moveContext=MoveContext(attackerLoc=self.attackerLoc, defenderLocs=self.defenderLocs, move=self.move))
     
 class BattleLocation:
     """Represents a slot or location on the battlefield.

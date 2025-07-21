@@ -30,8 +30,8 @@ class Tackle(Move):
         self.priority=Prio.MOVE
         self.name=self.__class__.__name__
     @moveDecorator
-    def enact(self, battleContext, eventContext):
-        AttackSingleTarget.do(battleContext=battleContext, eventContext=eventContext)
+    def enact(self, battleContext, moveContext, eventContext):
+        AttackSingleTarget.do(battleContext=battleContext, moveContext=moveContext, eventContext=eventContext)
     def select(self, battleContext, **kwargs):
         return SelectSingleTarget.select(battleContext=battleContext, eventContext=EventContext(), **kwargs)
 
@@ -58,8 +58,8 @@ class Earthquake(Move):
         self.priority=Prio.MOVE
         self.name=self.__class__.__name__
     @moveDecorator
-    def enact(self, battleContext, eventContext):
-        AttackSingleTarget.do(battleContext=battleContext, eventContext=eventContext)
+    def enact(self, battleContext, moveContext, eventContext):
+        AttackSingleTarget.do(battleContext=battleContext, moveContext=moveContext, eventContext=eventContext)
     def select(self, battleContext, **kwargs):
         return SelectSingleTarget.select(battleContext=battleContext, eventContext=EventContext(), **kwargs)
 
@@ -87,9 +87,9 @@ class Thunder(Move):
         self.paraChance=0.3
         self.name=self.__class__.__name__
     @moveDecorator
-    def enact(self, battleContext, eventContext):
+    def enact(self, battleContext, moveContext, eventContext):
         battleContext.eventSystem.schedule(MoveStatusByChance(status=Paralyzed(), statusChance=0.5, attacker=battleContext.attacker, startTurn=battleContext.turn, duration=1, procs=1))
-        AttackSingleTarget.do(battleContext=battleContext, eventContext=eventContext)
+        AttackSingleTarget.do(battleContext=battleContext, moveContext=moveContext, eventContext=eventContext)
     def select(self, battleContext, **kwargs):
         return SelectSingleTarget.select(battleContext=battleContext, eventContext=EventContext(), **kwargs)
     
@@ -220,9 +220,9 @@ class WaterLance(Move):
         self.name=self.__class__.__name__
         self.numHits=2
     @moveDecorator
-    def enact(self, battleContext, eventContext):
+    def enact(self, battleContext, moveContext, eventContext):
         for i in range(self.numHits):
-            AttackSingleTarget.do(battleContext=battleContext, eventContext=eventContext)
+            AttackSingleTarget.do(battleContext=battleContext, moveContext=moveContext, eventContext=eventContext)
     def select(self, battleContext, **kwargs):
         return SelectSingleTarget.select(battleContext=battleContext, eventContext=EventContext(), **kwargs)
     
@@ -245,9 +245,9 @@ class SwordsDance(Move):
         self.statToBuff='Att'
         self.buffMult=1.0
     @moveDecorator
-    def enact(self, battleContext, eventContext):
+    def enact(self, battleContext, moveContext, eventContext):
         buff=StatBuff(name='Swords Dance', flat=0, mult=self.buffMult)
-        BuffSingleTarget.do(battleContext=battleContext, eventContext=eventContext, buff=buff, stat=self.statToBuff)
+        BuffSingleTarget.do(battleContext=battleContext, moveContext=moveContext, eventContext=eventContext, buff=buff, stat=self.statToBuff)
     def select(self, battleContext, **kwargs):
         return SelectSelf.select(battleContext=battleContext, eventContext=EventContext(), **kwargs)
     
@@ -268,8 +268,8 @@ class Recover(Move):
         self.name=self.__class__.__name__
         self.healAmount=50
     @moveDecorator
-    def enact(self, battleContext, eventContext):
-        HealSingleTarget.do(battleContext=battleContext, eventContext=eventContext, healAmount=self.healAmount)
+    def enact(self, battleContext, moveContext, eventContext):
+        HealSingleTarget.do(battleContext=battleContext, moveContext=moveContext, eventContext=eventContext, healAmount=self.healAmount)
     def select(self, battleContext, **kwargs):
         return SelectSelf.select(battleContext=battleContext, eventContext=EventContext(), **kwargs)
     

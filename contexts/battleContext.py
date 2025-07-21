@@ -1,5 +1,7 @@
 from events.eventSystem import EventSystem
+from dataclasses import dataclass
 
+@dataclass
 class BattleContext:
     """
     Holds all battle context

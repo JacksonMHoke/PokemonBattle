@@ -11,7 +11,7 @@ class ExecutionBehavior(ABC):
     """
     @staticmethod
     @abstractmethod
-    def do(battleContext, eventContext, **kwargs):
+    def do(battleContext, moveContext, eventContext, **kwargs):
         pass
 
 '''

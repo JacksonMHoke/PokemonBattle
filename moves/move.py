@@ -17,11 +17,12 @@ class Move(ABC):
         """Defines characteristics of the move."""
         pass
     @abstractmethod
-    def enact(self, battleContext):
+    def enact(self, battleContext, moveContext):
         """Executes the move using the battle context from attacker location to target locations.
         
         Arguments:
             battleContext (BattleContext): Battle context.
+            moveContext (MoveContext): Move context object
         """
         pass
     @abstractmethod

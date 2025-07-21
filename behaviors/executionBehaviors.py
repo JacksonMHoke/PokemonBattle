@@ -20,7 +20,7 @@ class AttackSingleTarget(ExecutionBehavior):
         This class is used as a namespace for a static method `do` and is not intended to be instantiated
     """
     @executionBehaviorDecorator
-    def do(battleContext, eventContext, **kwargs):
+    def do(battleContext, moveContext, eventContext, **kwargs):
         """Executes a single target attack.
 
         Arguments:
@@ -29,17 +29,14 @@ class AttackSingleTarget(ExecutionBehavior):
         Raises:
             AssertionError: If `defenderLocs` does not contain exactly 1 target.
         """
-        defenderLocs=battleContext.defenderLocs
-        attackerLoc=battleContext.attackerLoc
+        defenderLocs=moveContext.defenderLocs
+        attackerLoc=moveContext.attackerLoc
+        attacker=moveContext.attacker
+        move=moveContext.move
 
-        attacker=battleContext.attacker
-        defenders=battleContext.defenders
-
-        move=battleContext.move
-
-        assert(len(defenderLocs)==1 and len(defenders)==1)
-
-        defender=defenders[0]
+        assert(len(defenderLocs)==1)
+        defenderLoc=defenderLocs[0]
+        defender=defenderLocs[0].pokemon
 
         # calc mults
         stab=STAB if move.type in attacker.typing else 1
@@ -70,10 +67,15 @@ class AttackSingleTarget(ExecutionBehavior):
             dmg*=CRIT
 
         defender.takeDamage(dmg=dmg)
-        afterHitECtx=EventContext()
-        afterHitECtx.attacker=attacker
-        afterHitECtx.defender=defender
-        battleContext.eventSystem.trigger(eventContext=afterHitECtx, trigger=Trigger.AFTER_HIT)
+        battleContext.eventSystem.trigger(
+            eventContext=AfterHitEventContext(
+                attackerLoc=attackerLoc,
+                defenderLoc=defenderLoc,
+                attacker=attacker,
+                defender=defender,
+                move=move,
+                dmg=dmg),
+            trigger=Trigger.AFTER_HIT)
 
 
 '''
