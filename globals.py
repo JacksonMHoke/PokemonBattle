@@ -65,12 +65,14 @@ class Trigger(Enum):
     EQUIP=1
     UNEQUIP=2
     BEFORE_MOVE=3
-    BEFORE_EX_BEHAVIOR=4
+    BEFORE_EXECUTE_BEHAVIOR=4
     AFTER_HIT=5
-    AFTER_EX_BEHAVIOR=6
-    AFTER_MOVE=7
-    END_TURN_STATUS=8
-    END_TURN=9
+    AFTER_EXECUTE_BEHAVIOR=6
+    CANCELED_EXECUTE_BEHAVIOR=7
+    AFTER_MOVE=8
+    CANCELED_MOVE=9
+    END_TURN_STATUS=10
+    END_TURN=11
 
 # Effectiveness multipliers:
 # For any (attacker, defender) pair not listed, assume a multiplier of 1.

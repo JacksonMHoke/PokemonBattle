@@ -35,6 +35,7 @@ class BattleQueue:
         while len(self.pq)>0 and self.pq[0].turn==currentTurn:
             self.executeAction()
 
+        self.battleContext.eventSystem.trigger(eventContext=None, trigger=Trigger.END_TURN)
         self.battleContext.eventSystem.trigger(eventContext=None, trigger=Trigger.END_TURN_STATUS)
 
     # Enforces that battleContext is set before used

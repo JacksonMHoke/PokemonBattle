@@ -13,15 +13,18 @@ class Sword(Item):
         self.buffAmount=10
         self.statToBuff='Att'
 
-    def attach(self, newOwner, **kwargs):
+    def onBattleStart(self):
         self.buff=StatBuff(name='Sword', flat=self.buffAmount, mult=0)
-        self.owner=newOwner
+        self.owner.stats.addBuff(buff=self.buff, stat=self.statToBuff)
+
+    def attach(self, newOwner, **kwargs):
+        super().attach(newOwner=newOwner)
+        self.buff=StatBuff(name='Sword', flat=self.buffAmount, mult=0)
         self.owner.stats.addBuff(buff=self.buff, stat=self.statToBuff)
         
     def detach(self, battleContext):
-        self.owner.item=None
         self.owner.stats.removeBuffs(matchById(self.buff.id), stat=self.statToBuff)
-        self.owner=None
+        super().detach()
 
 class GravityBall(Item):
     """Item that makes pokemon immune to ground type moves. The item is detached when owner is hit."""
@@ -30,16 +33,43 @@ class GravityBall(Item):
         self.immunityType=Type.GROUND
         self.immuneEvent=None
         self.popEvent=None
+
+    def onBattleStart(self):
+        self.immuneEvent=TypeImmunity(immunityType=self.immunityType, target=self.owner)
+        self.battleContext.eventSystem.addPermanentEvent(self.immuneEvent)
+        self.popEvent=DetachItemOnHit(item=self)
+        self.battleContext.eventSystem.addPermanentEvent(self.popEvent)
     
     def attach(self, newOwner, **kwargs):
-        self.owner=newOwner
+        super().attach(newOwner=newOwner)
         self.immuneEvent=TypeImmunity(immunityType=self.immunityType, target=self.owner)
         self.battleContext.eventSystem.addPermanentEvent(self.immuneEvent)
         self.popEvent=DetachItemOnHit(item=self)
         self.battleContext.eventSystem.addPermanentEvent(self.popEvent)
 
     def detach(self, **kwargs):
-        self.owner.item=None
-        self.owner=None
         self.battleContext.eventSystem.remove(matchById(self.immuneEvent))
+        self.immuneEvent=None
         self.battleContext.eventSystem.remove(matchById(self.popEvent))
+        self.popEvent=None
+        super().detach()
+
+class GreenFungus(Item):
+    """Item that heals owner 1/16 of the user's HP at the end of every turn"""
+    def __init__(self, owner):
+        super().__init__(name=self.__class__.__name__, owner=owner)
+        self.healPercent=1/16
+
+    def onBattleStart(self):
+        self.healEvent=HealPercentMaxHpIfActive(healPercent=self.healPercent, target=self.owner, triggers=[Trigger.END_TURN])
+        self.battleContext.eventSystem.addPermanentEvent(self.healEvent)
+    
+    def attach(self, newOwner, **kwargs):
+        super().attach(newOwner=newOwner)
+        self.healEvent=HealPercentMaxHpIfActive(healPercent=self.healPercent, target=self.owner, triggers=[Trigger.END_TURN])
+        self.battleContext.eventSystem.addPermanentEvent(self.healEvent)
+
+    def detach(self, **kwargs):
+        self.battleContext.eventSystem.remove(matchById(self.healEvent))
+        self.healEvent=None
+        super().detach()

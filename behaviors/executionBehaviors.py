@@ -29,14 +29,10 @@ class AttackSingleTarget(ExecutionBehavior):
         Raises:
             AssertionError: If `defenderLocs` does not contain exactly 1 target.
         """
-        defenderLocs=moveContext.defenderLocs
-        attackerLoc=moveContext.attackerLoc
         attacker=moveContext.attacker
         move=moveContext.move
-
-        assert(len(defenderLocs)==1)
-        defenderLoc=defenderLocs[0]
-        defender=defenderLocs[0].pokemon
+        defenderLoc=moveContext.currentDefenderLoc
+        defender=defenderLoc.pokemon
 
         # calc mults
         stab=STAB if move.type in attacker.typing else 1
@@ -67,15 +63,7 @@ class AttackSingleTarget(ExecutionBehavior):
             dmg*=CRIT
 
         defender.takeDamage(dmg=dmg)
-        battleContext.eventSystem.trigger(
-            eventContext=AfterHitEventContext(
-                attackerLoc=attackerLoc,
-                defenderLoc=defenderLoc,
-                attacker=attacker,
-                defender=defender,
-                move=move,
-                dmg=dmg),
-            trigger=Trigger.AFTER_HIT)
+        battleContext.eventSystem.trigger(eventContext=MoveEventContext(moveContext=moveContext, dmg=dmg), trigger=Trigger.AFTER_HIT)
 
 
 '''
@@ -92,7 +80,7 @@ class BuffSingleTarget(ExecutionBehavior):
         This class is used as a namespace for a static method `do` and is not intended to be instantiated
     """
     @executionBehaviorDecorator
-    def do(battleContext, eventContext, **kwargs):
+    def do(battleContext, moveContext, eventContext, **kwargs):
         """Executes a single target buff.
 
         Arguments:
@@ -104,17 +92,7 @@ class BuffSingleTarget(ExecutionBehavior):
         Raises:
             AssertionError: If `defenderLocs` does not contain exactly 1 target.
         """
-        defenderLocs=battleContext.defenderLocs
-        attackerLoc=battleContext.attackerLoc
-
-        attacker=battleContext.attacker
-        defenders=battleContext.defenders
-
-        move=battleContext.move
-
-        assert(len(defenderLocs)==1 and len(defenders)==1)
-
-        defender=defenders[0]
+        defender=moveContext.currentDefenderLoc.pokemon
         defender.stats.addBuff(buff=kwargs['buff'], stat=kwargs['stat'])
 
 class HealSingleTarget(ExecutionBehavior):
@@ -127,7 +105,7 @@ class HealSingleTarget(ExecutionBehavior):
         This class is used as a namespace for a static method `do` and is not intended to be instantiated
     """
     @executionBehaviorDecorator
-    def do(battleContext, eventContext, **kwargs):
+    def do(battleContext, moveContext, eventContext, **kwargs):
         """Executes a single target heal.
 
         Arguments:
@@ -139,17 +117,7 @@ class HealSingleTarget(ExecutionBehavior):
         Raises:
             AssertionError: If `defenderLocs` does not contain exactly 1 target.
         """
-        defenderLocs=battleContext.defenderLocs
-        attackerLoc=battleContext.attackerLoc
-
-        attacker=battleContext.attacker
-        defenders=battleContext.defenders
-
-        move=battleContext.move
-
-        assert(len(defenderLocs)==1 and len(defenders)==1)
-
-        defender=defenders[0]
+        defender=moveContext.currentDefenderLoc.pokemon
         defender.heal(kwargs['healAmount'])
 
 '''

@@ -5,4 +5,5 @@ class MoveContext:
         self.attacker=attackerLoc.pokemonAtSelection
         self.attackerLoc=attackerLoc
         self.defenderLocs=defenderLocs
+        self.currentDefenderLoc=defenderLocs[0] if len(defenderLocs)==1 else None
         self.move=move

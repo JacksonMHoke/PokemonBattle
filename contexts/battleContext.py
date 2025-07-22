@@ -67,7 +67,7 @@ class BattleContext:
             for trainer in team.trainers:
                 for mon in trainer.party:
                     if mon.item is not None:
-                        mon.item.attach(mon)
+                        mon.item.onBattleStart()
 
     def attachAbilities(self):
         for team in self.teams:

@@ -8,11 +8,12 @@ class EventContext:
         self.attackMult=1
 
 @dataclass
-class AfterHitEventContext:
-    def __init__(self, attackerLoc, defenderLoc, attacker, defender, move, dmg):
-        self.attackerLoc=attackerLoc
-        self.defenderLoc=defenderLoc
-        self.attacker=attacker
-        self.defender=defender
-        self.move=move
-        self.dmg=dmg
+class MoveEventContext:
+    def __init__(self, moveContext, **kwargs):
+        self.attackerLoc=moveContext.attackerLoc
+        self.attacker=moveContext.attacker
+        self.defenderLoc=moveContext.currentDefenderLoc
+        self.defenderLocs=moveContext.defenderLocs
+        self.move=moveContext.move
+        for k, v in kwargs.items():
+            setattr(self, k, v)

@@ -14,12 +14,19 @@ class Item:
         self.owner=owner
         self.id=getUniqueID()
 
+    def onBattleStart(self):
+        """Called once when the battle begins"""
+
     def attach(self, newOwner, **kwargs):
         """Attach item to pokemon"""
+        assert self.owner is None, f'Trying to attach an item({self.name}) that already has an owner.'
+        self.owner=newOwner
 
     def detach(self, **kwargs):
         """Detach from current owner"""
-        pass
+        assert self.owner is not None, f'Trying to detach an item({self.name}) that has no owner.'
+        self.owner.item=None
+        self.owner=None
 
     @property
     def battleContext(self):

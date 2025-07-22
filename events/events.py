@@ -51,13 +51,13 @@ class TypeImmunity(Event):
         immunityType (Type): Type that pokemon is immune to
         immunePokemon (Pokemon): Pokemon that is immune
     """
-    def __init__(self, immunityType, target, triggers=[Trigger.BEFORE_EX_BEHAVIOR], priority=EventPrio.DEFAULT, procs=float('inf')):
+    def __init__(self, immunityType, target, triggers=[Trigger.BEFORE_EXECUTE_BEHAVIOR], priority=EventPrio.DEFAULT, procs=float('inf')):
         super().__init__(name=self.__class__.__name__, triggers=triggers, priority=priority, procs=procs)
         self.immunityType=immunityType
         self.immunePokemon=target
     
     def trigger(self, battleContext, eventContext, trigger):
-        if trigger==Trigger.BEFORE_EX_BEHAVIOR and battleContext.defender==self.immunePokemon and self.immunityType==battleContext.move.type:
+        if trigger==Trigger.BEFORE_EXECUTE_BEHAVIOR and eventContext.defenderLoc.pokemon==self.immunePokemon and self.immunityType==eventContext.move.type:
             eventContext.cancelBehavior=True
             battleContext.window['combatLog'].update(f'{self.immunePokemon.name} is immune.\n', append=True)
             return True
@@ -75,9 +75,22 @@ class DetachItemOnHit(Event):
         self.item=item
     
     def trigger(self, battleContext, eventContext, trigger):
-        print('defender was none' if battleContext.defender is None else battleContext.defender.name)
-        if trigger==Trigger.AFTER_HIT and battleContext.defender==self.item.owner:
+        if trigger==Trigger.AFTER_HIT and eventContext.defenderLoc.pokemon==self.item.owner:
             battleContext.window['combatLog'].update(f'{self.item.name} was detached!\n', append=True)
             self.item.detach()
             return True
         return False
+    
+class HealPercentMaxHpIfActive(Event):
+    """
+    Event that heals the pokemon if they are active.
+    """
+    def __init__(self, healPercent, target, triggers=[], priority=EventPrio.DEFAULT, procs=float('inf')):
+        super().__init__(name=self.__class__.__name__, triggers=triggers, priority=priority, procs=procs)
+        self.healPercent=healPercent
+        self.target=target
+
+    def trigger(self, battleContext, eventContext, trigger):
+        if trigger in self.triggers:
+            healAmount=self.target.stats.effectiveMaxHp*self.healPercent
+            self.target.heal(healAmount)
