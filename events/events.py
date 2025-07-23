@@ -94,3 +94,23 @@ class HealPercentMaxHpIfActive(Event):
         if trigger in self.triggers:
             healAmount=self.target.stats.effectiveMaxHp*self.healPercent
             self.target.heal(healAmount)
+            return True
+        return False
+
+class EndureOHKO(Event):
+    """
+    Event that leaves pokemon at 1hp if they were at full hp and are being one shot. Does not work if max HP is 1.
+    """
+    def __init__(self, target, triggers=[Trigger.BEFORE_HIT], priority=EventPrio.SASH, procs=1):
+        super().__init__(name=self.__class__.__name__, triggers=triggers, priority=priority, procs=procs)
+        self.target=target
+
+    def trigger(self, battleContext, eventContext, trigger):
+        if (not hasattr(eventContext, 'defenderLoc')):
+            return False
+        defender=eventContext.defenderLoc.pokemon
+        if trigger==Trigger.BEFORE_HIT and defender==self.target and 1<defender.stats.effectiveMaxHp<=defender.stats.currentHp<=eventContext.damage.total:
+            battleContext.window['combatLog'].update(f'{defender.name} endured with 1 HP!\n', append=True)
+            eventContext.damage.damageCap=defender.stats.currentHp-1
+            return True
+        return False

@@ -2,6 +2,7 @@ from behaviors.behaviors import ExecutionBehavior
 from random import random
 from battle.battleAction import *
 from globals import *
+from utils import *
 from contexts.battleContext import BattleContext
 from contexts.eventContext import *
 from decorators import executionBehaviorDecorator
@@ -34,36 +35,36 @@ class AttackSingleTarget(ExecutionBehavior):
         defenderLoc=moveContext.currentDefenderLoc
         defender=defenderLoc.pokemon
 
-        # calc mults
-        stab=STAB if move.type in attacker.typing else 1
-        attackMult=attacker.stats.effectiveAtt/defender.stats.effectiveDef if move.isPhys else attacker.stats.effectiveSpa/defender.stats.effectiveSpd
-        eff=1
+        # calc damage
+        damage=Damage(move.power)
+        damage.stab=STAB if move.type in attacker.typing else 1
+        damage.attackMult=attacker.stats.effectiveAtt/defender.stats.effectiveDef if move.isPhys else attacker.stats.effectiveSpa/defender.stats.effectiveSpd
+        damage.eff=1
         for t in defender.typing:
-            eff*=getEffectiveness(attackingType=move.type, defendingType=t)
+            damage.eff*=getEffectiveness(attackingType=move.type, defendingType=t)
         r=random()
         if r>move.accuracy:                  # TODO: Add evasiveness as a stat for miss calculation
             print(move.name, 'missed!', flush=True)
             battleContext.window['combatLog'].update(f'{move.name} missed!\n', append=True)
             return
         
-        if eff>1:
+        if damage.eff>1:
             print(f'{move.name} was super effective!', flush=True)
             battleContext.window['combatLog'].update(f'{move.name} was super effective!\n', append=True)
-        elif eff==0:
+        elif damage.eff==0:
             print(f'{move.name} was ineffective...', flush=True)
             battleContext.window['combatLog'].update(f'{move.name} failed due to immunity...\n', append=True)
-        elif eff<1:
+        elif damage.eff<1:
             print(f'{move.name} was ineffective...', flush=True)
             battleContext.window['combatLog'].update(f'{move.name} was ineffective...\n', append=True)
 
-        dmg=attackMult*move.power*stab*eff*eventContext.attackMult
         if random()<move.critChance:
             print('A critical hit!', flush=True)
             battleContext.window['combatLog'].update(f'A critical hit!\n', append=True)
-            dmg*=CRIT
-
-        defender.takeDamage(dmg=dmg)
-        battleContext.eventSystem.trigger(eventContext=MoveEventContext(moveContext=moveContext, dmg=dmg), trigger=Trigger.AFTER_HIT)
+            damage.crit=CRIT
+        battleContext.eventSystem.trigger(eventContext=MoveEventContext(moveContext=moveContext, damage=damage), trigger=Trigger.BEFORE_HIT)
+        defender.takeDamage(damage=damage)
+        battleContext.eventSystem.trigger(eventContext=MoveEventContext(moveContext=moveContext, damage=damage), trigger=Trigger.AFTER_HIT)
 
 
 '''

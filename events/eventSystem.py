@@ -1,5 +1,5 @@
 from events.eventQueue import *
-from events.eventUtils import *
+from utils import *
 from collections import defaultdict
 from collections.abc import Iterable
 
@@ -48,7 +48,7 @@ class EventSystem:
             triggers=[triggers]
 
         for trigger in triggers:
-            self.permanentEvents[trigger]=[e for e in self.permanentEvents[trigger] if shouldRemoveFn(e)]
+            self.permanentEvents[trigger]=[e for e in self.permanentEvents[trigger] if not shouldRemoveFn(e)]
 
     def schedule(self, event, triggers=None):
         """Schedules a temporary event to the EventSystem that will be fired when the triggers are activated.
@@ -84,7 +84,7 @@ class EventSystem:
             triggers=[triggers]
             
         for trigger in triggers:
-            self.scheduledEvents[trigger]=[e for e in self.scheduledEvents[trigger] if shouldRemoveFn(e)]
+            self.scheduledEvents[trigger]=[e for e in self.scheduledEvents[trigger] if not shouldRemoveFn(e)]
 
     def remove(self, shouldRemoveFn, triggers=None):
         """Removes all temporary and permanent events from the specified triggers that satisfy the removal function.
@@ -129,7 +129,7 @@ class EventSystem:
             if event.trigger(battleContext=self.battleContext, eventContext=eventContext, trigger=trigger):
                 event.procs-=1
                 if event.procs<=0:
-                    self.remove(matchById(event), event.triggers)
+                    self.remove(matchById(event))
 
         if trigger==Trigger.END_TURN:
             for trig, events in self.scheduledEvents.items():

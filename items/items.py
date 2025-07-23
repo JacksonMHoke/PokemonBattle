@@ -1,5 +1,5 @@
 from events.event import Event
-from events.eventUtils import *
+from utils import *
 from globals import *
 from random import random
 from events.events import *
@@ -72,4 +72,23 @@ class GreenFungus(Item):
     def detach(self, **kwargs):
         self.battleContext.eventSystem.remove(matchById(self.healEvent))
         self.healEvent=None
+        super().detach()
+
+class FocusSash(Item):
+    """Leaves pokemon at 1HP if they are about to be OHKO from full hp."""
+    def __init__(self, owner):
+        super().__init__(name=self.__class__.__name__, owner=owner)
+
+    def onBattleStart(self):
+        self.surviveEvent=EndureOHKO(self.owner)
+        self.battleContext.eventSystem.addPermanentEvent(self.surviveEvent)
+
+    def attach(self, newOwner):
+        super().attach(newOwner=newOwner)
+        self.surviveEvent=EndureOHKO(self.owner)
+        self.battleContext.eventSystem.addPermanentEvent(self.surviveEvent)
+
+    def detach(self):
+        self.battleContext.eventSystem.remove(matchById(self.surviveEvent))
+        self.surviveEvent=None
         super().detach()

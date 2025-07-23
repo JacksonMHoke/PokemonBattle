@@ -1,6 +1,6 @@
 from statuses.status import *
 from events.events import *
-from events.eventUtils import *
+from utils import *
 from stats.statBuff import *
 from globals import *
 

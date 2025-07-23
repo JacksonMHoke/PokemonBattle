@@ -266,7 +266,7 @@ class Recover(Move):
         self.type=Type.NORMAL
         self.priority=Prio.MOVE
         self.name=self.__class__.__name__
-        self.healAmount=50
+        self.healAmount=200
     @moveDecorator
     def enact(self, battleContext, moveContext, eventContext):
         HealSingleTarget.do(battleContext=battleContext, moveContext=moveContext, healAmount=self.healAmount)

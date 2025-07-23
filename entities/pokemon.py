@@ -43,11 +43,11 @@ class Pokemon(ABC):
         self.stats.currentHp=min(self.stats.effectiveMaxHp, amount+self.stats.currentHp)
         self.battleContext.window['combatLog'].update(f'{self.name} healed to {self.stats.currentHp} HP!\n', append=True)
 
-    def takeDamage(self, dmg):
+    def takeDamage(self, damage):
         """Take damage"""
-        self.stats.currentHp-=dmg
-        print(f'{self.name} took {dmg} damage!', flush=True)
-        self.battleContext.window['combatLog'].update(f'{self.name} took {dmg} damage!\n', append=True)
+        self.stats.currentHp-=damage.total
+        print(f'{self.name} took {damage} damage!', flush=True)
+        self.battleContext.window['combatLog'].update(f'{self.name} took {damage} damage!\n', append=True)
         if self.stats.currentHp<=0:
             self.faint()
             self.battleContext.window['combatLog'].update(f'{self.name} fainted!\n', append=True)

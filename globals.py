@@ -49,6 +49,7 @@ class Prio(IntEnum):
     MOVE=0
 
 class EventPrio(IntEnum):
+    SASH=-999
     DEFAULT=0
     WEATHER=1
     STATUS=2
@@ -66,13 +67,14 @@ class Trigger(Enum):
     UNEQUIP=2
     BEFORE_MOVE=3
     BEFORE_EXECUTE_BEHAVIOR=4
-    AFTER_HIT=5
-    AFTER_EXECUTE_BEHAVIOR=6
-    CANCELED_EXECUTE_BEHAVIOR=7
-    AFTER_MOVE=8
-    CANCELED_MOVE=9
-    END_TURN_STATUS=10
-    END_TURN=11
+    BEFORE_HIT=5
+    AFTER_HIT=6
+    AFTER_EXECUTE_BEHAVIOR=7
+    CANCELED_EXECUTE_BEHAVIOR=8
+    AFTER_MOVE=9
+    CANCELED_MOVE=10
+    END_TURN_STATUS=11
+    END_TURN=12
 
 # Effectiveness multipliers:
 # For any (attacker, defender) pair not listed, assume a multiplier of 1.
