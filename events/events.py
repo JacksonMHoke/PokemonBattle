@@ -135,3 +135,30 @@ class DamageBoostSuperEff(Event):
             eventContext.damage.flatBonus+=self.flatBoost
             return True
         return False
+    
+class RepeatedMoveRampingDamage(Event):
+    """
+    Using the same move repeatedly buffs damage up to a cap
+    """
+    def __init__(self, basePowerIncrement, attackMultIncrement, flatBoostIncrement, maxRepeats, target, triggers=[Trigger.BEFORE_MOVE, Trigger.BEFORE_HIT], priority=EventPrio.DEFAULT, procs=float('inf')):
+        super().__init__(name=self.__class__.__name__, triggers=triggers, priority=priority, procs=procs)
+        self.basePowerIncrement=basePowerIncrement
+        self.attackMultIncrement=attackMultIncrement
+        self.flatBoostIncrement=flatBoostIncrement
+        self.maxRepeats=maxRepeats
+        self.target=target
+        self.prevMove=None
+        self.repeats=0
+
+    def trigger(self, battleContext, eventContext, trigger):
+        if trigger==Trigger.BEFORE_HIT and self.target==eventContext.attacker:
+            battleContext.window['combatLog'].update(f'{eventContext.attacker.name}\'s move was boosted from consecutive uses!\n', append=True)
+            eventContext.damage.basePower+=self.basePowerIncrement*self.repeats
+            eventContext.damage.additionalMult+=self.attackMultIncrement*self.repeats
+            eventContext.damage.flatBonus+=self.flatBoostIncrement*self.repeats
+            self.repeats=min(self.repeats+1, self.maxRepeats)
+            return True
+        if trigger==Trigger.BEFORE_MOVE and self.target==eventContext.attacker:
+            if self.prevMove!=eventContext.move:
+                self.repeats=0
+                self.prevMove=eventContext.move

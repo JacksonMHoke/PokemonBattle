@@ -112,3 +112,24 @@ class ExpertBelt(Item):
         self.battleContext.eventSystem.remove(matchById(self.boostEvent))
         self.boostEvent=None
         super().detach()
+
+class Metronome(Item):
+    """Moves used repeatedly gain power, stacking up to 100% bonus after 5 uses."""
+    def __init__(self, owner):
+        super().__init__(name=self.__class__.__name__, owner=owner)
+        self.attackMult=0.25
+        self.maxRepeats=4
+
+    def onBattleStart(self):
+        self.boostEvent=RepeatedMoveRampingDamage(basePowerIncrement=0, attackMultIncrement=self.attackMult, flatBoostIncrement=0, maxRepeats=self.maxRepeats, target=self.owner)
+        self.battleContext.eventSystem.addPermanentEvent(self.boostEvent)
+
+    def attach(self, newOwner):
+        super().attach(newOwner=newOwner)
+        self.boostEvent=RepeatedMoveRampingDamage(basePowerIncrement=0, attackMultIncrement=self.attackMult, flatBoostIncrement=0, maxRepeats=self.maxRepeats, target=self.owner)
+        self.battleContext.eventSystem.addPermanentEvent(self.boostEvent)
+
+    def detach(self):
+        self.battleContext.eventSystem.remove(matchById(self.boostEvent))
+        self.boostEvent=None
+        super().detach()
