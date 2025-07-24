@@ -14,9 +14,9 @@ moves=[Tackle(), Earthquake(), WaterLance(), SwordsDance(), Recover(), Thunder()
 pikachuStats=Stats(200,100,100,100,100,100)
 pikachus=[Pikachu('pika1', 15, pikachuStats, moves)]#, Pikachu('pika2', 15, pikachuStats, moves), Pikachu('pika3', 15, pikachuStats, moves), Pikachu('pika4', 15, pikachuStats, moves)]
 
-ratStats=Stats(200,400,100,100,100,101)
+ratStats=Stats(200,10,100,100,100,101)
 rats=[Rattata('rat1', 20, ratStats, moves)]#, Rattata('rat2', 20, ratStats, moves), Rattata('rat3', 20, ratStats, moves), Rattata('rat4', 20, ratStats, moves)]
-rats[0].item=GreenFungus(rats[0])
+rats[0].item=ExpertBelt(rats[0])
 
 bellStats=Stats(200, 75, 100, 150, 150, 30)
 bell=Bell('Bong', 15, bellStats, moves, None, None)

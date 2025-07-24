@@ -114,3 +114,24 @@ class EndureOHKO(Event):
             eventContext.damage.damageCap=defender.stats.currentHp-1
             return True
         return False
+    
+class DamageBoostSuperEff(Event):
+    """
+    Event that boosts the damage of super effective moves
+    """
+    def __init__(self, basePowerBoost, attackMult, flatBoost, target, triggers=[Trigger.BEFORE_HIT], priority=EventPrio.DEFAULT, procs=float('inf')):
+        super().__init__(name=self.__class__.__name__, triggers=triggers, priority=priority, procs=procs)
+        self.basePowerBoost=basePowerBoost
+        self.attackMult=attackMult
+        self.flatBoost=flatBoost
+        self.target=target
+
+    def trigger(self, battleContext, eventContext, trigger):
+        print('Effectiveness in trigger', eventContext.damage.effectiveness)
+        if trigger==Trigger.BEFORE_HIT and self.target==eventContext.attacker and eventContext.damage.effectiveness>1:
+            battleContext.window['combatLog'].update(f'{eventContext.attacker.name}\'s super effective attack was boosted!\n', append=True)
+            eventContext.damage.basePower+=self.basePowerBoost
+            eventContext.damage.additionalMult+=self.attackMult
+            eventContext.damage.flatBonus+=self.flatBoost
+            return True
+        return False

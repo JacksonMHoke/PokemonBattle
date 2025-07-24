@@ -92,3 +92,23 @@ class FocusSash(Item):
         self.battleContext.eventSystem.remove(matchById(self.surviveEvent))
         self.surviveEvent=None
         super().detach()
+
+class ExpertBelt(Item):
+    """Boosts the power of super effective moves by 20%"""
+    def __init__(self, owner):
+        super().__init__(name=self.__class__.__name__, owner=owner)
+        self.attackMult=0.2
+
+    def onBattleStart(self):
+        self.boostEvent=DamageBoostSuperEff(basePowerBoost=0, attackMult=self.attackMult, flatBoost=0, target=self.owner)
+        self.battleContext.eventSystem.addPermanentEvent(self.boostEvent)
+
+    def attach(self, newOwner):
+        super().attach(newOwner=newOwner)
+        self.boostEvent=DamageBoostSuperEff(basePowerBoost=0, attackMult=self.attackMult, flatBoost=0, target=self.owner)
+        self.battleContext.eventSystem.addPermanentEvent(self.boostEvent)
+
+    def detach(self):
+        self.battleContext.eventSystem.remove(matchById(self.boostEvent))
+        self.boostEvent=None
+        super().detach()

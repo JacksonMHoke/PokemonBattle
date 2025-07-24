@@ -39,22 +39,21 @@ class AttackSingleTarget(ExecutionBehavior):
         damage=Damage(move.power)
         damage.stab=STAB if move.type in attacker.typing else 1
         damage.attackMult=attacker.stats.effectiveAtt/defender.stats.effectiveDef if move.isPhys else attacker.stats.effectiveSpa/defender.stats.effectiveSpd
-        damage.eff=1
         for t in defender.typing:
-            damage.eff*=getEffectiveness(attackingType=move.type, defendingType=t)
+            damage.effectiveness*=getEffectiveness(attackingType=move.type, defendingType=t)
         r=random()
         if r>move.accuracy:                  # TODO: Add evasiveness as a stat for miss calculation
             print(move.name, 'missed!', flush=True)
             battleContext.window['combatLog'].update(f'{move.name} missed!\n', append=True)
             return
         
-        if damage.eff>1:
+        if damage.effectiveness>1:
             print(f'{move.name} was super effective!', flush=True)
             battleContext.window['combatLog'].update(f'{move.name} was super effective!\n', append=True)
-        elif damage.eff==0:
+        elif damage.effectiveness==0:
             print(f'{move.name} was ineffective...', flush=True)
             battleContext.window['combatLog'].update(f'{move.name} failed due to immunity...\n', append=True)
-        elif damage.eff<1:
+        elif damage.effectiveness<1:
             print(f'{move.name} was ineffective...', flush=True)
             battleContext.window['combatLog'].update(f'{move.name} was ineffective...\n', append=True)
 
