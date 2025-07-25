@@ -15,5 +15,6 @@ class MoveEventContext:
         self.defenderLoc=moveContext.currentDefenderLoc
         self.defenderLocs=moveContext.defenderLocs
         self.move=moveContext.move
+        self.moveContext=moveContext
         for k, v in kwargs.items():
             setattr(self, k, v)

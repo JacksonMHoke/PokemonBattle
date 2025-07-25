@@ -38,7 +38,6 @@ class AttackSingleTarget(ExecutionBehavior):
         # calc damage
         damage=Damage(move.power)
         damage.stab=STAB if move.type in attacker.typing else 1
-        damage.attackMult=attacker.stats.effectiveAtt/defender.stats.effectiveDef if move.isPhys else attacker.stats.effectiveSpa/defender.stats.effectiveSpd
         for t in defender.typing:
             damage.effectiveness*=getEffectiveness(attackingType=move.type, defendingType=t)
         r=random()
@@ -62,7 +61,11 @@ class AttackSingleTarget(ExecutionBehavior):
             battleContext.window['combatLog'].update(f'A critical hit!\n', append=True)
             damage.crit=CRIT
         battleContext.eventSystem.trigger(eventContext=MoveEventContext(moveContext=moveContext, damage=damage), trigger=Trigger.BEFORE_HIT)
-        defender.takeDamage(damage=damage)
+        if not isValidTargeting(moveContext=moveContext):
+            print('Attack targets not valid!')
+            return
+        print(moveContext.attackDefenseRatio)
+        defender.takeDamage(damage=damage.total(moveContext.attackDefenseRatio))
         battleContext.eventSystem.trigger(eventContext=MoveEventContext(moveContext=moveContext, damage=damage), trigger=Trigger.AFTER_HIT)
 
 

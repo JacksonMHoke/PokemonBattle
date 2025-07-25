@@ -109,7 +109,7 @@ class EndureOHKO(Event):
         if (not hasattr(eventContext, 'defenderLoc')):
             return False
         defender=eventContext.defenderLoc.pokemon
-        if trigger==Trigger.BEFORE_HIT and defender==self.target and 1<defender.stats.effectiveMaxHp<=defender.stats.currentHp<=eventContext.damage.total:
+        if trigger==Trigger.BEFORE_HIT and defender==self.target and 1<defender.stats.effectiveMaxHp<=defender.stats.currentHp<=eventContext.damage.total(eventContext.moveContext.attackDefenseRatio):
             battleContext.window['combatLog'].update(f'{defender.name} endured with 1 HP!\n', append=True)
             eventContext.damage.damageCap=defender.stats.currentHp-1
             return True
@@ -154,7 +154,7 @@ class RepeatedMoveRampingDamage(Event):
         if trigger==Trigger.BEFORE_HIT and self.target==eventContext.attacker:
             battleContext.window['combatLog'].update(f'{eventContext.attacker.name}\'s move was boosted from consecutive uses!\n', append=True)
             eventContext.damage.basePower+=self.basePowerIncrement*self.repeats
-            eventContext.damage.additionalMult+=self.attackMultIncrement*self.repeats
+            eventContext.damage.attackMult+=self.attackMultIncrement*self.repeats
             eventContext.damage.flatBonus+=self.flatBoostIncrement*self.repeats
             self.repeats=min(self.repeats+1, self.maxRepeats)
             return True

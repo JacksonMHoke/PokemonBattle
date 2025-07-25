@@ -45,7 +45,7 @@ class Pokemon(ABC):
 
     def takeDamage(self, damage):
         """Take damage"""
-        self.stats.currentHp-=damage.total
+        self.stats.currentHp-=damage
         print(f'{self.name} took {damage} damage!', flush=True)
         self.battleContext.window['combatLog'].update(f'{self.name} took {damage} damage!\n', append=True)
         if self.stats.currentHp<=0:
