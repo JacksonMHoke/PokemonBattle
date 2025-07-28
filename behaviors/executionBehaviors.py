@@ -42,29 +42,23 @@ class AttackSingleTarget(ExecutionBehavior):
             damage.effectiveness*=getEffectiveness(attackingType=move.type, defendingType=t)
         r=random()
         if r>move.accuracy:                  # TODO: Add evasiveness as a stat for miss calculation
-            print(move.name, 'missed!', flush=True)
             battleContext.window['combatLog'].update(f'{move.name} missed!\n', append=True)
             return
         
         if damage.effectiveness>1:
-            print(f'{move.name} was super effective!', flush=True)
             battleContext.window['combatLog'].update(f'{move.name} was super effective!\n', append=True)
         elif damage.effectiveness==0:
-            print(f'{move.name} was ineffective...', flush=True)
             battleContext.window['combatLog'].update(f'{move.name} failed due to immunity...\n', append=True)
         elif damage.effectiveness<1:
-            print(f'{move.name} was ineffective...', flush=True)
             battleContext.window['combatLog'].update(f'{move.name} was ineffective...\n', append=True)
 
         if random()<move.critChance:
-            print('A critical hit!', flush=True)
             battleContext.window['combatLog'].update(f'A critical hit!\n', append=True)
             damage.crit=CRIT
         battleContext.eventSystem.trigger(eventContext=MoveEventContext(moveContext=moveContext, damage=damage), trigger=Trigger.BEFORE_HIT)
-        if not isValidTargeting(moveContext=moveContext):
+        if not isValidAttack(moveContext=moveContext):
             print('Attack targets not valid!')
             return
-        print(moveContext.attackDefenseRatio)
         defender.takeDamage(damage=damage.total(moveContext.attackDefenseRatio))
         battleContext.eventSystem.trigger(eventContext=MoveEventContext(moveContext=moveContext, damage=damage), trigger=Trigger.AFTER_HIT)
 

@@ -16,7 +16,7 @@ class PreventMoveByChance(Event):
         self.target=target
     
     def trigger(self, battleContext, eventContext, trigger):
-        if trigger==Trigger.BEFORE_MOVE and battleContext.attacker==self.target:
+        if trigger==Trigger.BEFORE_MOVE and eventContext.moveContext.attacker==self.target:
             eventContext.cancelMove=random()<self.preventChance
             return True
         return False
@@ -37,9 +37,9 @@ class MoveStatusByChance(TimedEvent):
         self.attacker=attacker
 
     def trigger(self, battleContext, eventContext, trigger):
-        if trigger==Trigger.AFTER_HIT and eventContext.attacker==self.attacker:
+        if trigger==Trigger.AFTER_HIT and eventContext.moveContext.attacker==self.attacker:
             if random()<self.statusChance:
-                eventContext.defender.inflictStatus(self.status)
+                eventContext.moveContext.defender.inflictStatus(self.status)
             return True
         return False
     
@@ -57,7 +57,7 @@ class TypeImmunity(Event):
         self.immunePokemon=target
     
     def trigger(self, battleContext, eventContext, trigger):
-        if trigger==Trigger.BEFORE_EXECUTE_BEHAVIOR and eventContext.defenderLoc.pokemon==self.immunePokemon and self.immunityType==eventContext.move.type:
+        if trigger==Trigger.BEFORE_EXECUTE_BEHAVIOR and eventContext.moveContext.defender==self.immunePokemon and self.immunityType==eventContext.moveContext.move.type:
             eventContext.cancelBehavior=True
             battleContext.window['combatLog'].update(f'{self.immunePokemon.name} is immune.\n', append=True)
             return True
@@ -75,7 +75,7 @@ class DetachItemOnHit(Event):
         self.item=item
     
     def trigger(self, battleContext, eventContext, trigger):
-        if trigger==Trigger.AFTER_HIT and eventContext.defenderLoc.pokemon==self.item.owner:
+        if trigger==Trigger.AFTER_HIT and eventContext.moveContext.defender==self.item.owner:
             battleContext.window['combatLog'].update(f'{self.item.name} was detached!\n', append=True)
             self.item.detach()
             return True
@@ -108,7 +108,7 @@ class EndureOHKO(Event):
     def trigger(self, battleContext, eventContext, trigger):
         if (not hasattr(eventContext, 'defenderLoc')):
             return False
-        defender=eventContext.defenderLoc.pokemon
+        defender=eventContext.moveContext.defender
         if trigger==Trigger.BEFORE_HIT and defender==self.target and 1<defender.stats.effectiveMaxHp<=defender.stats.currentHp<=eventContext.damage.total(eventContext.moveContext.attackDefenseRatio):
             battleContext.window['combatLog'].update(f'{defender.name} endured with 1 HP!\n', append=True)
             eventContext.damage.damageCap=defender.stats.currentHp-1
@@ -127,9 +127,9 @@ class DamageBoostSuperEff(Event):
         self.target=target
 
     def trigger(self, battleContext, eventContext, trigger):
-        print('Effectiveness in trigger', eventContext.damage.effectiveness)
-        if trigger==Trigger.BEFORE_HIT and self.target==eventContext.attacker and eventContext.damage.effectiveness>1:
-            battleContext.window['combatLog'].update(f'{eventContext.attacker.name}\'s super effective attack was boosted!\n', append=True)
+        moveContext=eventContext.moveContext
+        if trigger==Trigger.BEFORE_HIT and self.target==moveContext.attacker and eventContext.damage.effectiveness>1:
+            battleContext.window['combatLog'].update(f'{moveContext.attacker.name}\'s super effective attack was boosted!\n', append=True)
             eventContext.damage.basePower+=self.basePowerBoost
             eventContext.damage.additionalMult+=self.attackMult
             eventContext.damage.flatBonus+=self.flatBoost
@@ -151,14 +151,15 @@ class RepeatedMoveRampingDamage(Event):
         self.repeats=0
 
     def trigger(self, battleContext, eventContext, trigger):
-        if trigger==Trigger.BEFORE_HIT and self.target==eventContext.attacker:
-            battleContext.window['combatLog'].update(f'{eventContext.attacker.name}\'s move was boosted from consecutive uses!\n', append=True)
+        moveContext=eventContext.moveContext
+        if trigger==Trigger.BEFORE_HIT and self.target==moveContext.attacker:
+            battleContext.window['combatLog'].update(f'{moveContext.attacker.name}\'s move was boosted from consecutive uses!\n', append=True)
             eventContext.damage.basePower+=self.basePowerIncrement*self.repeats
             eventContext.damage.attackMult+=self.attackMultIncrement*self.repeats
             eventContext.damage.flatBonus+=self.flatBoostIncrement*self.repeats
             self.repeats=min(self.repeats+1, self.maxRepeats)
             return True
-        if trigger==Trigger.BEFORE_MOVE and self.target==eventContext.attacker:
-            if self.prevMove!=eventContext.move:
+        if trigger==Trigger.BEFORE_MOVE and self.target==moveContext.attacker:
+            if self.prevMove!=moveContext.move:
                 self.repeats=0
-                self.prevMove=eventContext.move
+                self.prevMove=moveContext.move

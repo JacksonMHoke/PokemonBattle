@@ -3,7 +3,7 @@ from globals import *
 def matchById(obj):
     return lambda x: x.id==obj.id
 
-def isValidTargeting(moveContext):
+def isValidAttack(moveContext):
     """Takes move context and returns true if targeting is valid"""
     if moveContext.attacker and moveContext.attacker.state==State.ACTIVE and moveContext.defender:
         return True
@@ -19,7 +19,7 @@ class Damage:
         self.flatBonus=flatBonus
         self.damageCap=float('inf')
     
-    def total(self, attackDefRatio):
+    def total(self, attackDefRatio=1):
         return min(self.basePower*attackDefRatio*self.attackMult*self.stab*self.effectiveness*self.crit+self.flatBonus, self.damageCap)
     
     def __repr__(self):
