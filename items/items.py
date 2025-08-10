@@ -133,3 +133,28 @@ class Metronome(Item):
         self.battleContext.eventSystem.remove(matchById(self.boostEvent))
         self.boostEvent=None
         super().detach()
+
+class CursedSlippers(Item):
+    """Increases Speed by 50%, but user can only use the first selected move until switched out."""
+    def __init__(self, owner):
+        super().__init__(name=self.__class__.__name__, owner=owner)
+        self.speedBoost=0.5
+        self.cursedEvent=None
+    
+    def onBattleStart(self):
+        self.speedBuff=StatBuff(name=self.__class__.__name__, flat=0, mult=self.speedBoost)
+        self.owner.stats.addBuff(self.speedBuff, 'Spe')
+        self.cursedEvent=CursedMoveLimiter(target=self.owner)
+        self.battleContext.eventSystem.addPermanentEvent(self.cursedEvent)
+    
+    def attach(self, newOwner):
+        super().attach(newOwner=newOwner)
+        self.cursedEvent=CursedMoveLimiter(target=self.owner)
+        self.battleContext.eventSystem.addPermanentEvent(self.cursedEvent)
+
+    def detach(self):
+        self.battleContext.eventSystem.remove(matchById(self.cursedEvent))
+        self.owner.stats.removeBuffs(matchById(self.speedBuff))
+        super().detach()
+
+    

@@ -136,6 +136,27 @@ class DamageBoostSuperEff(Event):
             return True
         return False
     
+class DamageBoost(Event):
+    """
+    Event that boosts the damage of super effective moves
+    """
+    def __init__(self, basePowerBoost, attackMult, flatBoost, target, triggers=[Trigger.BEFORE_HIT], priority=EventPrio.DEFAULT, procs=float('inf')):
+        super().__init__(name=self.__class__.__name__, triggers=triggers, priority=priority, procs=procs)
+        self.basePowerBoost=basePowerBoost
+        self.attackMult=attackMult
+        self.flatBoost=flatBoost
+        self.target=target
+
+    def trigger(self, battleContext, eventContext, trigger):
+        moveContext=eventContext.moveContext
+        if trigger==Trigger.BEFORE_HIT and self.target==moveContext.attacker:
+            battleContext.window['combatLog'].update(f'{moveContext.attacker.name}\'s attack was boosted!\n', append=True)
+            eventContext.damage.basePower+=self.basePowerBoost
+            eventContext.damage.additionalMult+=self.attackMult
+            eventContext.damage.flatBonus+=self.flatBoost
+            return True
+        return False
+    
 class RepeatedMoveRampingDamage(Event):
     """
     Using the same move repeatedly buffs damage up to a cap
@@ -163,3 +184,39 @@ class RepeatedMoveRampingDamage(Event):
             if self.prevMove!=moveContext.move:
                 self.repeats=0
                 self.prevMove=moveContext.move
+        return False
+
+class CursedMoveLimiter(Event):
+    """
+    Limits move selection to a single move after the pokemon uses it. Resets when swapped out
+    """
+    def __init__(self, target, triggers=[Trigger.BEFORE_ACTION_SELECT, Trigger.AFTER_MOVE, Trigger.AFTER_SWAP], priority=EventPrio.DEFAULT, procs=float('inf')):
+        super().__init__(name=self.__class__.__name__, triggers=triggers, priority=priority, procs=procs)
+        self.target=target
+        self.move=None
+
+    def trigger(self, battleContext, eventContext, trigger):
+        if trigger==Trigger.AFTER_MOVE and eventContext.attacker==self.target:
+            self.move=eventContext.moveContext.move
+        if trigger==Trigger.AFTER_SWAP and eventContext.oldPokemon==self.target:
+            self.move=None
+        if trigger==Trigger.BEFORE_ACTION_SELECT and eventContext.pokemon==self.target and self.move is not None:
+            eventContext.moveOptions=[option for option in eventContext.moveOptions if option.displayText==self.move.name]
+            return True
+        return False
+    
+class FunctionOnEvent(Event):
+    """
+    Calls specified function when trigger is applied and returns that value. Function should take in battleContext, eventContext,
+    and trigger. The function should return True when the event is considered activated and False otherwise. Pass in parameters to 
+    function as kwargs.
+    """
+    def __init__(self, function, triggers=[], priority=EventPrio.DEFAULT, procs=float('inf'), **kwargs):
+        super().__init__(name=self.__class__.__name__, triggers=triggers, priority=priority, procs=procs)
+        self.function=function
+        self.params=kwargs
+    
+    def trigger(self, battleContext, eventContext, trigger):
+        if trigger in self.triggers:
+            return self.function(battleContext, eventContext, trigger, **self.params)
+        return False

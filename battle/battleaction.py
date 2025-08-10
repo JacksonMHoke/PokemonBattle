@@ -3,6 +3,7 @@ from random import random
 from globals import *
 from gui import *
 from contexts.moveContext import *
+from contexts.eventContext import *
 class BattleAction(ABC):
     """Represents an action in battle.
 
@@ -53,7 +54,7 @@ class SwapAction(BattleAction):
         if self.swapInPokemon.status==State.FAINTED:
             battleContext.window['combatLog'].update(f'Could not swap in {self.swapInPokemon.name} because it has already fainted!!\n', append=True)
             return
-        self.swapLocation.swapPokemon(self.trainer, self.swapInPokemon)
+        self.swapLocation.swapPokemon(self.swapInPokemon)
     
 class MoveAction(BattleAction):
     """Represents a move action activated using the execute function.
@@ -98,10 +99,9 @@ class BattleLocation:
 
     Note: pokemonAtSelection is mainly used for specific moves like Pursuit
     """
-    def __init__(self, teamIdx, slotIdx, trainer=None, pokemon=None):
+    def __init__(self, teamIdx, slotIdx, pokemon=None):
         self.teamIdx=teamIdx
         self.slotIdx=slotIdx
-        self.trainer=trainer
         self.pokemonAtSelection=None
         self.pokemon=pokemon
 
@@ -111,21 +111,18 @@ class BattleLocation:
             raise Exception('Selecting action from empty slot!')
 
         self.pokemonAtSelection=self.pokemon
-        validMoves=self.pokemon.moves
-        moveNames=[DropdownItem(move.name, i) for i, move in enumerate(validMoves)]
-        
-        team=self.battleContext.teams[self.teamIdx]
-        swapNames=[DropdownItem(f'{trainer.name}: {pokemon.name}', (trainer, pokemon)) for trainer in team.trainers for pokemon in trainer.getBenchedPokemon()]
+        selectActionContext=SelectActionEventContext(pokemon=self.pokemon)
+        self.battleContext.eventSystem.trigger(eventContext=selectActionContext, trigger=Trigger.BEFORE_ACTION_SELECT)
 
-        showDropdown(battleContext=self.battleContext, team=self.teamIdx, text='Select a move:', values=moveNames)
-        showSwapDropdown(battleContext=self.battleContext, team=self.teamIdx, text='', values=swapNames)
+        showDropdown(battleContext=self.battleContext, team=self.teamIdx, text='Select a move:', values=selectActionContext.moveOptions)
+        showSwapDropdown(battleContext=self.battleContext, team=self.teamIdx, text='', values=selectActionContext.swapOptions)
         v=waitForSubmit(self.battleContext, self.teamIdx)
         hideDropdown(battleContext=self.battleContext, team=self.teamIdx)
         hideSwapDropdown(self.battleContext, self.teamIdx)
         
         action=None
         if v[f'team{self.teamIdx+1}DDChoice']!='':
-            move=validMoves[v[f'team{self.teamIdx+1}DDChoice'].id]
+            move=selectActionContext.moves[v[f'team{self.teamIdx+1}DDChoice'].id]
             targetsLoc=move.select(self.battleContext, attackerLoc=self)
             action=MoveAction(self.battleContext.turn, move, self, targetsLoc)
         if v[f'team{self.teamIdx+1}DDSwapChoice']!='':
@@ -142,9 +139,8 @@ class BattleLocation:
             self.pokemon.state=State.BENCHED
 
         self.pokemon=None
-        self.trainer=None
     
-    def swapPokemon(self, trainer, pokemon):
+    def swapPokemon(self, pokemon):
         """Swaps pokemon off this slot in place for a new pokemon and their trainer.
 
         Arguments:
@@ -153,15 +149,26 @@ class BattleLocation:
         """
         assert pokemon.state==State.BENCHED
 
+        swapContext = SwapEventContext(oldPokemon=self.pokemon, newPokemon=pokemon, cancelSwap=False)
+        self.battleContext.eventSystem.trigger(eventContext=swapContext, trigger=Trigger.BEFORE_SWAP)
+        if swapContext.cancelSwap:
+            return
+
         if self.pokemon is None:
             self.battleContext.window['combatLog'].update(f'Sending out {pokemon.name}!\n', append=True)
         else:
             self.battleContext.window['combatLog'].update(f'Swapped {self.pokemon.name} and {pokemon.name}!\n', append=True)
 
         self.clear()
-        self.pokemon=pokemon
+        self.pokemon=swapContext.newPokemon
         self.pokemon.state=State.ACTIVE
-        self.trainer=trainer
+
+        self.battleContext.eventSystem.trigger(
+            eventContext=SwapEventContext(oldPokemon=swapContext.oldPokemon, newPokemon=swapContext.newPokemon),
+            trigger=Trigger.AFTER_SWAP
+        )
+
+
 
     # Enforces that battleContext is set before used
     @property
@@ -174,3 +181,7 @@ class BattleLocation:
     def battleContext(self, battleContext):
         """Sets battle context"""
         self._battleContext=battleContext
+
+    @property
+    def trainer(self):
+        return self.pokemon.trainer if self.pokemon is not None else None
