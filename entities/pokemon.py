@@ -61,6 +61,7 @@ class Pokemon(ABC):
         self.trainer=trainer
 
     # Enforces that battleContext is set before used
+    # TODO: Add in slot so that we can find which slot a pokemon is in from the pokemon
     @property
     def battleContext(self):
         if not hasattr(self, '_battleContext') or self._battleContext is None:

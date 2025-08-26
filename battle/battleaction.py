@@ -80,6 +80,7 @@ class MoveAction(BattleAction):
         """
         if self.attackerLoc.pokemonAtSelection.state!=State.ACTIVE:
             return
+        # TODO: Remove attacker, defender, move, etc from battle context and remove need for this function call
         battleContext.prepareMove(attackerLoc=self.attackerLoc, defenderLocs=self.defenderLocs, move=self.move)
         self.move.enact(battleContext=battleContext, moveContext=MoveContext(attackerLoc=self.attackerLoc, defenderLocs=self.defenderLocs, move=self.move))
     
@@ -122,6 +123,7 @@ class BattleLocation:
         
         action=None
         if v[f'team{self.teamIdx+1}DDChoice']!='':
+            # TODO: Add event for move selection in here or in move selection behavior
             move=selectActionContext.moves[v[f'team{self.teamIdx+1}DDChoice'].id]
             targetsLoc=move.select(self.battleContext, attackerLoc=self)
             action=MoveAction(self.battleContext.turn, move, self, targetsLoc)
@@ -140,6 +142,7 @@ class BattleLocation:
 
         self.pokemon=None
     
+    # TODO: Separate between sending out pokemon and swapping a pokemon with another slot
     def swapPokemon(self, pokemon):
         """Swaps pokemon off this slot in place for a new pokemon and their trainer.
 

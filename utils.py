@@ -9,6 +9,7 @@ def isValidAttack(moveContext):
         return True
     return False
 
+# TODO: Make similar classes for healing and other payloads that are used in execution behavior
 class Damage:
     def __init__(self, basePower, attackMult=1, stab=1, effectiveness=1, crit=1, additionalMult=1, flatBonus=0):
         self.basePower=basePower

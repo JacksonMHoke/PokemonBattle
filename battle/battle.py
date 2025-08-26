@@ -9,6 +9,8 @@ import FreeSimpleGUI as sg
 from tabulate import tabulate
 from random import random
 
+# TODO: Add in multi battle system where you get rewards after each battle
+# TODO: Add in usable items and make catching possible
 class Battle:
     """Represents a battle scenario between teams.
 

@@ -120,6 +120,7 @@ class HealSingleTarget(ExecutionBehavior):
 '''
 Misc Behavior
 '''
+# TODO: Add back in stealing item behaviors to test if detach and attach work as intended
 # class StealItem(ExecutionBehavior):
 #     """Implements execution behavior for stealing defender's item.
 
@@ -156,7 +157,7 @@ Misc Behavior
 #         battleContext.eventQueue.trigger(battleContext=battleContext, eventContext=eventContext, trigger=Trigger.EQUIP)
 
 
-
+# TODO: Implement weather
 # class SetWeather(ExecutionBehavior):
 #     """Implements execution behavior for setting weather effect.
 
