@@ -88,7 +88,7 @@ class Thunder(Move):
         self.name=self.__class__.__name__
     @moveDecorator
     def enact(self, battleContext, moveContext, eventContext):
-        battleContext.eventSystem.schedule(MoveStatusByChance(status=Paralyzed(), statusChance=0.5, attacker=battleContext.attacker, startTurn=battleContext.turn, duration=1, procs=1))
+        battleContext.eventSystem.schedule(MoveStatusByChance(status=Paralyzed(), statusChance=0.5, attacker=moveContext.attacker, startTurn=battleContext.turn, duration=1, procs=1))
         AttackSingleTarget.do(battleContext=battleContext, moveContext=moveContext)
     def select(self, battleContext, **kwargs):
         return SelectSingleTarget.select(battleContext=battleContext, eventContext=EventContext(), **kwargs)

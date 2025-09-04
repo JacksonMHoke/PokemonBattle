@@ -29,12 +29,7 @@ class Battle:
 
     def runBattle(self):
         """Runs the battle."""
-        queue=BattleQueue()
-        queue.battleContext=self.battleContext
-        self.battleContext.attachItems()
-        self.battleContext.attachAbilities()
-        self.battleContext.turn=1
-        
+        self.battleContext.setupBattle()
         self.battleContext.window = sg.Window('Battle Window', getLayout(self.battleContext), size=(800, 1080), resizable=True, finalize=True, return_keyboard_events=True, element_justification='center')
 
         while True:
@@ -46,9 +41,6 @@ class Battle:
                     if e == sg.WINDOW_CLOSED or e == "Exit":
                         break
                 return remainingTeams[0]
-            
-            if self.battleContext.turn==0:
-                self.battleContext.eventSystem.trigger(eventContext=EventContext(), trigger=Trigger.START)
             
             e, v = self.battleContext.window.read(timeout=50)
             if e == sg.WINDOW_CLOSED or e == "Exit":
@@ -64,10 +56,10 @@ class Battle:
             for team in self.battleContext.teams:
                 actions=team.selectActions()
                 for action in actions:
-                    queue.push(action)
+                    self.battleContext.battleQueue.push(action)
                 
             # enact moves in correct order
-            queue.executeTurn()
+            self.battleContext.battleQueue.executeTurn()
 
             refreshWindow(self.battleContext)
 

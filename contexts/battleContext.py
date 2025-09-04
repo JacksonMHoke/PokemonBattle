@@ -1,4 +1,6 @@
 from events.eventSystem import EventSystem
+from battle.battleQueue import BattleQueue
+from contexts.eventContext import *
 from dataclasses import dataclass
 
 @dataclass
@@ -20,49 +22,18 @@ class BattleContext:
     """
     def __init__(self, teams):
         self.turn=0
-        self.attacker=None
-        self.defender=None
-        self.defenderLoc=None
-        self.defenders=None
-        self.attackerLoc=None
-        self.defenderLocs=None
-        self.move=None
         self.events=[]
         self.weather=None
+        self.battleQueue=BattleQueue()
+        self.battleQueue.battleContext=self
         self.eventSystem=EventSystem()
         self.eventSystem.battleContext=self
         self.teams=teams
-    
-    def setAttacker(self, attackerLoc):
-        """Updates context for new attacker"""
-        self.attacker=attackerLoc.pokemonAtSelection
-        self.attackerLoc=attackerLoc
-    
-    def setDefenders(self, defenderLocs):
-        """Updates context for new defenders"""
-        self.defenders=[loc.pokemon for loc in defenderLocs]
-        self.defenderLocs=defenderLocs
-        if len(defenderLocs)==1:
-            self.defenderLoc=defenderLocs[0]
-            self.defender=self.defenderLoc.pokemon
-        else:
-            # Defender should be specified in move enact function for more complex logic
-            self.defenderLoc=None
-            self.defender=None
-    
-    def addDefender(self, defender):
-        """Updates context for an additional defender"""
-        if self.defenders is None:
-            self.defenders=[]
-        self.defenders.append(defender)
-
-    def prepareMove(self, attackerLoc, defenderLocs, move):
-        """Prepares context for enacting move"""
-        self.move=move
-        self.setAttacker(attackerLoc)
-        self.setDefenders(defenderLocs)
 
     def attachItems(self):
+        """
+        Called on battle start. Sets up all pokemon items.
+        """
         for team in self.teams:
             for trainer in team.trainers:
                 for mon in trainer.party:
@@ -70,8 +41,17 @@ class BattleContext:
                         mon.item.onBattleStart()
 
     def attachAbilities(self):
+        """
+        Called on battle start. Sets up all pokemon abilities.
+        """
         for team in self.teams:
             for trainer in team.trainers:
                 for mon in trainer.party:
                     if mon.ability is not None:
                         mon.ability.attach(mon)
+
+    def setupBattle(self):
+        self.attachItems()
+        self.attachAbilities()
+        self.turn=1
+        self.eventSystem.trigger(eventContext=EventContext(), trigger=Trigger.START)

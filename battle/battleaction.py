@@ -80,8 +80,6 @@ class MoveAction(BattleAction):
         """
         if self.attackerLoc.pokemonAtSelection.state!=State.ACTIVE:
             return
-        # TODO: Remove attacker, defender, move, etc from battle context and remove need for this function call
-        battleContext.prepareMove(attackerLoc=self.attackerLoc, defenderLocs=self.defenderLocs, move=self.move)
         self.move.enact(battleContext=battleContext, moveContext=MoveContext(attackerLoc=self.attackerLoc, defenderLocs=self.defenderLocs, move=self.move))
     
 class BattleLocation:
